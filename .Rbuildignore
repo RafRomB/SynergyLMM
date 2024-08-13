@@ -1,0 +1,4 @@
+^renv$
+^renv\.lock$
+^SynerLMM\.Rproj$
+^\.Rproj\.user$
