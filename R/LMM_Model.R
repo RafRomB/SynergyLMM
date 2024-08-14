@@ -1,5 +1,6 @@
 
-#' @importFrom ggplot2 aes geom_line geom_point ylab xlab scale_x_continuous facet_wrap geom_segment
+#' @import ggplot2
+#' @import nlme
 #' @export
 LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 0, min_obs = 1, plot = TRUE, ...){
  col.names <- c(Mouse, Day, Treatment, TV)
@@ -90,7 +91,7 @@ LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 
    segment_data$Treatment <- factor(x = c(C, A, B, AB), levels = c(C, A, B, AB))
    
    print(TV.plot %>% 
-     ggplot2::ggplot(aes(Day, logRTV, color = Treatment)) +
+     ggplot(aes(Day, logRTV, color = Treatment)) +
      geom_line(aes(group = Mouse), alpha = 0.33)+ geom_point(aes(group = Mouse)) +
      ylab("Log (RTV)") + 
      xlab("Days since start of treatment") + 
