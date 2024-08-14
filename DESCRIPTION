@@ -15,4 +15,9 @@ Imports:
     dplyr,
     ggplot2,
     cowplot,
-    nlme
+    nlme,
+    nlmeU,
+    fBasics,
+    car,
+    performance,
+    lattice
