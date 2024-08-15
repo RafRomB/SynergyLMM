@@ -336,8 +336,6 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
   dtLong <- expand.grid(dtL) # Long format
   mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
   
-  # Define betas according to doubling time for each condition (doubling time = log(2)/beta)
-  
   # Controls growth rate
   C <- grwrControl
   
