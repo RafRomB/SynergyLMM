@@ -226,6 +226,18 @@
       ],
       "Hash": "ac6cdb8552c61bd36b0e54d07cf2aab7"
     },
+    "checkmate": {
+      "Package": "checkmate",
+      "Version": "2.3.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "backports",
+        "utils"
+      ],
+      "Hash": "0e14e01ce07e7c88fd25de6d4260d26b"
+    },
     "cli": {
       "Package": "cli",
       "Version": "3.6.3",
@@ -236,6 +248,19 @@
         "utils"
       ],
       "Hash": "b21916dd77a27642b447374a5d30ecf3"
+    },
+    "clubSandwich": {
+      "Package": "clubSandwich",
+      "Version": "0.5.11",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "lifecycle",
+        "sandwich",
+        "stats"
+      ],
+      "Hash": "efeaf0782337828ce979ef71f2a17ee2"
     },
     "colorspace": {
       "Package": "colorspace",
@@ -277,6 +302,17 @@
         "R"
       ],
       "Hash": "5a295d7d963cc5035284dcdbaf334f4e"
+    },
+    "data.table": {
+      "Package": "data.table",
+      "Version": "1.15.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "methods"
+      ],
+      "Hash": "8ee9ac56ef633d0c7cab8b2ca87d683e"
     },
     "datawizard": {
       "Package": "datawizard",
@@ -550,6 +586,25 @@
       ],
       "Hash": "7ce2733a9826b3aeb1775d56fd305472"
     },
+    "marginaleffects": {
+      "Package": "marginaleffects",
+      "Version": "0.21.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "RcppEigen",
+        "checkmate",
+        "data.table",
+        "generics",
+        "insight",
+        "methods",
+        "rlang",
+        "utils"
+      ],
+      "Hash": "ff81d0015a8b37d206b7fbaf8c888578"
+    },
     "mgcv": {
       "Package": "mgcv",
       "Version": "1.9-1",
@@ -619,7 +674,7 @@
     },
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-165",
+      "Version": "3.1-166",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -629,7 +684,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "2769a88be217841b1f33ed469675c3cc"
+      "Hash": "ccbb8846be320b627e6aa2b4616a2ded"
     },
     "nlmeU": {
       "Package": "nlmeU",
@@ -784,6 +839,19 @@
         "utils"
       ],
       "Hash": "3eec01f8b1dee337674b2e34ab1f9bc1"
+    },
+    "sandwich": {
+      "Package": "sandwich",
+      "Version": "3.1-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "stats",
+        "utils",
+        "zoo"
+      ],
+      "Hash": "1cf6ae532f0179350862fefeb0987c9b"
     },
     "scales": {
       "Package": "scales",
@@ -1008,6 +1076,21 @@
         "graphics"
       ],
       "Hash": "07909200e8bbe90426fbfeb73e1e27aa"
+    },
+    "zoo": {
+      "Package": "zoo",
+      "Version": "1.8-12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "grDevices",
+        "graphics",
+        "lattice",
+        "stats",
+        "utils"
+      ],
+      "Hash": "5c715954112b45499fb1dadc6ee6ee3e"
     }
   }
 }

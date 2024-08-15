@@ -20,4 +20,6 @@ Imports:
     fBasics,
     car,
     performance,
-    lattice
+    lattice,
+    marginaleffects,
+    clubSandwich
