@@ -313,6 +313,7 @@ Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05){
 #' @import ggplot2
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
+#' @export
 
 Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, sd_eval = NULL, 
                     sgma_eval = NULL, grwrComb_eval = NULL, method = "Bliss"){
