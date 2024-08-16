@@ -1,6 +1,13 @@
-## Random Effects Diagnostics
-
+#' @title Diagnostics of random effects of the linear mixed model.
+#' 
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
 #' @import ggplot2
+#' @returns A list with different outputs for the diagnostics of the random effects are produced:
+#' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
+#' - `Normality`: results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
+#' D'Agostino normality test and Anderson - Darling normality test.
+#' - `Levene.test`: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by mouse.
+#' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by mouse.
 #' @export
 
 ranef_diag <- function(model){
