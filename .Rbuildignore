@@ -2,3 +2,4 @@
 ^renv\.lock$
 ^SynerLMM\.Rproj$
 ^\.Rproj\.user$
+^LICENSE\.md$

@@ -103,7 +103,7 @@ resid_diag <- function(model, pval=0.05){
   return(list(plots = resid_plot, outliers = outliers, Normality = Normality))
 }
 
-## 3. Observed vs predicted ----
+## Observed vs predicted ----
 
 #' @export
 ObsvsPred_plot <- function(model, nrow, ncol){
