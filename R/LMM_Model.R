@@ -1,6 +1,23 @@
-
+#' @title Generate Linear Mixed Model for synergy calculation.
+#' 
+#' @param data A data frame with the tumor growth data, in long format.
+#' It must contain at least contain the following columns: mice IDs, days of follow-up (numeric number), treatment and tumor volume (numeric number).
+#' @param Mouse String indicating the name of the column with the mice IDs.
+#' @param Day String indicating the name of the column with the days of follow-up.
+#' @param Treatment String indicating the name of the column with the treatment corresponding to each mouse.
+#' @param TV String indicating the name of the column with the tumor volume.
+#' @param C String indicating the name assigned to the 'Control' group.
+#' @param A String indicating the name assigned to the 'Drug A' group.
+#' @param B String indicating the name assigned to the 'Drug B' group.
+#' @param AB String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
+#' @param day_start Numeric value indicating the day at which the treatment started.
+#' @param min_obs Minimum number of observation for each mouse to be included in the analysis.
+#' @param plot Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Day for each mouse, 
+#' and the model calculated marginal slope for each treatment, should be produced.
+#' @param ... Additional arguments to be passed to [nlme::lme()] function.
 #' @import ggplot2
 #' @import nlme
+#' @return An object of class "lme" [nlme::lme()] representing the linear mixed-effects model fit. 
 #' @export
 LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 0, min_obs = 1, plot = TRUE, ...){
  col.names <- c(Mouse, Day, Treatment, TV)
