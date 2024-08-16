@@ -2,9 +2,9 @@
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
 #' @import ggplot2
-#' @returns A list with different outputs for the diagnostics of the random effects are produced:
+#' @returns A list with different elements for the diagnostics of the random effects are produced:
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
-#' - `Normality`: results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
+#' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
 #' - `Levene.test`: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by mouse.
 #' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by mouse.
@@ -69,8 +69,15 @@ ranef_diag <- function(model){
 }
 
 
-## Residuals Diagnostics
-
+#' @title Diagnostics of residuals of the linear mixed model.
+#' 
+#' @param model  An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param pval Threshold for the p-value of outlier observations based on their Pearson residuals.
+#' @returns A list with different elements for the diagnostics of the residuals are produced:
+#' - `plots`: Different plots for evaluating the normality and homocedasticity of the residuals.
+#' - `outliers`: Data frame with the identified outliers based on the Pearson residuals and the value of `pval`.
+#' - `Normality`: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test, 
+#' D'Agostino normality test and Anderson - Darling normality test.
 #' @export
 resid_diag <- function(model, pval=0.05){
   # Plots

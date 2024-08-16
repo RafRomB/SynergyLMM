@@ -10,10 +10,10 @@ ranef_diag(model)
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
 }
 \value{
-A list with different outputs for the diagnostics of the random effects are produced:
+A list with different elements for the diagnostics of the random effects are produced:
 \itemize{
 \item \code{plots}: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
-\item \code{Normality}: results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test,
+\item \code{Normality}: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test,
 D'Agostino normality test and Anderson - Darling normality test.
 \item \code{Levene.test}: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by mouse.
 \item \code{Fligner.test}: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by mouse.
