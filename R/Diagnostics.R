@@ -1,4 +1,4 @@
-## 1. Random Effects ----
+## Random Effects Diagnostics
 
 #' @import ggplot2
 #' @export
@@ -62,9 +62,8 @@ ranef_diag <- function(model){
 }
 
 
-## 2. Residuals of the Model -----
+## Residuals Diagnostics
 
-#' 
 #' @export
 resid_diag <- function(model, pval=0.05){
   # Plots
@@ -120,7 +119,7 @@ ObsvsPred_plot <- function(model, nrow, ncol){
        par.strip.text=list(col="black", cex=.5))
 }
 
-# Influential Diagnostics ----
+# Influential Diagnostics
 
 
 # Modified logLik1 function to deal with varIdent structure
@@ -153,7 +152,7 @@ logLik1.varIdent <- function(modfit, dt1, varName){
   return(-0.5 * as.numeric(lLik))
 }
 
-## 4. Individual contributions to logLik ----
+## Individual contributions to logLik 
 
 #' @export
 logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
@@ -191,7 +190,7 @@ logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
          title = "logLik contribution\nthreshold", bty = "n", cex = 0.66,xpd = TRUE)
 }
 
-## 5. Leave-one-out ----
+## Leave-one-out 
 
 # Creating object lmeUall containing fitted models
 
@@ -288,7 +287,7 @@ loo_logLik_disp <- function(model, disp_thrh, label_angle = 0, varName = NULL, .
 }
 
 
-## 6. Cook's distance for beta estimates ----
+## Cook's distance for beta estimates
 
 CookDfun <- function(betaU, beta0, vb.inv){
   dbetaU <- betaU - beta0 # beta(-i) - beta
