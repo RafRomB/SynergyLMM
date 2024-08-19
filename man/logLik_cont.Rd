@@ -17,7 +17,7 @@ logLik_cont(model, lLik_thrh, label_angle = 0, varName = NULL)
 }
 \value{
 Returns a plot of the per-observation individual-subject log-likelihood contibutions to the model, indicating those subjects
-whose contribution is smaller thatn \code{lLik_thrh}.
+whose contribution is smaller than \code{lLik_thrh}.
 }
 \description{
 Contributions of the individual subjects to the log-likelihood for the model.

@@ -187,7 +187,7 @@ logLik1.varIdent <- function(modfit, dt1, varName){
 #' @param label_angle Angle for the label of subjects with a log-likelihood contribution smaller than `lLik_thrh`.
 #' @param varName Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
 #' @returns Returns a plot of the per-observation individual-subject log-likelihood contibutions to the model, indicating those subjects
-#' whose contribution is smaller thatn `lLik_thrh`. 
+#' whose contribution is smaller than `lLik_thrh`. 
 #' @export
 logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
   
@@ -278,8 +278,15 @@ lLik <- function(cx, model, lmeUall, varName){
   return(lLikU + lLik.s) # "Displaced" log-likelihood
 } 
 
+#' @title Likelihood displacement for the model.
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param disp_thrh Threshold of log-likelihood displacement.
+#' @param label_angle Angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
+#' @param varName Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
 #' @import nlme
 #' @import lattice
+#' @returns Returns a plot of the log-likelihood displacement values for each subject, indicating those subjects
+#' whose contribution is greater than `disp_thrh`.
 #' @export
 loo_logLik_disp <- function(model, disp_thrh, label_angle = 0, varName = NULL, ...){
   
@@ -329,7 +336,13 @@ CookDfun <- function(betaU, beta0, vb.inv){
   CookD.value <- t(dbetaU) %*% vb.inv %*% dbetaU # Compute Cook distance
 }
 
+#' @title Cook's distance for the coefficient estimates.
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param cook_thr Threshold for the Cook's distance.
+#' @param label_angle Angle for the label of subjects with a Cook's distance greater than `cook_thr`.
 #' @import nlme
+#' @returns Plot of the Cook's distance value for each subject, indicating those subjects
+#' whose Cook's distance is greater than `cook_thr`.
 #' @export
 Cooks_dist <- function(model, cook_thr, label_angle = 0){
   subject.c <- levels(model$data$Mouse)
