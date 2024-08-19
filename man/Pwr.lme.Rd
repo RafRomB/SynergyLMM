@@ -15,8 +15,7 @@
   ddf = numeric(0),
   alpha = 0.05,
   altB = NULL,
-  tol = 1e-10,
-  dt1efs = NULL
+  tol = 1e-10
 )
 }
 \arguments{

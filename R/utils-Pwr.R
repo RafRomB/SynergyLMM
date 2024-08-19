@@ -74,7 +74,7 @@ Pwr <-  function(object, ...) UseMethod("Pwr")
 Pwr.lme <- function (object, ...,
                      type = c("sequential", "marginal"), 
                      Terms, L, verbose = FALSE, sigma, ddf= numeric(0), alpha=0.05,
-                     altB = NULL, tol = 1e-10, dt1efs = NULL) 
+                     altB = NULL, tol = 1e-10) 
 {
   ## Arguments: 
   ##  1. object: one object only
