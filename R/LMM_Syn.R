@@ -2,6 +2,25 @@
 ## Synergy Calculation using LMM
 
 #' @importFrom marginaleffects hypotheses
+#' 
+#' @title Synergy calculation using linear-mixed models.
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
+#' corresponding to Bliss, highest single agent and response additivity, respectively.
+#' @param min Minimun day from which to start calculating synergy.
+#' @param robustSE If TRUE, uncertainty is estimated using robust standard errors 
+#' using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by [clubSandwich::vcovCR()].
+#' @param type Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3". 
+#' See "Details" section of [clubSandwich::vcovCR()] for further information.
+#' @param test If `method` is set to "RA", string indicating the test for checking the 
+#' normality of the hypothesis expression of synergy (see "Warning#3" in "Description" section of [marginaleffects::hypotheses()]).
+#' Possible values are "shapiroTest", "dagoTest" or "adTest", for Shapiro-Wilk, D'Agostino and Anderson-Darling normality tests, respectively.
+#' @param ... Additional arguments to be passed to [marginaleffects::hypotheses()].
+#' @returns The function returns a list with two elements:
+#' - `Constrasts`: List with the outputs of the (non)-linear test for the synergy null hypothesis obtained by [marginaleffects::hypotheses()] for each day.
+#' See [marginaleffects::hypotheses()] for more details.
+#' - `Synergy`: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
+#' the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each day.
 #' @export
 
 LMM_Syn <- function(model, method = "Bliss", min = 0, robustSE = FALSE, type = "CR2", test = "shapiroTest", ...){
@@ -54,7 +73,7 @@ LMM_Syn <- function(model, method = "Bliss", min = 0, robustSE = FALSE, type = "
   days <- days[order(days)]
   i <- 1
   for(d in days){
-    data <- model$data %>% dplyr::filter(Day <= d)
+    data <- model$data %>% dplyr::filter(.data$Day <= d)
     model_day <- update(model, data = data)
     if(robustSE){
       Test <- hypotheses(model_day, hypothesis = contrast, vcov = clubSandwich::vcovCR(model, type = type), ...)
