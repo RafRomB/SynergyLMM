@@ -2,6 +2,8 @@
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
 #' @import ggplot2
+#' @import stats
+#' @import graphics
 #' @returns A list with different elements for the diagnostics of the random effects are produced:
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 #' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
@@ -18,7 +20,7 @@ ranef_diag <- function(model){
   p2 <- qqnorm(model, ~resid(.)|Mouse, pch=20, cex = 0.5, col = "gray20",
                main = list("Normal Q-Q Plot by Mouse", cex = 0.8), par.strip.text=list(col="black", cex=.66))
   p3 <- plot(model, Mouse ~ resid(., type = "response"), abline = 0, main = list("Conditional Residuals by Mouse", cex = 0.8))
-  p4 <- plot(model, resid(., type = "pearson") ~ fitted(.)|Mouse, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.5,
+  p4 <- plot(model, residuals(., type = "pearson") ~ fitted(.)|Mouse, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.5,
              main = list("Pearson Residuals vs Fitted Values by Mouse", cex =0.8),par.strip.text=list(col="black", cex=.66))
   cowplot::plot_grid(p1,p2,p3,p4, ncol = 2)
   ranef_plot <- cowplot::plot_grid(p1,p2,p3,p4, ncol = 2)
@@ -38,18 +40,18 @@ ranef_diag <- function(model){
   # Homocedasticity test
   
   # Conditional Residuals
-  cond_res <- resid(model, type = "response")
+  cond_res <- residuals(model, type = "response")
   cond_res <- data.frame(Conditional.Resid = cond_res, Mouse = names(cond_res), stringsAsFactors = T)
   colnames(cond_res) <- c("Conditional.Resid", "Mouse")
   
   # Marginal Residuals
-  mar_res <- resid(model, type = "response", level = 0)
+  mar_res <- residuals(model, type = "response", level = 0)
   mar_res <- data.frame(Marginal.Resid = mar_res, Mouse = names(mar_res), stringsAsFactors = T)
   colnames(mar_res) <- c("Marginal.Resid", "Mouse")
   
   # Normalized Residuals
   
-  norm_res <- resid(model, type = "normalized")
+  norm_res <- residuals(model, type = "normalized")
   norm_res <- data.frame(Normalized.Resid = norm_res, Mouse = names(norm_res), stringsAsFactors = T)
   colnames(norm_res) <- c("Normalized.Resid", "Mouse")
   
@@ -123,12 +125,13 @@ resid_diag <- function(model, pval=0.05){
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
 #' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
+#' @param ... Additional arguments to be passed to [performance::model_performance()].
 #' @details
 #'  The function provides visual and quantitative information about the performance of the model:
 #' - A layout of the observed and predicted values of log(relative tumor volume) vs day for each mouse, 
 #' with the actual measurements, the regression line for each mouse, and the marginal, treatment-specific, 
 #' regression line for each treatment group.
-#' - Performance metrics of the model obtain calculated using [performance::model_performance].
+#' - Performance metrics of the model obtain calculated using [performance::model_performance()].
 #' @returns A layout of the observed vs predicted values for each mouse and model performance metrics.
 #' @export
 ObsvsPred_plot <- function(model, nrow, ncol, ...){
@@ -145,7 +148,6 @@ ObsvsPred_plot <- function(model, nrow, ncol, ...){
 }
 
 # Influential Diagnostics
-
 
 # Modified logLik1 function to deal with varIdent structure
 
@@ -179,6 +181,13 @@ logLik1.varIdent <- function(modfit, dt1, varName){
 
 ## Individual contributions to logLik 
 
+#' @title Contributions of the individual subjects to the log-likelihood for the model.
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param lLik_thrh Threshold of log-likelihood contribution.
+#' @param label_angle Angle for the label of subjects with a log-likelihood contribution smaller than `lLik_thrh`.
+#' @param varName Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
+#' @returns Returns a plot of the per-observation individual-subject log-likelihood contibutions to the model, indicating those subjects
+#' whose contribution is smaller thatn `lLik_thrh`. 
 #' @export
 logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
   
