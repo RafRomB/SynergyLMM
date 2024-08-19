@@ -229,6 +229,7 @@ logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
 # Creating object lmeUall containing fitted models
 
 lmeU <- function(cx, model,...){
+  Mouse <- NULL
   dfU <- subset(model$data, Mouse != cx) ## LOO data
   update(model, data = dfU,...)
 }
