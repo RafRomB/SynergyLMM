@@ -12,6 +12,8 @@ ObsvsPred_plot(model, nrow, ncol, ...)
 \item{nrow}{Number of rows of the layout to organize the observed vs predicted plots.}
 
 \item{ncol}{Number of columns of the layout to organize the observed vs predicted plots.}
+
+\item{...}{Additional arguments to be passed to \code{\link[performance:model_performance]{performance::model_performance()}}.}
 }
 \value{
 A layout of the observed vs predicted values for each mouse and model performance metrics.
@@ -25,6 +27,6 @@ The function provides visual and quantitative information about the performance 
 \item A layout of the observed and predicted values of log(relative tumor volume) vs day for each mouse,
 with the actual measurements, the regression line for each mouse, and the marginal, treatment-specific,
 regression line for each treatment group.
-\item Performance metrics of the model obtain calculated using \link[performance:model_performance]{performance::model_performance}.
+\item Performance metrics of the model obtain calculated using \code{\link[performance:model_performance]{performance::model_performance()}}.
 }
 }
