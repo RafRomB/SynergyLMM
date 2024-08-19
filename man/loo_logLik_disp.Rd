@@ -14,6 +14,9 @@ loo_logLik_disp(model, disp_thrh, label_angle = 0, varName = NULL, ...)
 \item{label_angle}{Angle for the label of subjects with a log-likelihood displacement greater than \code{disp_thrh}.}
 
 \item{varName}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.}
+
+\item{...}{Extra arguments, if any, for \link[lattice:panel.xyplot]{lattice::panel.xyplot}. Usually passed on as
+graphical parameters to low level plotting functions, or to the panel functions performing smoothing, if applicable.}
 }
 \value{
 Returns a plot of the log-likelihood displacement values for each subject, indicating those subjects

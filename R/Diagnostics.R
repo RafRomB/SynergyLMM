@@ -202,6 +202,9 @@ logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
   if(is.null(model$modelStruct$varStruct)){
     lLik.i <- by(model$data, model$data$Mouse, FUN = function(dfi) nlmeU::logLik1(model, dfi)) # Function to calculate log likelihood for subject i
   } else {
+    if(is.null(varName)){
+      stop("`varName` cannot be NULL is a variance estructure has been specified in the model")
+    }
     lLik.i <- by(model$data, model$data$Mouse, FUN = function(dfi) logLik1.varIdent(model, dfi, varName = varName)) # Function to calculate log likelihood for subject i
   }
   
@@ -228,10 +231,10 @@ logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
 
 # Creating object lmeUall containing fitted models
 
-lmeU <- function(cx, model,...){
+lmeU <- function(cx, model){
   Mouse <- NULL
   dfU <- subset(model$data, Mouse != cx) ## LOO data
-  update(model, data = dfU,...)
+  update(model, data = dfU)
 }
 
 # logLik1 function for varStruct with LOO data
@@ -267,12 +270,16 @@ logLik1.varIdent_loo <- function(modfit, dt1, dtInit, varName){
 # Calculation of the likelihood displacement
 
 lLik <- function(cx, model, lmeUall, varName){
+  Mouse <- NULL
   lmeU <- lmeUall[[cx]] # LOO fit extracted
   lLikU <- logLik(lmeU, REML = FALSE) # LOO log-likelihood
   df.s <- subset(model$data, Mouse == cx) # Data for subject cx...
   if(is.null(model$modelStruct$varStruct)){
     lLik.s <- nlmeU::logLik1(lmeU, df.s) # ... and log-likelihood  
   } else{
+    if(is.null(varName)){
+      stop("`varName` cannot be NULL is a variance estructure has been specified in the model")
+    }
     lLik.s <- logLik1.varIdent_loo(lmeU, df.s, model, varName) # ... and log-likelihood
   }
   return(lLikU + lLik.s) # "Displaced" log-likelihood
@@ -283,6 +290,8 @@ lLik <- function(cx, model, lmeUall, varName){
 #' @param disp_thrh Threshold of log-likelihood displacement.
 #' @param label_angle Angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
 #' @param varName Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
+#' @param ... Extra arguments, if any, for [lattice::panel.xyplot]. Usually passed on as 
+#' graphical parameters to low level plotting functions, or to the panel functions performing smoothing, if applicable.
 #' @import nlme
 #' @import lattice
 #' @returns Returns a plot of the log-likelihood displacement values for each subject, indicating those subjects
@@ -294,7 +303,7 @@ loo_logLik_disp <- function(model, disp_thrh, label_angle = 0, varName = NULL, .
   
   subject.c <- levels(model$data$Mouse)
   
-  lmeUall <- lapply(subject.c, lmeU, model = model, ...)
+  lmeUall <- lapply(subject.c, lmeU, model = model)
   names(lmeUall) <- subject.c
   
   # Likelihood Displacement for Model
