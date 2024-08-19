@@ -119,9 +119,20 @@ resid_diag <- function(model, pval=0.05){
 
 ## Observed vs predicted ----
 
+#' @title Observed vs predicted values and performance
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
+#' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
+#' @details
+#'  The function provides visual and quantitative information about the performance of the model:
+#' - A layout of the observed and predicted values of log(relative tumor volume) vs day for each mouse, 
+#' with the actual measurements, the regression line for each mouse, and the marginal, treatment-specific, 
+#' regression line for each treatment group.
+#' - Performance metrics of the model obtain calculated using [performance::model_performance].
+#' @returns A layout of the observed vs predicted values for each mouse and model performance metrics.
 #' @export
-ObsvsPred_plot <- function(model, nrow, ncol){
-  print(performance::model_performance(model, metrics = c("AIC", "AICc","BIC", "R2", "RMSE", "SIGMA")))
+ObsvsPred_plot <- function(model, nrow, ncol, ...){
+  print(performance::model_performance(model, metrics = c("AIC", "AICc","BIC", "R2", "RMSE", "SIGMA")), ...)
   TV.df <- model$data
   aug.Pred <- nlme::augPred(model, primary = ~Day, level = 0:1, length.out = 2)
   plot(aug.Pred, layout = c(ncol, nrow, 1), lty = c(1,2),
