@@ -38,7 +38,7 @@ LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 
  # Remove samples with less than the minimum of observations specified
  
  samples <- TV.df %>% dplyr::count(Mouse, .by = Mouse) %>% 
-   dplyr::filter(n > min_obs) %>% dplyr::select(Mouse)
+   dplyr::filter(.data$n > min_obs) %>% dplyr::select(Mouse)
  
  TV.df <- TV.df %>% dplyr::filter(Mouse %in% samples$Mouse)
  
@@ -99,7 +99,7 @@ LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 
  if(plot){
    
    segment_data <- data.frame(x = rep(0,4), 
-                              xend = TV.plot %>% dplyr::group_by(Treatment) %>% dplyr::summarise(Max = max(Day)) %>% dplyr::select(Max),
+                              xend = TV.plot %>% dplyr::group_by(Treatment) %>% dplyr::summarise(Max = max(Day)) %>% dplyr::select(.data$Max),
                               y = rep(0, 4), 
                               yend = nlme::fixef(model))
    
@@ -108,14 +108,14 @@ LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 
    segment_data$Treatment <- factor(x = c(C, A, B, AB), levels = c(C, A, B, AB))
    
    print(TV.plot %>% 
-     ggplot(aes(Day, logRTV, color = Treatment)) +
-     geom_line(aes(group = Mouse), alpha = 0.33)+ geom_point(aes(group = Mouse)) +
+     ggplot(aes(.data$Day, .data$logRTV, color = .data$Treatment)) +
+     geom_line(aes(group = .data$Mouse), alpha = 0.33)+ geom_point(aes(group = .data$Mouse)) +
      ylab("Log (RTV)") + 
      xlab("Days since start of treatment") + 
      scale_x_continuous(breaks = unique(TV.plot$Day)) + 
      cowplot::theme_cowplot() + facet_wrap(~Treatment) +
      geom_segment(data = segment_data, 
-                  aes(x = x, xend = xend, y = y, yend = yend), 
+                  aes(x = .data$x, xend = .data$xend, y = .data$y, yend = .data$yend), 
                   lwd = 1.25, alpha = 0.75))
  }
  
