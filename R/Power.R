@@ -62,9 +62,17 @@ Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...)
 #' through which the power for synergy calculation will be evaluated.
 #' @param grwrComb_eval A vector with values representing the coefficients for Combination treatment group tumor growth rate,
 #' through which the power for synergy calculation will be evaluated.
-#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
-#' corresponding to Bliss, highest single agent and response additivity, respectively.
+#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
+#' corresponding to Bliss and highest single agent, respectively.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
+#' @returns The functions returns several plots:
+#' - A plot representing the hypothetical data, with the regression lines for each
+#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
+#' assigned to `sd_ranef` and `sgma` are also shown.
+#' - A plot showing the values of the power calculation depending on the values assigned to 
+#' `sd_eval` and `sgma_eval`,
+#' - A plot showing the values of the power calculation depending on the values assigned to
+#' `grwrComb_eval`.
 #' @import ggplot2
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
@@ -126,7 +134,7 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
     subset(exmpDt, subject %in% subj)
   })
   
-  p1 <- selDt %>% ggplot(aes(x = Day, y = mA)) + geom_line(aes(colour = Treatment), lwd = 2) + 
+  p1 <- selDt %>% ggplot(aes(x = .data$Day, y = .data$mA)) + geom_line(aes(colour = .data$Treatment), lwd = 2) + 
     labs(title = "Exemplary Data") + ylab("logRTV") + xlab("Days") + theme_cowplot() +
     annotate(geom = "text", x = max(selDt$Day)+3, y = max(selDt$mA), label = paste("GR Control=",C), hjust = -0.05, size = 4) +
     annotate(geom = "text", x = max(selDt$Day)+3, y = max(selDt$mA)*0.95, label = paste("GR Drug A=",A), hjust = -0.05, size = 4) +
@@ -235,12 +243,32 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
 
 ## Power with varying number of subjects 
 
+#' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM
+#' depending on the sample size per group
+#' @param npg A vector with the sample size (number of animals) per group to calculate the power of 
+#' the synergy analysis.
+#' @param Day Vector with the days at which the tumor volume measurements have been performed.
+#' @param grwrControl Coefficient for Control treatment group tumor growth rate.
+#' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
+#' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
+#' @param grwrComb Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.
+#' @param sd_ranef Random effects standard deviation for the model.
+#' @param sgma Residuals standard deviation for the model.
+#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
+#' corresponding to Bliss and highest single agent, respectively.
+#' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
+#' @returns The functions returns two plots:
+#' - A plot representing the hypothetical data, with the regression lines for each
+#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
+#' assigned to `sd_ranef` and `sgma` are also shown.
+#' - A plot showing the values of the power calculation depending on the values assigned to 
+#' `npg`.
 #' @import ggplot2
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
 #' @export 
 
-Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss"){
+Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss", ...){
   ## Constructing an exemplary dataset
   
   npg_vector <- c()
@@ -301,13 +329,13 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
     
     if(method == "Bliss"){
       dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentTreatA" = -1,
-                                          "Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1))
+                                          "Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1), ...)
     }
     if(method == "HSA"){
       if(which.min(c(grwrA, grwrB)) == 1){
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1))
+        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1), ...)
       } else{
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1))
+        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1), ...)
       }
     }
     
@@ -323,7 +351,7 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
     subset(exmpDt, subject %in% subj)
   })
   
-  p1 <- selDt %>% ggplot(aes(x = Day, y = mA)) + geom_line(aes(colour = Treatment), lwd = 2) + 
+  p1 <- selDt %>% ggplot(aes(x = .data$Day, y = .data$mA)) + geom_line(aes(colour = .data$Treatment), lwd = 2) + 
     labs(title = "Exemplary Data") + ylab("logRTV") + xlab("Days") + theme_cowplot() +
     annotate(geom = "text", x = max(selDt$Day)+3, y = max(selDt$mA), label = paste("GR Control=",C, sep = ""), hjust = -0.05, size = 4) +
     annotate(geom = "text", x = max(selDt$Day)+3, y = max(selDt$mA)*0.95, label = paste("GR Drug A=",A, sep = ""), hjust = -0.05, size = 4) +
@@ -335,7 +363,7 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
   
   npg_Pwr <- data.frame(N = npg_vector, Power = Pwr_vector)
   
-  p2 <- npg_Pwr %>% ggplot(aes(x = N, y = Power)) + geom_line() + theme_cowplot() + xlab("N per group") + 
+  p2 <- npg_Pwr %>% ggplot(aes(x = .data$N, y = .data$Power)) + geom_line() + theme_cowplot() + xlab("N per group") + 
     labs(title = paste("Power depending on\nnumber of animals for", method)) + scale_x_continuous(breaks = npg) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
@@ -344,13 +372,39 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
 
 ## Power with varying days of follow-up or frequency of measurements
 
+#' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM
+#' depending on the days of follow-up or the frequency of measurements
+#' @param npg Number of mouse per group.
+#' @param Day A list in which element is a vector with the days at which the tumor volume measurements have been performed.
+#' If `type` is set to "max", each vector in the list should have the measurements taken at the same interval and differ in the final
+#' day of follow-up. If `type` is set to "freq", each vector in the list should have the same final day of follow-up and
+#' differ in the intervals at which the measurements have been taken. 
+#' @param type String indicating whether to calculate the power depending on the days of follow-up ("max"), or the frequency
+#' of measurements ("freq").
+#' @param grwrControl Coefficient for Control treatment group tumor growth rate.
+#' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
+#' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
+#' @param grwrComb Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.
+#' @param sd_ranef Random effects standard deviation for the model.
+#' @param sgma Residuals standard deviation for the model.
+#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
+#' corresponding to Bliss and highest single agent, respectively.
+#' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
+#' @returns The functions returns two plots:
+#' - A plot representing the hypothetical data, with the regression lines for each
+#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
+#' assigned to `sd_ranef` and `sgma` are also shown.
+#' - A plot showing the values of the power calculation depending on the values assigned to 
+#' `Day`. If `type` is set to "max", the plot shows how the power varies depending on the maximum day of follow-up. 
+#' If `type` is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
+#' been performed.
 #' @import ggplot2
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
 #' @export 
 
 Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)), type = "max", 
-                        grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss"){
+                        grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss", ...){
   ## Constructing an exemplary dataset
   
   day_vector <- c()
@@ -414,13 +468,13 @@ Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 
     
     if(method == "Bliss"){
       dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentTreatA" = -1,
-                                          "Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1))
+                                          "Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1), ...)
     }
     if(method == "HSA"){
       if(which.min(c(grwrA, grwrB)) == 1){
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1))
+        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1), ...)
       } else{
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1))
+        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1), ...)
       }
     }
     
@@ -445,7 +499,7 @@ Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 
     subset(exmpDt, subject %in% subj)
   })
   
-  p1 <- selDt %>% ggplot(aes(x = Day, y = mA)) + geom_line(aes(colour = Treatment), lwd = 2) + 
+  p1 <- selDt %>% ggplot(aes(x = .data$Day, y = .data$mA)) + geom_line(aes(colour = .data$Treatment), lwd = 2) + 
     labs(title = "Exemplary Data") + ylab("logRTV") + xlab("Days") + theme_cowplot() +
     annotate(geom = "text", x = max(selDt$Day)+3, y = max(selDt$mA), label = paste("GR Control=",C, sep = ""), hjust = -0.05, size = 4) +
     annotate(geom = "text", x = max(selDt$Day)+3, y = max(selDt$mA)*0.95, label = paste("GR Drug A=",A, sep = ""), hjust = -0.05, size = 4) +
@@ -457,7 +511,7 @@ Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 
   
   npg_Pwr <- data.frame(Day = day_vector, Power = Pwr_vector)
   
-  p2 <- npg_Pwr %>% ggplot(aes(x = Day, y = Power)) + geom_line() + theme_cowplot() + xlab(x.lab) + 
+  p2 <- npg_Pwr %>% ggplot(aes(x = .data$Day, y = .data$Power)) + geom_line() + theme_cowplot() + xlab(x.lab) + 
     labs(title = paste(title, method)) + scale_x_continuous(breaks = day_vector) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
