@@ -1,8 +1,17 @@
 ## Power Evaluation using Simulations 
 
+#' @title Post hoc power calculation based on simulations of the synergy evaluation using LMM.
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param nsim Number of simulations to perform.
+#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
+#' corresponding to Bliss, highest single agent and response additivity, respectively.
+#' @param pvalue Threshold for the p-value of synergy calculation to be considered statistically significant.
+#' @param ... Additional parameters to be passed to [nlmeU::simulateY].
+#' @returns Returns a numeric value of the power for the synergy calculation for the model using the method specified in `method`. 
+#' The power is expressed as the proportion of simulations that provides a p-value below the threshold specified in `pvalue`. 
 #' @export
 
-Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05){
+Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...){
   
   if(method == "Bliss"){
     contrast <- "b4 = b2 + b3 - b1"
@@ -19,7 +28,7 @@ Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05){
     contrast <- "b4 = log(exp(b2) + exp(b3) - exp(b1))"
   }
   
-  simA <- nlmeU::simulateY(model, nsim = nsim) # Simulation
+  simA <- nlmeU::simulateY(model, nsim = nsim, ...) # Simulation
   dt <- model$data # working copy
   simfmA <- apply(simA,
                   2,
@@ -38,13 +47,31 @@ Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05){
 
 ## A priori Power Calculations
 
+#' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM.
+#' @param npg Number of mouse per group.
+#' @param Day Vector with the days at which the tumor volume measurements have been performed.
+#' @param grwrControl Coefficient for Control treatment group tumor growth rate.
+#' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
+#' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
+#' @param grwrComb Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.
+#' @param sd_ranef Random effects standard deviation for the model.
+#' @param sgma Residuals standard deviation for the model.
+#' @param sd_eval A vector with values representing the standard deviations of random effects,
+#' through which the power for synergy calculation will be evaluated.
+#' @param sgma_eval A vector with values representing the standard deviations of the residuals,
+#' through which the power for synergy calculation will be evaluated.
+#' @param grwrComb_eval A vector with values representing the coefficients for Combination treatment group tumor growth rate,
+#' through which the power for synergy calculation will be evaluated.
+#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
+#' corresponding to Bliss, highest single agent and response additivity, respectively.
+#' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
 #' @import ggplot2
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
 #' @export
 
 Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, sd_eval = NULL, 
-                    sgma_eval = NULL, grwrComb_eval = NULL, method = "Bliss"){
+                    sgma_eval = NULL, grwrComb_eval = NULL, method = "Bliss", ...){
   
   if(is.null(sd_eval) & is.null(sgma_eval) & is.null(grwrComb_eval)){
     stop("One of the following, 'sd_eval' and 'sgma_eval', or 'grwrComb_eval', arguments must be specified")
@@ -131,13 +158,13 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
     # Ploting power curve
     
     if(method == "Bliss"){
-      print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentTreatA" = -1,"Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1)))
+      print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentTreatA" = -1,"Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1)), ...)
     }
     if(method == "HSA"){
       if(which.min(c(grwrA, grwrB)) == 1){
-        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1)))
+        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1)), ...)
       } else{
-        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1)))
+        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1)), ...)
       }
     }
     
@@ -153,13 +180,13 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
         fmA <- lme(mA ~ 0+Day:Treatment, random = list(subject = pd1), data = exmpDt, control = cntrl)
         if(method == "Bliss"){
           dtF <- Pwr(fmA,sigma = sgma_eval[j], L = c("Day:TreatmentControl"=1, "Day:TreatmentTreatA"=-1,
-                                                     "Day:TreatmentTreatB"=-1, "Day:TreatmentCombination"=1))
+                                                     "Day:TreatmentTreatB"=-1, "Day:TreatmentCombination"=1), ...)
         }
         if(method == "HSA"){
           if(which.min(c(grwrA, grwrB)) == 1){
-            dtF <- Pwr(fmA, sigma = sgma_eval[j], L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1))
+            dtF <- Pwr(fmA, sigma = sgma_eval[j], L = c("Day:TreatmentTreatA" = -1,"Day:TreatmentCombination" = 1), ...)
           } else{
-            dtF <- Pwr(fmA, sigma = sgma_eval[j], L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1))
+            dtF <- Pwr(fmA, sigma = sgma_eval[j], L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1), ...)
           }
         }
         power.df[idx, "SD"] <- sd_eval[i]
@@ -169,7 +196,7 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
       }
     }
     
-    p2 <- power.df %>% ggplot(aes(x = SD, y = sigma, z = Power)) + geom_raster(aes(fill = Power)) + 
+    p2 <- power.df %>% ggplot(aes(x = .data$SD, y = .data$sigma, z = .data$Power)) + geom_raster(aes(fill = .data$Power)) + 
       scale_fill_continuous(type = "viridis") + theme_cowplot() + labs(title = paste("Power for", method, sep = " ")) +
       xlab("SD for random effects") + ylab("Sigma")
     print(plot_grid(p1,p2, ncol = 2))
@@ -196,7 +223,7 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
         dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentTreatB" = -1,"Day:TreatmentCombination" = 1), altB = dif)
       }
     }
-    p3 <- dtF %>% ggplot(aes(x = `Day:TreatmentCombination`, y = Power)) + geom_line() + theme_cowplot() +
+    p3 <- dtF %>% ggplot(aes(x = .data$`Day:TreatmentCombination`, y = .data$Power)) + geom_line() + theme_cowplot() +
       labs(title = paste("Power across growth rate\nvalues for combination treatment for ", method)) + xlab("Growth rate (logRTV/Days)") +
       geom_hline(yintercept = 0.8, lty = "dashed")
     print(plot_grid(p1,p3, ncol = 2))
