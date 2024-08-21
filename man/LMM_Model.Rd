@@ -2,7 +2,7 @@
 % Please edit documentation in R/LMM_Model.R
 \name{LMM_Model}
 \alias{LMM_Model}
-\title{Generate Linear Mixed Model for synergy calculation.}
+\title{Generate Linear Mixed Model for synergy calculation}
 \usage{
 LMM_Model(
   data,
@@ -53,5 +53,5 @@ and the model calculated marginal slope for each treatment, should be produced.}
 An object of class "lme" \code{\link[nlme:lme]{nlme::lme()}} representing the linear mixed-effects model fit.
 }
 \description{
-Generate Linear Mixed Model for synergy calculation.
+Generate Linear Mixed Model for synergy calculation
 }

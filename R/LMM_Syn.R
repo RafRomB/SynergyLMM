@@ -90,5 +90,6 @@ LMM_Syn <- function(model, method = "Bliss", min = 0, robustSE = FALSE, type = "
   colnames(ss) <- c("Model","Metric","Estimate", "lwr", "upr", "pval", "Day")
   df <- rbind(ci, ss)
   result <- list(Contrasts = Contrasts, Synergy = df)
+  print(Plot_LMM_Syn(result))
   return(result)
 }

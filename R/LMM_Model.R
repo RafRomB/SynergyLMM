@@ -1,4 +1,7 @@
-#' @title Generate Linear Mixed Model for synergy calculation.
+#' @import nlme
+NULL
+
+#' @title Generate Linear Mixed Model for synergy calculation
 #' 
 #' @param data A data frame with the tumor growth data, in long format.
 #' It must contain at least contain the following columns: mice IDs, days of follow-up (numeric number), treatment and tumor volume (numeric number).
@@ -15,8 +18,6 @@
 #' @param plot Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Day for each mouse, 
 #' and the model calculated marginal slope for each treatment, should be produced.
 #' @param ... Additional arguments to be passed to [nlme::lme()] function.
-#' @import ggplot2
-#' @import nlme
 #' @return An object of class "lme" [nlme::lme()] representing the linear mixed-effects model fit. 
 #' @export
 LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 0, min_obs = 1, plot = TRUE, ...){
@@ -89,6 +90,8 @@ LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 
 
  model <- nlme::lme(fixed = logRTV ~  0 + Day:Treatment, random = ~0 + Day|Mouse, data = TV.df, ...)
  
+ model$dt1 <- TV.plot
+ 
  if("weights" %in% names(args)){
    model$call$weights <- args$weights
  }
@@ -97,26 +100,7 @@ LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 
  }
  
  if(plot){
-   
-   segment_data <- data.frame(x = rep(0,4), 
-                              xend = TV.plot %>% dplyr::group_by(Treatment) %>% dplyr::summarise(Max = max(Day)) %>% dplyr::select(.data$Max),
-                              y = rep(0, 4), 
-                              yend = nlme::fixef(model))
-   
-   segment_data$yend <- segment_data$Max*segment_data$yend
-   colnames(segment_data) <- c("x", "xend", "y", "yend")
-   segment_data$Treatment <- factor(x = c(C, A, B, AB), levels = c(C, A, B, AB))
-   
-   print(TV.plot %>% 
-     ggplot(aes(.data$Day, .data$logRTV, color = .data$Treatment)) +
-     geom_line(aes(group = .data$Mouse), alpha = 0.33)+ geom_point(aes(group = .data$Mouse)) +
-     ylab("Log (RTV)") + 
-     xlab("Days since start of treatment") + 
-     scale_x_continuous(breaks = unique(TV.plot$Day)) + 
-     cowplot::theme_cowplot() + facet_wrap(~Treatment) +
-     geom_segment(data = segment_data, 
-                  aes(x = .data$x, xend = .data$xend, y = .data$y, yend = .data$yend), 
-                  lwd = 1.25, alpha = 0.75))
+   print(Plot_LMM_Model(model = model, C = C, A = A, B = B, AB = AB))
  }
  
  return(model)

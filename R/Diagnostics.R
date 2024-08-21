@@ -2,8 +2,6 @@
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
 #' @import ggplot2
-#' @import stats
-#' @import graphics
 #' @returns A list with different elements for the diagnostics of the random effects are produced:
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 #' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
@@ -14,26 +12,18 @@
 
 ranef_diag <- function(model){
   # Plots
-  p1 <- ggplot(nlme::ranef(model), aes(sample = nlme::ranef(model)$Day)) + stat_qq(col = "gray20") + stat_qq_line() +
-    labs(title = "Normal Q-Q Plot of Random Effects") + xlab("Theoretical Quantiles") + ylab("Sample Quantiles") + cowplot::theme_cowplot()+
-    theme(plot.title = element_text(size = 10, hjust = 0.5), axis.title = element_text(size = 12))
-  p2 <- qqnorm(model, ~resid(.)|Mouse, pch=20, cex = 0.5, col = "gray20",
-               main = list("Normal Q-Q Plot by Mouse", cex = 0.8), par.strip.text=list(col="black", cex=.66))
-  p3 <- plot(model, Mouse ~ resid(., type = "response"), abline = 0, main = list("Conditional Residuals by Mouse", cex = 0.8))
-  p4 <- plot(model, residuals(., type = "pearson") ~ fitted(.)|Mouse, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.5,
-             main = list("Pearson Residuals vs Fitted Values by Mouse", cex =0.8),par.strip.text=list(col="black", cex=.66))
-  cowplot::plot_grid(p1,p2,p3,p4, ncol = 2)
-  ranef_plot <- cowplot::plot_grid(p1,p2,p3,p4, ncol = 2)
+  ranef_plot <- Plot_ranef_diag(model)
+  print(ranef_plot[[5]])
   
   # Normality test
-  ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Day, description = "Shapiro - Wilk Normality Test of random effects")
+  print(ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Day, description = "Shapiro - Wilk Normality Test of random effects"))
   
   if(length(nlme::ranef(model)$Day)<20){
     ranef_DAgostino <- print("Sample size must be at least 20 for D'Agostino Normality Test")
   } else {
-    ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Day, description = "D'Agostino Normality Test of random effects") 
+    print(ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Day, description = "D'Agostino Normality Test of random effects")) 
   }
-  ranef_ad <- fBasics::adTest(nlme::ranef(model)$Day, description = "Anderson - Darling Normality Test of random effects")
+  print(ranef_ad <- fBasics::adTest(nlme::ranef(model)$Day, description = "Anderson - Darling Normality Test of random effects"))
   
   Normality <- list(Shapiro.test = ranef_shapiro, DAgostino.test = ranef_DAgostino, Anderson.Darling.test = ranef_ad)
   
@@ -56,18 +46,23 @@ ranef_diag <- function(model){
   colnames(norm_res) <- c("Normalized.Resid", "Mouse")
   
   levene <- list()
-  
-  levene$Conditional.Resid <- car::leveneTest(Conditional.Resid ~ Mouse, data = cond_res)
-  levene$Marginal.Resid <- car::leveneTest(Marginal.Resid ~ Mouse, data = mar_res)
-  levene$Normalized.Resid <- car::leveneTest(Normalized.Resid ~ Mouse, data = norm_res)
+  print("Conditional Residuals")
+  print(levene$Conditional.Resid <- car::leveneTest(Conditional.Resid ~ Mouse, data = cond_res))
+  print("Marginal Residuals")
+  print(levene$Marginal.Resid <- car::leveneTest(Marginal.Resid ~ Mouse, data = mar_res))
+  print("Normalized Residuals")
+  print(levene$Normalized.Resid <- car::leveneTest(Normalized.Resid ~ Mouse, data = norm_res))
   
   fligner <- list()
   
-  fligner$Conditional.Resid <- fligner.test(Conditional.Resid ~ Mouse, data = cond_res)
-  fligner$Marginal.Resid <- fligner.test(Marginal.Resid ~ Mouse, data = mar_res)
-  fligner$Normalized.Resid <- fligner.test(Normalized.Resid ~ Mouse, data = norm_res)
+  print("Conditional Residuals")
+  print(fligner$Conditional.Resid <- fligner.test(Conditional.Resid ~ Mouse, data = cond_res))
+  print("Marginal Residuals")
+  print(fligner$Marginal.Resid <- fligner.test(Marginal.Resid ~ Mouse, data = mar_res))
+  print("Normalized Residuals")
+  print(fligner$Normalized.Resid <- fligner.test(Normalized.Resid ~ Mouse, data = norm_res))
   
-  return(list(plots = ranef_plot, Normality = Normality, Levene.test = levene, Fligner.test = fligner))
+  return(invisible(list(Plots = ranef_plot, Normality = Normality, Levene.test = levene, Fligner.test = fligner)))
 }
 
 
@@ -83,26 +78,16 @@ ranef_diag <- function(model){
 #' @export
 resid_diag <- function(model, pval=0.05){
   # Plots
-  p1 <- qqnorm(model, ~resid(., type = "normalized"),pch = 20, main = "Q-Q Plot of Normalized Residuals")
-  p2 <- qqnorm(model, ~resid(., type = "normalized")|Day,pch = 20, main = "Q-Q Plot of Normalized Residuals by Day",
-               par.strip.text=list(col="black", cex=.5))
-  p3 <- qqnorm(model, ~resid(., type = "normalized")|Treatment, pch = 20, main = "Q-Q Plot of Normalized Residuals by Treatment",
-               par.strip.text=list(col="black", cex=.5))
-  p4 <- plot(model,main = "Pearson Residuals vs Fitted Values", pch = 20)
-  p5 <- plot(model, resid(., type = "pearson") ~Day|Treatment, id = 0.05, pch=20,
-             adj = -0.03, cex = 0.6, main = "Pearson Residuals per Time and Treatment", 
-             par.strip.text=list(col="black", cex=.5))
-  
-  cowplot::plot_grid(p1,p2,p3,p4,p5, nrow = 3, ncol = 2, align = "hv")
-  resid_plot <-  cowplot::plot_grid(p1,p2,p3,p4,p5, nrow = 3, ncol = 2, align = "hv")
+  resid_plot <- Plot_resid_diag(model)
+  print(resid_plot[[6]])
   
   # Normality test
   
   norm_res <- resid(model, type = "normalized")
   
-  res_shapiro <- fBasics::shapiroTest(norm_res, description = "Shapiro - Wilk Normality Test of normalized residuals")
-  res_DAgostino <- fBasics::dagoTest(norm_res, description = "D'Agostino Normality Test of normalized residuals")
-  res_ad <- fBasics::adTest(norm_res, description = "Anderson - Darling Normality Test of normalized residuals")
+  print(res_shapiro <- fBasics::shapiroTest(norm_res, description = "Shapiro - Wilk Normality Test of normalized residuals"))
+  print(res_DAgostino <- fBasics::dagoTest(norm_res, description = "D'Agostino Normality Test of normalized residuals"))
+  print(res_ad <- fBasics::adTest(norm_res, description = "Anderson - Darling Normality Test of normalized residuals"))
   
   Normality <- list(Shapiro.test = res_shapiro, DAgostino.test = res_DAgostino, Anderson.Darling.test = res_ad)
   
@@ -114,9 +99,10 @@ resid_diag <- function(model, pval=0.05){
                            resid.p <- resid(model, type = "pearson") # Pearson resids.
                            idx <- abs(resid.p) > -qnorm(id/2) # Indicator vector
                          })
-  outliers <- subset(outliers.idx, idx) # Data with outliers
+  print("Outlier observations")
+  print(outliers <- subset(outliers.idx, idx)) # Data with outliers
   
-  return(list(plots = resid_plot, outliers = outliers, Normality = Normality))
+  return(invisible(list(plots = resid_plot, outliers = outliers, Normality = Normality)))
 }
 
 ## Observed vs predicted ----
@@ -134,17 +120,9 @@ resid_diag <- function(model, pval=0.05){
 #' - Performance metrics of the model obtain calculated using [performance::model_performance()].
 #' @returns A layout of the observed vs predicted values for each mouse and model performance metrics.
 #' @export
-ObsvsPred_plot <- function(model, nrow, ncol, ...){
+ObsvsPred <- function(model, nrow, ncol, ...){
   print(performance::model_performance(model, metrics = c("AIC", "AICc","BIC", "R2", "RMSE", "SIGMA")), ...)
-  TV.df <- model$data
-  aug.Pred <- nlme::augPred(model, primary = ~Day, level = 0:1, length.out = 2)
-  plot(aug.Pred, layout = c(ncol, nrow, 1), lty = c(1,2),
-       key = list(lines = list(lty = c(1,2), col = c("slateblue", "orange")),
-                  text = list(c("Marginal", "Mouse-specific")),
-                  columns = 2,
-                  space="top"), 
-       pch = 20, lwd = 1.5, main = "Observed and Predicted Values by Day",
-       par.strip.text=list(col="black", cex=.5))
+  Plot_ObsvsPred(model, nrow, ncol)
 }
 
 # Influential Diagnostics
@@ -221,10 +199,12 @@ logLik_cont <- function(model, lLik_thrh, label_angle = 0, varName = NULL){
   plot(lLik.n~subject.x, type = "h", ylab = "Contribution to log Likelihood",
        xlab = "Subject", main = "Per-observation subject\nlog-likelihood contributions")
   points(subject.x[outL], lLik.n[outL], type = "p", pch = 20)
-  text(x = subject.x[outL], y = lLik.n[outL], labels = subject.c[outL], cex = 0.8, adj = c(0.5,0.1), srt = label_angle, xpd = TRUE)
+  text(x = subject.x[outL], y = lLik.n[outL], labels = subject.c[outL], cex = 0.8, adj = c(0.5,1), srt = label_angle, xpd = TRUE)
   abline(h = lLik_thrh, lty = 2)
   legend("topright", inset = c(-0.02,-0.1), legend = c(as.character(lLik_thrh)),lty = 2,
          title = "logLik contribution\nthreshold", bty = "n", cex = 0.66,xpd = TRUE)
+  names(lLik.n) <- subject.c
+  print(lLik.n)
 }
 
 ## Leave-one-out 
@@ -292,8 +272,6 @@ lLik <- function(cx, model, lmeUall, varName){
 #' @param varName Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
 #' @param ... Extra arguments, if any, for [lattice::panel.xyplot]. Usually passed on as 
 #' graphical parameters to low level plotting functions, or to the panel functions performing smoothing, if applicable.
-#' @import nlme
-#' @import lattice
 #' @returns Returns a plot of the log-likelihood displacement values for each subject, indicating those subjects
 #' whose contribution is greater than `disp_thrh`.
 #' @export
@@ -323,7 +301,7 @@ loo_logLik_disp <- function(model, disp_thrh, label_angle = 0, varName = NULL, .
   myPanel <- function(x, y, ...){
     x1 <- as.numeric(x)
     panel.xyplot(x1, y, ...)
-    ltext(x1[outL], y[outL], subject.c[outL], cex = 0.66, adj = c(0.5,0.1), srt = label_angle) # Label outlying LDi's
+    ltext(x1[outL], y[outL], subject.c[outL], cex = 0.66, adj = c(0.5,1), srt = label_angle) # Label outlying LDi's
     panel.xyplot(x = subject.f[outL], y = dif.2Lik[outL], type = "p", pch = 20)
     panel.abline(h = disp_thrh, lty = 2)
   }
@@ -335,6 +313,7 @@ loo_logLik_disp <- function(model, disp_thrh, label_angle = 0, varName = NULL, .
                     text = list(c(paste("logLik displacement threshold:", 
                                         as.character(disp_thrh))), cex = 0.66), 
                     space = "top"))
+  return(invisible(dif.2Lik))
 }
 
 
@@ -349,7 +328,6 @@ CookDfun <- function(betaU, beta0, vb.inv){
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
 #' @param cook_thr Threshold for the Cook's distance.
 #' @param label_angle Angle for the label of subjects with a Cook's distance greater than `cook_thr`.
-#' @import nlme
 #' @returns Plot of the Cook's distance value for each subject, indicating those subjects
 #' whose Cook's distance is greater than `cook_thr`.
 #' @export
@@ -383,6 +361,7 @@ Cooks_dist <- function(model, cook_thr, label_angle = 0){
   abline(h = cook_thr, lty = "dashed")
   legend("topright", inset = c(0,-0.1), legend = c(as.character(cook_thr)),lty = 2,
          title = "Cook's distance\n threshold", bty = "n", cex = 0.66,xpd = TRUE)
+  return(invisible(CookD))
 }
 
 
