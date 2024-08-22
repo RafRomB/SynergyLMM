@@ -61,6 +61,7 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \code{sd_eval} and \code{sgma_eval},
 \item A plot showing the values of the power calculation depending on the values assigned to
 \code{grwrComb_eval}.
+If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
 }
 }
 \description{

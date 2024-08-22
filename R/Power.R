@@ -73,6 +73,7 @@ Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...)
 #' `sd_eval` and `sgma_eval`,
 #' - A plot showing the values of the power calculation depending on the values assigned to
 #' `grwrComb_eval`.
+#' If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
 #' @import ggplot2
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
@@ -249,6 +250,9 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
 #' assigned to `sd_ranef` and `sgma` are also shown.
 #' - A plot showing the values of the power calculation depending on the values assigned to 
 #' `npg`.
+#' 
+#' If save to a variable, the fuction returns the data frame with the power for the analysis for each sample size
+#' especified in `npg`.
 #' @export 
 
 Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss", ...){
@@ -336,6 +340,7 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
     geom_hline(yintercept = 0.8, lty = "dashed")
   
   print(plot_grid(p1,p2, ncol = 2))
+  return(invisible(npg_Pwr))
 }
 
 ## Power with varying days of follow-up or frequency of measurements
@@ -366,6 +371,8 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
 #' `Day`. If `type` is set to "max", the plot shows how the power varies depending on the maximum day of follow-up. 
 #' If `type` is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
 #' been performed.
+#' 
+#' If saved to a variable, the function returns the power for the analysis for each value specified in ` Day`.
 #' @export 
 
 Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)), type = "max", 
@@ -465,6 +472,7 @@ Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 
     geom_hline(yintercept = 0.8, lty = "dashed")
   
   print(plot_grid(p1,p2, ncol = 2))
+  return(invisible(npg_Pwr))
 }
 
 

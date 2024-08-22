@@ -50,6 +50,9 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \item A plot showing the values of the power calculation depending on the values assigned to
 \code{npg}.
 }
+
+If save to a variable, the fuction returns the data frame with the power for the analysis for each sample size
+especified in \code{npg}.
 }
 \description{
 A priori power calculation for a hypothetical study of synergy evaluation using LMM

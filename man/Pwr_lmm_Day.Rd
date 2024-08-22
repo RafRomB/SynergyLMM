@@ -58,6 +58,8 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 If \code{type} is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
 been performed.
 }
+
+If saved to a variable, the function returns the power for the analysis for each value specified in \code{ Day}.
 }
 \description{
 A priori power calculation for a hypothetical study of synergy evaluation using LMM
