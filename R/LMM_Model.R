@@ -86,18 +86,11 @@ LMM_Model <- function(data, Mouse, Day, Treatment, TV, C, A, B, AB, day_start = 
  
  TV.df <- as.data.frame(TV.df)
  
- args <- substitute(list(...))
+ args <- list(...)
 
- model <- nlme::lme(fixed = logRTV ~  0 + Day:Treatment, random = ~0 + Day|Mouse, data = TV.df, ...)
+ model <- do.call(nlme::lme, c(list(fixed = logRTV ~  0 + Day:Treatment, random = ~0 + Day|Mouse, data = TV.df),args))
  
  model$dt1 <- TV.plot
- 
- if("weights" %in% names(args)){
-   model$call$weights <- args$weights
- }
- if("control" %in% names(args)){
-   model$call$control <- args$control
- }
  
  if(plot){
    print(Plot_LMM_Model(model = model, C = C, A = A, B = B, AB = AB))
