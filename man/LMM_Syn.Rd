@@ -20,19 +20,19 @@ LMM_Syn(
 \item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 corresponding to Bliss, highest single agent and response additivity, respectively.}
 
+\item{min_day}{Minimun day from which to start calculating synergy.}
+
 \item{robustSE}{If TRUE, uncertainty is estimated using robust standard errors
 using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}.}
 
 \item{type}{Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3".
 See "Details" section of \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}} for further information.}
 
-\item{...}{Additional arguments to be passed to \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}}.}
-
-\item{min}{Minimun day from which to start calculating synergy.}
-
-\item{test}{If \code{method} is set to "RA", string indicating the test for checking the
+\item{norm_test}{If \code{method} is set to "RA", string indicating the test for checking the
 normality of the hypothesis expression of synergy (see "Warning#3" in "Description" section of \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}}).
 Possible values are "shapiroTest", "dagoTest" or "adTest", for Shapiro-Wilk, D'Agostino and Anderson-Darling normality tests, respectively.}
+
+\item{...}{Additional arguments to be passed to \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}}.}
 }
 \value{
 The function returns a list with two elements:

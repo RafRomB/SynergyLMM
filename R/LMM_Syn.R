@@ -7,12 +7,12 @@
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 #' corresponding to Bliss, highest single agent and response additivity, respectively.
-#' @param min Minimun day from which to start calculating synergy.
+#' @param min_day Minimun day from which to start calculating synergy.
 #' @param robustSE If TRUE, uncertainty is estimated using robust standard errors 
 #' using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by [clubSandwich::vcovCR()].
 #' @param type Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3". 
 #' See "Details" section of [clubSandwich::vcovCR()] for further information.
-#' @param test If `method` is set to "RA", string indicating the test for checking the 
+#' @param norm_test If `method` is set to "RA", string indicating the test for checking the 
 #' normality of the hypothesis expression of synergy (see "Warning#3" in "Description" section of [marginaleffects::hypotheses()]).
 #' Possible values are "shapiroTest", "dagoTest" or "adTest", for Shapiro-Wilk, D'Agostino and Anderson-Darling normality tests, respectively.
 #' @param ... Additional arguments to be passed to [marginaleffects::hypotheses()].

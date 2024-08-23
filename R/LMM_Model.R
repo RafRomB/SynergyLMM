@@ -48,24 +48,24 @@ LMM_Model <- function(data,
   # First, we will remove those rows for which we don't have the total volume, and
   # we will use only the data after the treatment start
   
-  TV.df <- TV.df %>% dplyr::filter(Day >= day_start & !is.na(TV))
+  TV.df <- TV.df %>% dplyr::filter(.data$Day >= day_start & !is.na(.data$TV))
   
   # Remove samples with less than the minimum of observations specified
   
   samples <- TV.df %>% 
-    dplyr::count(Mouse, .by = Mouse) %>%
+    dplyr::count(.data$Mouse, .by = .data$Mouse) %>%
     dplyr::filter(.data$n > min_observations) %>% 
-    dplyr::select(Mouse)
+    dplyr::select(.data$Mouse)
   
-  TV.df <- TV.df %>% dplyr::filter(Mouse %in% samples$Mouse)
+  TV.df <- TV.df %>% dplyr::filter(.data$Mouse %in% samples$Mouse)
   
   TV.df$Mouse <- as.factor(TV.df$Mouse)
   
   # df with the initial tumor volume.
   
   TV0 <- as.data.frame(TV.df %>% 
-                         dplyr::filter(Day == day_start) %>% 
-                         dplyr::select(Mouse, TV))
+                         dplyr::filter(.data$Day == day_start) %>% 
+                         dplyr::select(.data$Mouse, .data$TV))
   
   # Create the vectors for the relative tumor volumes
   
@@ -77,11 +77,11 @@ LMM_Model <- function(data,
   
   for (i in samples) {
     if (i %in% TV0$Mouse) {
-      rtv <- TV.df %>% dplyr::filter(Mouse == i) %>% dplyr::select(Mouse, TV)
+      rtv <- TV.df %>% dplyr::filter(.data$Mouse == i) %>% dplyr::select(.data$Mouse, .data$TV)
       rtv$RTV <- rtv$TV / TV0[TV0$Mouse == i, "TV"]
       RTV.df <- rbind(RTV.df, rtv[, c("Mouse", "RTV")])
     } else {
-      rtv <- TV.df %>% dplyr::filter(Mouse == i) %>% dplyr::select(Mouse, TV)
+      rtv <- TV.df %>% dplyr::filter(.data$Mouse == i) %>% dplyr::select(.data$Mouse, .data$TV)
       rtv$RTV <- NA
       RTV.df <- rbind(RTV.df, rtv[, c("Mouse", "RTV")])
     }
@@ -97,7 +97,7 @@ LMM_Model <- function(data,
   
   TV.plot <- TV.df
   
-  TV.df <- TV.df %>% dplyr::filter(Day != day_start)
+  TV.df <- TV.df %>% dplyr::filter(.data$Day != day_start)
   
   TV.df$Day <- TV.df$Day - day_start
   TV.plot$Day <- TV.plot$Day - day_start
