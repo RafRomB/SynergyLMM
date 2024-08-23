@@ -308,11 +308,11 @@ loo_logLik_disp <- function(model, disp_thrh, label_angle = 0, varName = NULL, .
   dtp <- dotplot(dif.2Lik~subject.f, panel = myPanel, type = "h", ylab = "Log Likelihood-displacement",
                  xlab = "Subject", main = "Log Likelihood-displacement values vs Subjects rank")
   lxlims <- length(dtp$x.limits)
-  update(dtp, xlim = rep("", lxlims), grid = "h", 
+  print(update(dtp, xlim = rep("", lxlims), grid = "h", 
          key = list(lines = list(lty = 2, lwd = 0.5),
                     text = list(c(paste("logLik displacement threshold:", 
                                         as.character(disp_thrh))), cex = 0.66), 
-                    space = "top"))
+                    space = "top")))
   return(invisible(dif.2Lik))
 }
 
