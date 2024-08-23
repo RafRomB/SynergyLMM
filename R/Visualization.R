@@ -8,14 +8,14 @@ NULL
 
 #' @title Vizualization of tumor growth data and linear mixed model fitted regression line.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
-#' @param C String indicating the name assigned to the 'Control' group.
-#' @param A String indicating the name assigned to the 'Drug A' group.
-#' @param B String indicating the name assigned to the 'Drug B' group.
-#' @param AB String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
+#' @param trt_control String indicating the name assigned to the 'Control' group.
+#' @param drug_a String indicating the name assigned to the 'Drug A' group.
+#' @param drug_b String indicating the name assigned to the 'Drug B' group.
+#' @param drug_ab String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) showing the tumor growth data represented as log(relative tumor volume) versus time since treatment initiation. 
 #' The regression lines corresponding to the fixed effects for each treatment group are also plotted.
 #' @export
-Plot_LMM_Model <- function(model, C, A, B, AB){
+Plot_LMM_Model <- function(model, trt_control = "Control", drug_a = "Drug_A", drug_b = "Drug_B", drug_ab= "Drug_AB"){
   segment_data <- data.frame(x = rep(0,4), 
                              xend = model$dt1 %>% dplyr::group_by(.data$Treatment) %>% dplyr::summarise(Max = max(.data$Day)) %>% dplyr::select(.data$Max),
                              y = rep(0, 4), 
@@ -23,7 +23,7 @@ Plot_LMM_Model <- function(model, C, A, B, AB){
   
   segment_data$yend <- segment_data$Max*segment_data$yend
   colnames(segment_data) <- c("x", "xend", "y", "yend")
-  segment_data$Treatment <- factor(x = c(C, A, B, AB), levels = c(C, A, B, AB))
+  segment_data$Treatment <- factor(x = c(trt_control, drug_a, drug_b, drug_ab), levels = c(trt_control, drug_a, drug_b, drug_ab))
   
   p <- model$dt1 %>% 
           ggplot(aes(.data$Day, .data$logRTV, color = .data$Treatment)) +

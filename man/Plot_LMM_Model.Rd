@@ -4,18 +4,24 @@
 \alias{Plot_LMM_Model}
 \title{Vizualization of tumor growth data and linear mixed model fitted regression line.}
 \usage{
-Plot_LMM_Model(model, C, A, B, AB)
+Plot_LMM_Model(
+  model,
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB"
+)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
 
-\item{C}{String indicating the name assigned to the 'Control' group.}
+\item{trt_control}{String indicating the name assigned to the 'Control' group.}
 
-\item{A}{String indicating the name assigned to the 'Drug A' group.}
+\item{drug_a}{String indicating the name assigned to the 'Drug A' group.}
 
-\item{B}{String indicating the name assigned to the 'Drug B' group.}
+\item{drug_b}{String indicating the name assigned to the 'Drug B' group.}
 
-\item{AB}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
+\item{drug_ab}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
 }
 \value{
 A ggplot2 plot (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more details) showing the tumor growth data represented as log(relative tumor volume) versus time since treatment initiation.

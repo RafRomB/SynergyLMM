@@ -6,17 +6,17 @@
 \usage{
 LMM_Model(
   data,
-  Mouse,
-  Day,
-  Treatment,
-  TV,
-  C,
-  A,
-  B,
-  AB,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
   day_start = 0,
-  min_obs = 1,
-  plot = TRUE,
+  min_observations = 1,
+  show_plot = TRUE,
   ...
 )
 }
@@ -24,27 +24,27 @@ LMM_Model(
 \item{data}{A data frame with the tumor growth data, in long format.
 It must contain at least contain the following columns: mice IDs, days of follow-up (numeric number), treatment and tumor volume (numeric number).}
 
-\item{Mouse}{String indicating the name of the column with the mice IDs.}
+\item{mouse_id}{String indicating the name of the column with the mice IDs.}
 
-\item{Day}{String indicating the name of the column with the days of follow-up.}
+\item{day}{String indicating the name of the column with the days of follow-up.}
 
-\item{Treatment}{String indicating the name of the column with the treatment corresponding to each mouse.}
+\item{treatment}{String indicating the name of the column with the treatment corresponding to each mouse.}
 
-\item{TV}{String indicating the name of the column with the tumor volume.}
+\item{tumor_vol}{String indicating the name of the column with the tumor volume (or any other measurement representing the tumor growth).}
 
-\item{C}{String indicating the name assigned to the 'Control' group.}
+\item{trt_control}{String indicating the name assigned to the 'Control' group.}
 
-\item{A}{String indicating the name assigned to the 'Drug A' group.}
+\item{drug_a}{String indicating the name assigned to the 'Drug A' group.}
 
-\item{B}{String indicating the name assigned to the 'Drug B' group.}
+\item{drug_b}{String indicating the name assigned to the 'Drug B' group.}
 
-\item{AB}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
+\item{drug_ab}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
 
 \item{day_start}{Numeric value indicating the day at which the treatment started.}
 
-\item{min_obs}{Minimum number of observation for each mouse to be included in the analysis.}
+\item{min_observations}{Minimum number of observation for each mouse to be included in the analysis.}
 
-\item{plot}{Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Day for each mouse,
+\item{show_plot}{Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Day for each mouse,
 and the model calculated marginal slope for each treatment, should be produced.}
 
 \item{...}{Additional arguments to be passed to \code{\link[nlme:lme]{nlme::lme()}} function.}
