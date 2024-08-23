@@ -4,7 +4,7 @@
 \alias{Cooks_dist}
 \title{Cook's distance for the coefficient estimates.}
 \usage{
-Cooks_dist(model, cook_thr, label_angle = 0)
+Cooks_dist(model, cook_thr = 0, label_angle = 0)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}

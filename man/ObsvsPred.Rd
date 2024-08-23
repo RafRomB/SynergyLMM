@@ -4,7 +4,7 @@
 \alias{ObsvsPred}
 \title{Observed vs predicted values and performance}
 \usage{
-ObsvsPred(model, nrow, ncol, ...)
+ObsvsPred(model, nrow = 4, ncol = 5, ...)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}

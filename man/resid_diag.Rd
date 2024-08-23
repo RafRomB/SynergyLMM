@@ -4,12 +4,12 @@
 \alias{resid_diag}
 \title{Diagnostics of residuals of the linear mixed model.}
 \usage{
-resid_diag(model, pval = 0.05)
+resid_diag(model, pvalue = 0.05)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
 
-\item{pval}{Threshold for the p-value of outlier observations based on their Pearson residuals.}
+\item{pvalue}{Threshold for the p-value of outlier observations based on their Pearson residuals.}
 }
 \value{
 A list with different elements for the diagnostics of the residuals are produced:

@@ -4,16 +4,16 @@
 \alias{logLik_cont}
 \title{Contributions of the individual subjects to the log-likelihood for the model.}
 \usage{
-logLik_cont(model, lLik_thrh, label_angle = 0, varName = NULL)
+logLik_cont(model, lLik_thrh = 0, label_angle = 0, var_name = NULL)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
 
-\item{lLik_thrh}{Threshold of log-likelihood contribution.}
+\item{lLik_thrh}{Threshold of log-likelihood contribution per-observation per-subject.}
 
 \item{label_angle}{Angle for the label of subjects with a log-likelihood contribution smaller than \code{lLik_thrh}.}
 
-\item{varName}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.}
+\item{var_name}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.}
 }
 \value{
 Returns a plot of the per-observation individual-subject log-likelihood contibutions to the model, indicating those subjects

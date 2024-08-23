@@ -23,23 +23,29 @@
 #' the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each day.
 #' @export
 
-LMM_Syn <- function(model, method = "Bliss", min = 0, robustSE = FALSE, type = "CR2", test = "shapiroTest", ...){
+LMM_Syn <- function(model,
+                    method = "Bliss",
+                    min_day = 0,
+                    robustSE = FALSE,
+                    type = "CR2",
+                    norm_test = "shapiroTest",
+                    ...) {
   
   ci <- data.frame()
   ss <- data.frame()
   Contrasts <- list()
-  if(method == "Bliss"){
+  if (method == "Bliss") {
     contrast <- "b4 = b2 + b3 - b1"
   }
-  if(method == "HSA" ){
+  if (method == "HSA") {
     fixef_betas <- nlme::fixef(model)[2:3]
-    if(which.min(fixef_betas) == 1){
+    if (which.min(fixef_betas) == 1) {
       contrast <- "b4 = b2"
     } else{
       contrast <- "b4 = b3"
     }
   }
-  if(method == "RA"){
+  if(method == "RA") {
     contrast <- "b4 = log(exp(b2) + exp(b3) - exp(b1))"
     
     summ <- summary(model)
@@ -51,43 +57,65 @@ LMM_Syn <- function(model, method = "Bliss", min = 0, robustSE = FALSE, type = "
     b1 <- rnorm(n = 1000, mean = b1["Value"], sd = b1["Std.Error"])
     b2 <- rnorm(n = 1000, mean = b2["Value"], sd = b2["Std.Error"])
     b3 <- rnorm(n = 1000, mean = b3["Value"], sd = b3["Std.Error"])
-    b4 <- log(exp(b2)+exp(b3)-exp(b1))
-    par(mfrow = c(1,2))
-    hist(log(exp(b2)+exp(b3)-exp(b1)), main = "Histogram for RA\nexpression values")
-    qqnorm(log(exp(b2)+exp(b3)-exp(b1)))
+    b4 <- log(exp(b2) + exp(b3) - exp(b1))
+    par(mfrow = c(1, 2))
+    hist(log(exp(b2) + exp(b3) - exp(b1)), main = "Histogram for RA\nexpression values")
+    qqnorm(log(exp(b2) + exp(b3) - exp(b1)))
     qqline(b4)
-    par(mfrow = c(1,1))
-    if(test == "shapiroTest"){
+    par(mfrow = c(1, 1))
+    if (norm_test == "shapiroTest") {
       print(fBasics::shapiroTest(b4))
     }
-    if(test == "dagoTest"){
+    if (norm_test == "dagoTest") {
       print(fBasics::dagoTest(b4))
     }
-    if(test == "adTest"){
+    if (norm_test == "adTest") {
       print(fBasics::adTest(b4))
     }
   }
   
   days <- unique(model$data$Day)
-  days <- days[days>=min]
+  days <- days[days >= min_day]
   days <- days[order(days)]
   i <- 1
-  for(d in days){
+  for (d in days) {
     data <- model$data %>% dplyr::filter(.data$Day <= d)
     model_day <- update(model, data = data)
-    if(robustSE){
-      Test <- hypotheses(model_day, hypothesis = contrast, vcov = clubSandwich::vcovCR(model, type = type), ...)
+    if (robustSE) {
+      Test <- hypotheses(
+        model_day,
+        hypothesis = contrast,
+        vcov = clubSandwich::vcovCR(model, type = type),
+        ...
+      )
     } else {
       Test <- hypotheses(model_day, hypothesis = contrast, ...)
     }
-    ci <- rbind(ci, data.frame(method, "CI", exp(Test$estimate), exp(Test$conf.low), exp(Test$conf.high), Test$p.value, d))
-    ss <- rbind(ss, data.frame(method, "SS", -100*(Test$estimate), -100*(Test$conf.low), -100*(Test$conf.high), Test$p.value, d))
+    ci <- rbind(ci, data.frame(
+      method,
+      "CI",
+      exp(Test$estimate),
+      exp(Test$conf.low),
+      exp(Test$conf.high),
+      Test$p.value,
+      d
+    ))
+    ss <- rbind(ss,
+                data.frame(
+                  method,
+                  "SS",
+                  -100 * (Test$estimate),
+                  -100 * (Test$conf.low),
+                  -100 * (Test$conf.high),
+                  Test$p.value,
+                  d
+                ))
     Contrasts[[i]] <- Test
-    i <- i+1
+    i <- i + 1
   }
-  names(Contrasts) <- paste("Day",days, sep = "")
-  colnames(ci) <- c("Model","Metric","Estimate", "lwr", "upr", "pval", "Day")
-  colnames(ss) <- c("Model","Metric","Estimate", "lwr", "upr", "pval", "Day")
+  names(Contrasts) <- paste("Day", days, sep = "")
+  colnames(ci) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Day")
+  colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Day")
   df <- rbind(ci, ss)
   result <- list(Contrasts = Contrasts, Synergy = df)
   print(Plot_LMM_Syn(result))

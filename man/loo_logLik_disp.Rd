@@ -4,7 +4,7 @@
 \alias{loo_logLik_disp}
 \title{Likelihood displacement for the model.}
 \usage{
-loo_logLik_disp(model, disp_thrh, label_angle = 0, varName = NULL, ...)
+loo_logLik_disp(model, disp_thrh = 0, label_angle = 0, var_name = NULL, ...)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
@@ -13,7 +13,7 @@ loo_logLik_disp(model, disp_thrh, label_angle = 0, varName = NULL, ...)
 
 \item{label_angle}{Angle for the label of subjects with a log-likelihood displacement greater than \code{disp_thrh}.}
 
-\item{varName}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.}
+\item{var_name}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.}
 
 \item{...}{Extra arguments, if any, for \link[lattice:panel.xyplot]{lattice::panel.xyplot}. Usually passed on as
 graphical parameters to low level plotting functions, or to the panel functions performing smoothing, if applicable.}
