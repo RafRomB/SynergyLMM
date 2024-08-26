@@ -1,4 +1,4 @@
-# Dummy dataset for testing .getRTV
+# Dummy dataset for testing .getRTV ----
 set.seed(123)
 test_data <- data.frame(
   Mouse = rep(1:5, each = 5),
@@ -10,6 +10,7 @@ test_data <- data.frame(
          70, 75, 85, 90, 100)       # Mouse 5
 )
 
+# Tests for .getRTV function ----
 # Test if .getRTV function correctly calculates RTV and logRTV
 test_that(".getRTV correctly calculates RTV and logRTV", {
   result <- .getRTV(test_data, day_start = 0)
@@ -82,7 +83,7 @@ test_that(".getRTV handles a dataset with a single mouse", {
   expect_equal(result$TV0, rep(100, 5))
 })
 
-# Dummy dataset for testing lmmModel
+# Dummy dataset for testing lmmModel ----
 set.seed(123)
 test_data <- data.frame(
   Mouse = rep(1:10, each = 10),
@@ -90,6 +91,8 @@ test_data <- data.frame(
   Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
   TV = rnorm(100, mean = 100, sd = 20)
 )
+
+# Tests for lmmModel function ----
 
 # Test if lmmModel function runs without errors on valid input
 test_that("lmmModel runs without error on valid input", {
