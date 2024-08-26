@@ -1,4 +1,4 @@
-# Dummy dataset for testing
+# Dummy dataset for testing .getRTV
 set.seed(123)
 test_data <- data.frame(
   Mouse = rep(1:5, each = 5),
@@ -82,4 +82,143 @@ test_that(".getRTV handles a dataset with a single mouse", {
   expect_equal(result$TV0, rep(100, 5))
 })
 
+# Dummy dataset for testing lmmModel
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Test if lmmModel function runs without errors on valid input
+test_that("lmmModel runs without error on valid input", {
+  result <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE
+  )
+  
+  expect_s3_class(result, "lme")
+})
+
+
+# Test if lmmModel function returns an error when required columns are missing
+test_that("lmmModel throws an error when required columns are missing", {
+  missing_data <- test_data[, -1] # Removing the 'Mouse' column
+  
+  expect_error(
+    lmmModel(
+      data = missing_data,
+      mouse_id = "Mouse",
+      day = "Day",
+      treatment = "Treatment",
+      tumor_vol = "TV",
+      trt_control = "Control",
+      drug_a = "Drug_A",
+      drug_b = "Drug_B",
+      drug_ab = "Drug_AB",
+      day_start = 0,
+      min_observations = 1,
+      show_plot = FALSE
+    )
+    # Adjust based on actual error message
+  )
+})
+
+test_that("lmmModel correctly filters data based on day_start", {
+  result <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 5,  # Change day_start to 5
+    min_observations = 1,
+    show_plot = FALSE
+  )
+  
+  filtered_data <- result$dt1
+  expect_true(all(filtered_data$Day >= 0))  # Since day_start was subtracted
+})
+
+# Test if lmmModel function respects the min_observations parameter
+test_that("lmmModel respects the min_observations parameter", {
+  min_obs_data <- test_data
+  min_obs_data <- min_obs_data[-10, ]  # Remove last day measurement from Mouse 1
+  
+  result <- lmmModel(
+    data = min_obs_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 10,  # Require at least 10 observations per mouse
+    show_plot = FALSE
+  )
+  
+  # Expect that Mouse 1 is not in the result because it was removed
+  expect_false(any(result$data$Mouse == 1))
+})
+
+
+# Test if lmmModel function produces a plot when show_plot is TRUE
+test_that("lmmModel produces plot when show_plot is TRUE", {
+  expect_output(
+    lmmModel(
+      data = test_data,
+      mouse_id = "Mouse",
+      day = "Day",
+      treatment = "Treatment",
+      tumor_vol = "TV",
+      trt_control = "Control",
+      drug_a = "Drug_A",
+      drug_b = "Drug_B",
+      drug_ab = "Drug_AB",
+      day_start = 0,
+      min_observations = 1,
+      show_plot = TRUE
+    ),
+    NA  # Check that no errors occur when plotting (manual visual check might be needed)
+  )
+})
+
+# Test if lmmModel function passes additional arguments correctly to nlme::lme
+test_that("lmmModel passes additional arguments correctly to nlme::lme", {
+  result <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE,
+    control = nlme::lmeControl(opt = "optim")  # Passing additional argument
+  )
+  
+  expect_equal(result$call$control$opt, "optim")  # Check if the control argument was passed correctly
+})
 

@@ -85,6 +85,18 @@ lmmModel <- function(data,
                       show_plot = TRUE,
                       ...) {
   
+  # Check if required columns are present
+  required_columns <- c(mouse_id, day, treatment, tumor_vol)
+  checkmate::assert_names(names(data), must.include = required_columns)
+  
+  # Check if there are 4 treatments in the treatment column
+  expected_treatments <- c(trt_control, drug_a, drug_b, drug_ab)
+  actual_treatments <- unique(data[[treatment]])
+  checkmate::assert_subset(
+    actual_treatments, 
+    choices = expected_treatments
+  )
+
   col.names <- c(mouse_id, day, treatment, tumor_vol)
   TV.df <- data %>% dplyr::select(dplyr::all_of(col.names))
   colnames(TV.df) <- c("Mouse", "Day", "Treatment", "TV")
@@ -100,6 +112,15 @@ lmmModel <- function(data,
   # we will use only the data after the treatment start
   
   TV.df <- TV.df %>% dplyr::filter(.data$Day >= day_start & !is.na(.data$TV))
+  
+  # Remove samples with less than the minimum of observations spececified
+  
+  samples <- TV.df %>% dplyr::count(.data$Mouse, .by = .data$Mouse) %>%
+    dplyr::filter(.data$n >= min_observations) %>% dplyr::select(.data$Mouse)
+  
+  TV.df <- TV.df %>% dplyr::filter(.data$Mouse %in% samples$Mouse)
+  
+  TV.df$Mouse <- as.factor(TV.df$Mouse)
   
   # Calculate the relative tumor volume
   TV.df <- .getRTV(TV.df, day_start)
