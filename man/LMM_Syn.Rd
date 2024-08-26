@@ -15,7 +15,7 @@ LMM_Syn(
 )
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
 
 \item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 corresponding to Bliss, highest single agent and response additivity, respectively.}

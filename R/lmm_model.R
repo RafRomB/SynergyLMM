@@ -9,15 +9,16 @@ NULL
 #' - logRTV: Logarithm of RTV column.
 #' - TV0: Tumor volume at `start_day`.
 #' @export
-.getRTV <- function(data, day_start){
-  
+.getRTV <- function(data, day_start) {
   TV.df <- data
   
   # df with the initial tumor volume.
   
-  TV0 <- as.data.frame(TV.df %>% 
-                         dplyr::filter(.data$Day == day_start) %>% 
-                         dplyr::select(.data$Mouse, .data$TV))
+  TV0 <- as.data.frame(
+    TV.df %>%
+      dplyr::filter(.data$Day == day_start) %>%
+      dplyr::select(.data$Mouse, .data$TV)
+  )
   
   # Create the vectors for the relative tumor volumes
   
@@ -29,11 +30,13 @@ NULL
   
   for (i in samples) {
     if (i %in% TV0$Mouse) {
-      rtv <- TV.df %>% dplyr::filter(.data$Mouse == i) %>% dplyr::select(.data$Mouse, .data$TV)
+      rtv <- TV.df %>% dplyr::filter(.data$Mouse == i) %>% 
+        dplyr::select(.data$Mouse, .data$TV)
       rtv$RTV <- rtv$TV / TV0[TV0$Mouse == i, "TV"]
       RTV.df <- rbind(RTV.df, rtv[, c("Mouse", "RTV")])
     } else {
-      rtv <- TV.df %>% dplyr::filter(.data$Mouse == i) %>% dplyr::select(.data$Mouse, .data$TV)
+      rtv <- TV.df %>% dplyr::filter(.data$Mouse == i) %>% 
+        dplyr::select(.data$Mouse, .data$TV)
       rtv$RTV <- NA
       RTV.df <- rbind(RTV.df, rtv[, c("Mouse", "RTV")])
     }
@@ -43,7 +46,7 @@ NULL
   
   TV.df$logRTV <- log(TV.df$RTV)
   
-  colnames(TV0) <- c("Mouse","TV0")
+  colnames(TV0) <- c("Mouse", "TV0")
   
   TV.df <- dplyr::left_join(TV.df, TV0, by = "Mouse")
   return(TV.df)
@@ -126,7 +129,7 @@ lmm_model <- function(data,
   
   if (show_plot) {
     print(
-      Plot_LMM_Model(
+      Plot_lmm_model(
         model = model,
         trt_control = trt_control,
         drug_a = drug_a,

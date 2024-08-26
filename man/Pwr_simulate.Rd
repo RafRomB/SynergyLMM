@@ -7,7 +7,7 @@
 Pwr_simulate(model, nsim = 1000, method = "Bliss", pvalue = 0.05, ...)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
 
 \item{nsim}{Number of simulations to perform.}
 

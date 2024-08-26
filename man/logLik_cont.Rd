@@ -7,7 +7,7 @@
 logLik_cont(model, lLik_thrh = 0, label_angle = 0, var_name = NULL)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=LMM_Model]{LMM_Model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
 
 \item{lLik_thrh}{Threshold of log-likelihood contribution per-observation per-subject.}
 

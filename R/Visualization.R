@@ -7,7 +7,7 @@ NULL
 
 
 #' @title Vizualization of tumor growth data and linear mixed model fitted regression line.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
 #' @param trt_control String indicating the name assigned to the 'Control' group.
 #' @param drug_a String indicating the name assigned to the 'Drug A' group.
 #' @param drug_b String indicating the name assigned to the 'Drug B' group.
@@ -15,7 +15,7 @@ NULL
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) showing the tumor growth data represented as log(relative tumor volume) versus time since treatment initiation. 
 #' The regression lines corresponding to the fixed effects for each treatment group are also plotted.
 #' @export
-Plot_LMM_Model <- function(model, trt_control = "Control", drug_a = "Drug_A", drug_b = "Drug_B", drug_ab= "Drug_AB"){
+Plot_lmm_model <- function(model, trt_control = "Control", drug_a = "Drug_A", drug_b = "Drug_B", drug_ab= "Drug_AB"){
   segment_data <- data.frame(x = rep(0,4), 
                              xend = model$dt1 %>% dplyr::group_by(.data$Treatment) %>% dplyr::summarise(Max = max(.data$Day)) %>% dplyr::select(.data$Max),
                              y = rep(0, 4), 
@@ -40,7 +40,7 @@ Plot_LMM_Model <- function(model, trt_control = "Control", drug_a = "Drug_A", dr
 
 
 #' @title Visualization of random effects diagnostics for a fitted linear mixed model of tumor growth data.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
 #' @returns A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
 #' - A normal Q-Q plot of the random effects of the model.
 #' - A normal Q-Q plot of the residuals by mouse.
@@ -63,7 +63,7 @@ Plot_ranef_diag <- function(model){
 }
 
 #' @title Visualization of residuals diagnostics for a fitted linear mixed model of tumor growth data.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
 #' @returns A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
 #' - A normal Q-Q plot of the normalized residuals of the model.
 #' - A normal Q-Q plot of the normalized residuals of the model by Day.
@@ -88,7 +88,7 @@ Plot_resid_diag <- function(model){
 }
 
 #' @title Visualization of observed vs predicted values by a fitted linear mixed model of tumor growth data.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`LMM_Model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
 #' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
 Plot_ObsvsPred <- function(model, nrow, ncol){
