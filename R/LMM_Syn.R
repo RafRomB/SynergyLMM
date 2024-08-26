@@ -4,7 +4,7 @@
 #' @importFrom marginaleffects hypotheses
 #' 
 #' @title Synergy calculation using linear-mixed models.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 #' corresponding to Bliss, highest single agent and response additivity, respectively.
 #' @param min_day Minimun day from which to start calculating synergy.

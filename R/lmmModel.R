@@ -71,7 +71,7 @@ NULL
 #' @param ... Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.
 #' @return An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. 
 #' @export
-lmm_model <- function(data,
+lmmModel <- function(data,
                       mouse_id = "Mouse",
                       day = "Day",
                       treatment = "Treatment",
@@ -129,7 +129,7 @@ lmm_model <- function(data,
   
   if (show_plot) {
     print(
-      Plot_lmm_model(
+      plot_lmmModel(
         model = model,
         trt_control = trt_control,
         drug_a = drug_a,

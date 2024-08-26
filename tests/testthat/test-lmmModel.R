@@ -10,7 +10,7 @@ test_data <- data.frame(
          70, 75, 85, 90, 100)       # Mouse 5
 )
 
-# Test if the function correctly calculates RTV and logRTV
+# Test if .getRTV function correctly calculates RTV and logRTV
 test_that(".getRTV correctly calculates RTV and logRTV", {
   result <- .getRTV(test_data, day_start = 0)
   
@@ -28,7 +28,7 @@ test_that(".getRTV correctly calculates RTV and logRTV", {
   expect_equal(result$logRTV, log(expected_RTV), tolerance = 1e-5)
 })
 
-# Test if the function correctly adds the TV0 column
+# Test if .getRTV function correctly adds the TV0 column
 test_that(".getRTV correctly adds TV0 column", {
   result <- .getRTV(test_data, day_start = 0)
   
@@ -39,7 +39,7 @@ test_that(".getRTV correctly adds TV0 column", {
   expect_equal(result$TV0, expected_TV0)
 })
 
-# Test if the function handles a case where some mice don't have data at day_start
+# Test if .getRTV function handles a case where some mice don't have data at day_start
 test_that(".getRTV handles cases with missing TV at day_start", {
   missing_data <- test_data %>% dplyr::filter(!(Mouse == 2 & Day == 0))
   result <- .getRTV(missing_data, day_start = 0)
@@ -53,7 +53,7 @@ test_that(".getRTV handles cases with missing TV at day_start", {
   expect_false(any(is.na(result$logRTV[result$Mouse != 2])))
 })
 
-# Test if the function handles an empty dataset
+# Test if .getRTV function handles an empty dataset
 test_that(".getRTV handles empty dataset", {
   empty_data <- data.frame(Mouse = integer(0), Day = integer(0), TV = numeric(0))
   
@@ -65,7 +65,7 @@ test_that(".getRTV handles empty dataset", {
   expect_equal(colnames(result), c("Mouse", "Day", "TV", "RTV", "logRTV", "TV0"))
 })
 
-# Test if the function handles a dataset with a single mouse
+# Test if .getRTV function handles a dataset with a single mouse
 test_that(".getRTV handles a dataset with a single mouse", {
   single_mouse_data <- test_data[test_data$Mouse == 1, ]
   
@@ -81,3 +81,5 @@ test_that(".getRTV handles a dataset with a single mouse", {
   # TV0 should be the same for all rows
   expect_equal(result$TV0, rep(100, 5))
 })
+
+

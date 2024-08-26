@@ -7,7 +7,7 @@
 Plot_resid_diag(model)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 }
 \value{
 A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:

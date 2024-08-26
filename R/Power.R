@@ -1,7 +1,7 @@
 ## Power Evaluation using Simulations 
 
 #' @title Post hoc power calculation based on simulations of the synergy evaluation using LMM.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nsim Number of simulations to perform.
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 #' corresponding to Bliss, highest single agent and response additivity, respectively.

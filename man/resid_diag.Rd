@@ -7,7 +7,7 @@
 resid_diag(model, pvalue = 0.05)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
 \item{pvalue}{Threshold for the p-value of outlier observations based on their Pearson residuals.}
 }

@@ -7,7 +7,7 @@
 loo_logLik_disp(model, disp_thrh = 0, label_angle = 0, var_name = NULL, ...)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
 \item{disp_thrh}{Threshold of log-likelihood displacement.}
 

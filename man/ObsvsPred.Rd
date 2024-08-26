@@ -7,7 +7,7 @@
 ObsvsPred(model, nrow = 4, ncol = 5, ...)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
 \item{nrow}{Number of rows of the layout to organize the observed vs predicted plots.}
 

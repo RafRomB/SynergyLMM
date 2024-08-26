@@ -7,7 +7,7 @@
 Cooks_dist(model, cook_thr = 0, label_angle = 0)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmm_model]{lmm_model()}}.}
+\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
 \item{cook_thr}{Threshold for the Cook's distance.}
 

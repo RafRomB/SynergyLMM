@@ -1,6 +1,6 @@
 #' @title Diagnostics of random effects of the linear mixed model.
 #' 
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @import ggplot2
 #' @returns A list with different elements for the diagnostics of the random effects are produced:
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
@@ -100,7 +100,7 @@ ranef_diag <- function(model){
 
 #' @title Diagnostics of residuals of the linear mixed model.
 #' 
-#' @param model  An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model  An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param pvalue Threshold for the p-value of outlier observations based on their Pearson residuals.
 #' @returns A list with different elements for the diagnostics of the residuals are produced:
 #' - `plots`: Different plots for evaluating the normality and homocedasticity of the residuals.
@@ -154,7 +154,7 @@ resid_diag <- function(model, pvalue=0.05){
 ## Observed vs predicted ----
 
 #' @title Observed vs predicted values and performance
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
 #' @param ... Additional arguments to be passed to [performance::model_performance()].
@@ -206,7 +206,7 @@ logLik1.varIdent <- function(modfit, dt1, var_name){
 ## Individual contributions to logLik 
 
 #' @title Contributions of the individual subjects to the log-likelihood for the model.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param lLik_thrh Threshold of log-likelihood contribution per-observation per-subject.
 #' @param label_angle Angle for the label of subjects with a log-likelihood contribution smaller than `lLik_thrh`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
@@ -346,7 +346,7 @@ lLik <- function(cx, model, lmeUall, var_name){
 } 
 
 #' @title Likelihood displacement for the model.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param disp_thrh Threshold of log-likelihood displacement.
 #' @param label_angle Angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
@@ -443,7 +443,7 @@ CookDfun <- function(betaU, beta0, vb.inv){
 }
 
 #' @title Cook's distance for the coefficient estimates.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmm_model()`].
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param cook_thr Threshold for the Cook's distance.
 #' @param label_angle Angle for the label of subjects with a Cook's distance greater than `cook_thr`.
 #' @returns Plot of the Cook's distance value for each subject, indicating those subjects
