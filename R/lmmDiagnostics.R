@@ -10,28 +10,28 @@
 #' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by mouse.
 #' @export
 
-ranef_diag <- function(model){
+ranefDiagnostics <- function(model){
   # Plots
-  ranef_plot <- Plot_ranef_diag(model)
+  ranef_plot <- plot_ranefDiagnostics(model)
   print(ranef_plot[[5]])
   
   # Normality test
   print(
     ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Day, 
-                                          description = "Shapiro - Wilk Normality Test of random effects")
+                                          title = "Shapiro - Wilk Normality Test of random effects")
   )
   
   if (length(nlme::ranef(model)$Day) < 20) {
-    ranef_DAgostino <- print("Sample size must be at least 20 for D'Agostino Normality Test")
+    ranef_DAgostino <- warning("Sample size must be at least 20 for D'Agostino Normality Test")
   } else {
     print(
       ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Day, 
-                                           description = "D'Agostino Normality Test of random effects")
+                                           title = "D'Agostino Normality Test of random effects")
     )
   }
   print(
     ranef_ad <- fBasics::adTest(nlme::ranef(model)$Day, 
-                                description = "Anderson - Darling Normality Test of random effects")
+                                title = "Anderson - Darling Normality Test of random effects")
   )
   
   Normality <- list(
@@ -71,20 +71,20 @@ ranef_diag <- function(model){
   colnames(norm_res) <- c("normalized_resid", "Mouse")
   
   levene <- list()
-  print("Conditional Residuals")
+  writeLines("Conditional Residuals")
   print(levene$conditional_resid <- car::leveneTest(conditional_resid ~ Mouse, data = cond_res))
-  print("Marginal Residuals")
+  writeLines("Marginal Residuals")
   print(levene$marginal_resid <- car::leveneTest(marginal_resid ~ Mouse, data = mar_res))
-  print("Normalized Residuals")
+  writeLines("Normalized Residuals")
   print(levene$normalized_resid <- car::leveneTest(normalized_resid ~ Mouse, data = norm_res))
   
   fligner <- list()
   
-  print("Conditional Residuals")
+  writeLines("Conditional Residuals")
   print(fligner$conditional_resid <- fligner.test(conditional_resid ~ Mouse, data = cond_res))
-  print("Marginal Residuals")
+  writeLines("Marginal Residuals")
   print(fligner$marginal_resid <- fligner.test(marginal_resid ~ Mouse, data = mar_res))
-  print("Normalized Residuals")
+  writeLines("Normalized Residuals")
   print(fligner$normalized_resid <- fligner.test(normalized_resid ~ Mouse, data = norm_res))
   
   return(invisible(

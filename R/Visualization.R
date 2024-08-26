@@ -47,7 +47,7 @@ plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", dru
 #' - Boxplots of the conditional residuals by mouse.
 #' - Dotplots of the pearson residuals vs fitted values by mouse.
 #' @export
-Plot_ranef_diag <- function(model){
+plot_ranefDiagnostics <- function(model){
   # Individual Plots
   p1 <- ggplot(nlme::ranef(model), aes(sample = nlme::ranef(model)$Day)) + stat_qq(col = "gray20") + stat_qq_line() +
     labs(title = "Normal Q-Q Plot of Random Effects") + xlab("Theoretical Quantiles") + ylab("Sample Quantiles") + cowplot::theme_cowplot()+
