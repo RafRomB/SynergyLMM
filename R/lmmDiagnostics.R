@@ -108,9 +108,9 @@ ranefDiagnostics <- function(model){
 #' - `Normality`: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
 #' @export
-resid_diag <- function(model, pvalue=0.05){
+residDiagnostics <- function(model, pvalue=0.05){
   # Plots
-  resid_plot <- Plot_resid_diag(model)
+  resid_plot <- Plot_residDiagnostics(model)
   print(resid_plot[[6]])
   
   # Normality test

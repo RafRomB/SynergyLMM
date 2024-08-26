@@ -71,7 +71,7 @@ plot_ranefDiagnostics <- function(model){
 #' - A dotplot of pearson residuals vs fitted values.
 #' - A dotplot of the pearson residuals by Day and Treatment.
 #' @export
-Plot_resid_diag <- function(model){
+plot_residDiagnostics <- function(model){
   # Individual Plots
   p1 <- qqnorm(model, ~resid(., type = "normalized"),pch = 20, main = "Q-Q Plot of Normalized Residuals")
   p2 <- qqnorm(model, ~resid(., type = "normalized")|Day,pch = 20, main = "Q-Q Plot of Normalized Residuals by Day",
