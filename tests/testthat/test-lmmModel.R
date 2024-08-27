@@ -133,8 +133,54 @@ test_that("lmmModel throws an error when required columns are missing", {
       day_start = 0,
       min_observations = 1,
       show_plot = FALSE
-    )
-    # Adjust based on actual error message
+    ),
+    "The following required columns are missing from the data: Mouse"
+  )
+})
+
+# Test if lmmModel function returns an error when treatment column contains unrecognized treatments
+test_that("lmmModel throws an error when treatment column contains unrecognized treatments", {
+  trt_data <- test_data
+  trt_data$Treatment[4] <- "unk_trt"
+  
+  expect_error(
+    lmmModel(
+      data = trt_data,
+      mouse_id = "Mouse",
+      day = "Day",
+      treatment = "Treatment",
+      tumor_vol = "TV",
+      trt_control = "Control",
+      drug_a = "Drug_A",
+      drug_b = "Drug_B",
+      drug_ab = "Drug_AB",
+      day_start = 0,
+      min_observations = 1,
+      show_plot = FALSE
+    ),
+    "The treatment column contains unrecognized treatments: unk_trt"
+  )
+})
+
+# Test if lmmModel function returns an error when an expected treatment is missing
+test_that("lmmModel throws an error when an expected treatment is missing", {
+
+  expect_error(
+    lmmModel(
+      data = test_data,
+      mouse_id = "Mouse",
+      day = "Day",
+      treatment = "Treatment",
+      tumor_vol = "TV",
+      trt_control = "Control",
+      drug_a = "Drug_A",
+      drug_b = "Drug_B",
+      drug_ab = "Drug_X",
+      day_start = 0,
+      min_observations = 1,
+      show_plot = FALSE
+    ),
+    "The treatment column is missing expected treatments: Drug_X"
   )
 })
 

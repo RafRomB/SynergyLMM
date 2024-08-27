@@ -87,17 +87,55 @@ lmmModel <- function(data,
                       ...) {
   
   # Check if required columns are present
-  required_columns <- c(mouse_id, day, treatment, tumor_vol)
-  checkmate::assert_names(names(data), must.include = required_columns)
+  tryCatch({
+    required_columns <- c(mouse_id, day, treatment, tumor_vol)
+    missing_columns <- setdiff(required_columns, names(data))
+    if (length(missing_columns) > 0) {
+      stop(
+        "The following required columns are missing from the data: ",
+        paste(missing_columns, collapse = ", ")
+      )
+    }
+  }, error = function(e) {
+    stop("Error in column checking: ", e$message)
+  })
   
-  # Check if there are 4 treatments in the treatment column
-  expected_treatments <- c(trt_control, drug_a, drug_b, drug_ab)
-  actual_treatments <- unique(data[[treatment]])
-  checkmate::assert_subset(
-    actual_treatments, 
-    choices = expected_treatments
-  )
-
+  # Check if there are exactly 4 treatments in the treatment column
+  
+  tryCatch({
+    expected_treatments <- c(trt_control, drug_a, drug_b, drug_ab)
+    actual_treatments <- unique(data[[treatment]])
+    
+    missing_treatments <- setdiff(expected_treatments, actual_treatments)
+    
+    if (length(missing_treatments) > 0) {
+      stop(
+        "The treatment column is missing expected treatments: ",
+        paste(missing_treatments, collapse = ", ")
+      )
+    }
+    
+    unrecognized_treatments <- setdiff(actual_treatments, expected_treatments)
+    
+    if (length(unrecognized_treatments) > 0) {
+      stop(
+        "The treatment column contains unrecognized treatments: ",
+        paste(unrecognized_treatments, collapse = ", ")
+      )
+    }
+    
+  }, error = function(e) {
+    stop("Error in treatment checking: ", e$message)
+  })
+  
+  tryCatch({
+    if (!is.numeric(min_observations) || length(min_observations) != 1 || min_observations <= 0) {
+      stop("The `min_observations` parameter must be a positive numeric value.")
+    }
+  }, error = function(e){
+    stop(e$message)
+  })
+  
   col.names <- c(mouse_id, day, treatment, tumor_vol)
   TV.df <- data %>% dplyr::select(dplyr::all_of(col.names))
   colnames(TV.df) <- c("Mouse", "Day", "Treatment", "TV")
