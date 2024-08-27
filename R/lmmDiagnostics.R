@@ -153,7 +153,7 @@ residDiagnostics <- function(model, pvalue=0.05){
 
 ## Observed vs predicted ----
 
-#' @title Observed vs predicted values and performance
+#' @title Observed vs predicted values and performance of the model
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.

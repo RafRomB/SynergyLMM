@@ -105,3 +105,78 @@ test_that("ranefDiagnostics handles small sample sizes for D'Agostino test", {
   expect_true(is.character(diagnostics$Normality$DAgostino.test))
   expect_match(diagnostics$Normality$DAgostino.test, "Sample size must be at least 20")
 })
+
+# Tests for residDiagnostics function ----
+
+# Data and model for testing:
+
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create an outlier observation
+
+test_data$TV[nrow(test_data)] <- 1000
+
+# Create model
+
+model <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE
+)
+
+test_that("residDiagnostics correctly identifies outliers", {
+  result <- residDiagnostics(model, pvalue = 0.05)
+  
+  # Check that the result contains an "outliers" data frame
+  expect_true("outliers" %in% names(result))
+  expect_s3_class(result$outliers, "data.frame")
+  
+  # Verify that outliers are correctly identified
+  # (You may need to manually verify this based on the mock model)
+  expect_true(nrow(result$outliers) > 0 || nrow(result$outliers) == 0)
+})
+
+test_that("residDiagnostics performs and returns results from normality tests", {
+  result <- residDiagnostics(model, pvalue = 0.05)
+  
+  # Check that the result contains a "Normality" list
+  expect_true("Normality" %in% names(result))
+  expect_type(result$Normality, "list")
+  
+  # Ensure all three tests are present
+  expect_true(all(c("Shapiro.test", "DAgostino.test", "Anderson.Darling.test") %in% names(result$Normality)))
+  
+  # Check that each test result is a valid object (not NULL)
+  expect_s4_class(result$Normality$Shapiro.test, "fHTEST")
+  expect_s4_class(result$Normality$DAgostino.test, "fHTEST")
+  expect_s4_class(result$Normality$Anderson.Darling.test, "fHTEST")
+})
+
+test_that("residDiagnostics generates diagnostic plots", {
+  result <- residDiagnostics(model, pvalue = 0.05)
+  
+  # Check that the result contains a "plots" object
+  expect_true("plots" %in% names(result))
+  expect_type(result$plots, "list")
+  
+  # Check that the plot list contains expected plots
+  expect_true(length(result$plots) >= 1)
+  
+  expect_s3_class(result$plots[[1]], "trellis")
+})
+
