@@ -110,7 +110,7 @@ ranefDiagnostics <- function(model){
 #' @export
 residDiagnostics <- function(model, pvalue=0.05){
   # Plots
-  resid_plot <- Plot_residDiagnostics(model)
+  resid_plot <- plot_residDiagnostics(model)
   print(resid_plot[[6]])
   
   # Normality test
