@@ -158,6 +158,49 @@ test_that("lmmModel correctly filters data based on day_start", {
   expect_true(all(filtered_data$Day >= 0))  # Since day_start was subtracted
 })
 
+test_that("lmmModel excludes samples with TV0 == 0", {
+  # Create a small example dataset
+  set.seed(123)
+  test_data <- data.frame(
+    Mouse = rep(1:5, each = 5),
+    Day = rep(0:4, times = 5),
+    Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), 
+                    each = 5, length.out = 25),
+    TV = c(0, 120, 140, 160, 180,   # Mouse 1
+           80, 100, 120, 150, 190,    # Mouse 2
+           90, 95, 100, 110, 130,     # Mouse 3
+           0, 115, 120, 125, 130,   # Mouse 4
+           70, 75, 85, 90, 100)       # Mouse 5
+  )
+  
+  # Run the lmmModel function with this dataset
+  model <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE
+  )
+  
+  # Extract the data used in the model
+  model_data <- model$dt1
+  
+  # Check that Mouse1 and Mouse3 are not in the final data because their TV0 is 0
+  expect_false(1 %in% model_data$Mouse)
+  expect_false(4 %in% model_data$Mouse)
+  
+  # Check that only Mouse2 remains
+  expect_true(2 %in% model_data$Mouse)
+  expect_equal(levels(model_data$Mouse), as.character(c(2,3,5)))
+})
+
 # Test if lmmModel function respects the min_observations parameter
 test_that("lmmModel respects the min_observations parameter", {
   min_obs_data <- test_data

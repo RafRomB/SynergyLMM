@@ -49,6 +49,7 @@ NULL
   colnames(TV0) <- c("Mouse", "TV0")
   
   TV.df <- dplyr::left_join(TV.df, TV0, by = "Mouse")
+  
   return(TV.df)
 }
 
@@ -120,10 +121,17 @@ lmmModel <- function(data,
   
   TV.df <- TV.df %>% dplyr::filter(.data$Mouse %in% samples$Mouse)
   
-  TV.df$Mouse <- as.factor(TV.df$Mouse)
-  
   # Calculate the relative tumor volume
   TV.df <- .getRTV(TV.df, day_start)
+  
+  # Remove those samples for which TV0 == 0
+  # (and therefore, no RTV can be calculated)
+  
+  TV.df <- TV.df %>% dplyr::filter(.data$TV0 != 0)
+  
+  # Convert Mouse to factor
+  
+  TV.df$Mouse <- as.factor(TV.df$Mouse)
   
   # Data frame for visualization
   TV.plot <- TV.df
