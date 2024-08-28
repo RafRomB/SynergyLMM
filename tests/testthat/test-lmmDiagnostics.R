@@ -180,3 +180,47 @@ test_that("residDiagnostics generates diagnostic plots", {
   expect_s3_class(result$plots[[1]], "trellis")
 })
 
+# Tests for ObsvsPred function ----
+
+# Data and model for testing:
+
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create model
+
+model <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE
+)
+
+
+test_that("ObsvsPred correctly computes and prints model performance metrics", {
+  expect_output(
+    ObsvsPred(model),
+    "AIC|BIC|R2|RMSE|SIGMA",  # Expect some of these metrics in the output
+    fixed = FALSE
+  )
+})
+
+test_that("ObsvsPred generates observed vs predicted plot", {
+  expect_s3_class(ObsvsPred(model), "trellis")
+})
+
+
+
