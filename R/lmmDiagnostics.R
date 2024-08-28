@@ -267,6 +267,11 @@ logLikSubjectContributions <- function(model,
   lLik.n <- lLik.i / as.vector(nx) # logLiki/ni
   outL <- lLik.n < lLik_thrh # TRUE for value < lLik_thrh
   lLik.n[outL] # logLiki/ni < lLik_thrh
+  
+  if (sum(outL) == 0) {
+    writeLines(paste("No subject with a log-likelihood contribution below", lLik_thrh))
+  }
+  
   subject.c <- levels(model$data$Mouse)
   subject.x <- 1:length(subject.c)
   plot(
@@ -361,7 +366,7 @@ logLikSubjectContributions <- function(model,
 }
 
 # Calculation of the likelihood displacement
-#' @title Helper function for the calculation of the likelihood displacement
+#' @title Helper function for the calculation of the likelihood displacement for every subject
 #' @param cx Subject that has been remove from the data to build the model with leave-one-out data.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
 #' fitted using maximum likelihood.
@@ -424,9 +429,12 @@ logLikSubjectDisplacements <- function(model,
   
   # Plot of the likelihood displacements with an indication of outlying values
   
-  disp_thrh <- disp_thrh
-  
   outL <- dif.2Lik > disp_thrh # Outlying LDi's
+  
+  if(sum(outL) == 0){
+    writeLines(paste("No subject with a log-likelihood displacement greater than", disp_thrh))
+  }
+  
   print(paste(
     "Outliers with Log Likelihood displacement greater than:",
     disp_thrh
@@ -520,6 +528,10 @@ CookDistance <- function(model,
   
   outD <- CookD > cook_thr # Outlying Di's
   
+  if(sum(outD) == 0){
+    writeLines(paste("No subject with a Cook's distance greater than", cook_thr))
+  }
+  
   print(paste("Subjects with Cook's distance greater than:", cook_thr))
   print(CookD[outD])
   
@@ -531,16 +543,20 @@ CookDistance <- function(model,
     xlab = "Subject",
     main = "Cook's Distance vs Subject"
   )
-  points(subject.x[outD], CookD[outD], pch = 20)
-  text(
-    x = subject.x[outD],
-    y = CookD[outD],
-    labels = subject.c[outD],
-    cex = 0.6,
-    adj = c(0.5, 0.1),
-    srt = label_angle,
-    xpd = TRUE
-  )
+  
+  if (sum(outD) > 0) {
+    points(subject.x[outD], CookD[outD], pch = 20)
+    text(
+      x = subject.x[outD],
+      y = CookD[outD],
+      labels = subject.c[outD],
+      cex = 0.6,
+      adj = c(0.5, 0.1),
+      srt = label_angle,
+      xpd = TRUE
+    )
+  }
+  
   abline(h = cook_thr, lty = "dashed")
   legend(
     "topright",

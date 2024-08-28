@@ -1,5 +1,6 @@
+# Tests for ranefDiagnostics ----
 
-# Example data and model for testing ----
+# Example data and model for testing
 set.seed(123)
 test_data <- data.frame(
   Mouse = rep(1:10, each = 10),
@@ -23,7 +24,6 @@ model <- lmmModel(
   show_plot = FALSE
 )
 
-# Tests for ranefDiagnostics function ----
 
 test_that("ranefDiagnostics returns the correct structure and classes", {
   # Run the diagnostics function
@@ -106,7 +106,7 @@ test_that("ranefDiagnostics handles small sample sizes for D'Agostino test", {
   expect_match(diagnostics$Normality$DAgostino.test, "Sample size must be at least 20")
 })
 
-# Tests for residDiagnostics function ----
+# Tests for residDiagnostics ----
 
 # Data and model for testing:
 
@@ -180,7 +180,7 @@ test_that("residDiagnostics generates diagnostic plots", {
   expect_s3_class(result$plots[[1]], "trellis")
 })
 
-# Tests for ObsvsPred function ----
+# Tests for ObsvsPred ----
 
 # Data and model for testing:
 
@@ -222,5 +222,645 @@ test_that("ObsvsPred generates observed vs predicted plot", {
   expect_s3_class(ObsvsPred(model), "trellis")
 })
 
+# Tests for .logLik1.varIdent ----
 
+# Data and model for testing:
+
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create model
+
+modfit <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE,
+  weights = varIdent(form = ~1|Mouse),
+  method = "ML"
+)
+
+# Recover the data from the fitted model
+model_data <- modfit$data
+
+test_that("Test .logLik1.varIdent function with valid input", {
+  # Data frame for one subject
+  dt1 <- model_data[model_data$Mouse == 1, ]
+  
+  # Call the function with valid input
+  result <- .logLik1.varIdent(modfit, dt1, var_name = "Mouse")
+  
+  # Check that the result is numeric and not NA
+  expect_type(result, "double")
+  expect_false(is.na(result))
+})
+
+
+test_that("Test .logLik1.varIdent function with different var_name values", {
+  
+  # Create model
+  
+  modfit <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE,
+    weights = varIdent(form = ~1|Day), # Different variable for the weights
+    method = "ML"
+  )
+  
+  # Recover the data from the fitted model
+  model_data <- modfit$data
+  
+  
+  # Data frame for one subject
+  dt1 <- model_data[model_data$Mouse == 1, ]
+  
+  # Call the function with a valid var_name
+  result <- .logLik1.varIdent(modfit, dt1, "Day")
+  
+  # Check that the result is numeric and not NA
+  expect_type(result, "double")
+  expect_false(is.na(result))
+})
+
+# Tests for logLikSubjectContributions ----
+
+test_that("Test logLikSubjectContributions with valid input without varIdent structure", {
+  
+  # Update model without variance structure
+  
+  set.seed(123)
+  test_data <- data.frame(
+    Mouse = rep(1:10, each = 10),
+    Day = rep(0:9, times = 10),
+    Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+    TV = rnorm(100, mean = 100, sd = 20)
+  )
+  
+  # Create model
+  
+  modfit_no_varIdent <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE
+  )
+  
+  # Call the function with valid input and check no error is thrown
+  expect_type(logLikSubjectContributions(modfit_no_varIdent), "double")
+  
+  # Test with threshold value
+  expect_type(logLikSubjectContributions(modfit_no_varIdent, lLik_thrh = 0), "double")
+  
+  # Test with threshold value smaller than any observations log likelihood contribution
+  expect_error(logLikSubjectContributions(modfit_no_varIdent, lLik_thrh = -10), "zero-length 'labels' specified")
+  
+  # Test with label angle change
+  expect_type(logLikSubjectContributions(modfit_no_varIdent, label_angle = 45), "double")
+})
+
+
+test_that("Test logLikSubjectContributions with valid input with varIdent structure", {
+  
+  # Update model without variance structure
+  
+  set.seed(123)
+  test_data <- data.frame(
+    Mouse = rep(1:10, each = 10),
+    Day = rep(0:9, times = 10),
+    Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+    TV = rnorm(100, mean = 100, sd = 20)
+  )
+  
+  # Create model
+  
+  modfit_varIdent <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE,
+    weights = varIdent(form = ~1|Mouse)
+  )
+  
+  # Call the function with valid input and check no error is thrown
+  expect_type(logLikSubjectContributions(modfit_varIdent, var_name = "Mouse"), "double")
+  
+  # Test with threshold value
+  expect_type(logLikSubjectContributions(modfit_varIdent, lLik_thrh = 0, var_name = "Mouse"), "double")
+  
+  # Test with threshold value smaller than any observations log likelihood contribution
+  expect_error(logLikSubjectContributions(modfit_varIdent, lLik_thrh = -10, var_name = "Mouse"), "zero-length 'labels' specified")
+  
+  # Test with label angle change
+  expect_type(logLikSubjectContributions(modfit_varIdent, label_angle = 45, var_name = "Mouse"), "double")
+})
+
+
+test_that("Test logLikSubjectContributions throws an error if varStruc is present but var_name is not specified", {
+  
+  # Update model without variance structure
+  
+  set.seed(123)
+  test_data <- data.frame(
+    Mouse = rep(1:10, each = 10),
+    Day = rep(0:9, times = 10),
+    Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+    TV = rnorm(100, mean = 100, sd = 20)
+  )
+  
+  # Create model
+  
+  modfit_varIdent <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE,
+    weights = varIdent(form = ~1|Mouse)
+  )
+  
+  # Call the function without specifying `var_name` argument
+  expect_error(logLikSubjectContributions(modfit_varIdent), "`var_name` cannot be NULL if a variance estructure has been specified in the model")
+
+})
+
+# Tests for .lmeU ----
+
+# Create test dataset 
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create model
+model <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE
+)
+
+test_that("Test .lmeU function with valid input", {
+  
+  # Remove subject 1 and update model
+  updated_model <- .lmeU(1, model)
+  
+  # Check that the updated model is still an 'lme' object
+  expect_s3_class(updated_model, "lme")
+  
+  # Check that the data in the updated model does not contain subject "M01"
+  expect_false(1 %in% unique(updated_model$data$Mouse))
+  
+  # Check that the number of subjects has decreased by 1
+  expect_equal(length(unique(updated_model$data$Mouse)), length(unique(model$data$Mouse)) - 1)
+})
+
+test_that("Test .lmeU function model structure consistency", {
+  # Remove a subject and get the updated model
+  updated_model <- .lmeU(1, model)
+  
+  # Check that the structure of the updated model is consistent with the original model
+  # except for the 'dt1' element corresponding to the transformed data produced by lmmModel()
+  expect_equal(names(model)[-length(names(model))], names(updated_model))
+  expect_equal(class(model$modelStruct), class(updated_model$modelStruct))
+})
+
+# Tests for .logLik1.varIdent_loo ----
+
+# Data and model for testing:
+
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create model
+
+model <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE,
+  weights = varIdent(form = ~1|Mouse),
+  method = "ML"
+)
+
+# Recover the data from the fitted model
+model_data <- model$data
+
+# Create leave-one-out model
+modfit <- .lmeU(1, model)
+
+test_that("Test .logLik1.varIdent_loo function with valid input", {
+  # Data frame for one subject
+  dt1 <- model_data[model_data$Mouse == 1, ]
+  
+  # Call the function with valid input
+  result <- .logLik1.varIdent_loo(modfit, dt1, dtInit = model, var_name = "Mouse")
+  
+  # Check that the result is numeric and not NA
+  expect_type(result, "double")
+  expect_false(is.na(result))
+})
+
+
+test_that("Test .logLik1.varIdent_loo function with different var_name values", {
+  # Create model
+  
+  model <- lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = 1,
+    show_plot = FALSE,
+    weights = varIdent(form = ~1|Day), # Different variable for the weights
+    method = "ML"
+  )
+  
+  # Recover the data from the fitted model
+  model_data <- model$data
+  
+  # Create leave-one-out model
+  modfit <- .lmeU(1, model)
+  
+  # Data frame for one subject
+  dt1 <- model_data[model_data$Mouse == 1, ]
+  
+  # Call the function with a valid var_name
+  result <- .logLik1.varIdent_loo(modfit, dt1, dtInit = model, var_name = "Day")
+  
+  # Check that the result is numeric and not NA
+  expect_type(result, "double")
+  expect_false(is.na(result))
+})
+
+# Tests for .lLik ----
+
+# Create test data
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create model
+
+model <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE,
+  method = "ML"
+)
+
+
+# Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
+lmeUall_no_varIdent <- list(.lmeU(1, model))
+names(lmeUall_no_varIdent) <- 1
+
+test_that("Test .lLik function with valid input without varIdent structure", {
+  
+  # Call the function with valid input and check result is numeric
+  result <- .lLik(1, model, lmeUall_no_varIdent, var_name = NULL)
+  expect_type(result, "double")
+})
+
+test_that("Test .lLik function with valid input with varIdent structure", {
+  
+  # Update model to include varIdent structure
+  model <- update(model, weights = varIdent(form = ~1|Mouse))
+
+  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
+  lmeUall_varIdent <- list(.lmeU(1, model))
+  names(lmeUall_varIdent) <- 1
+  
+  # Call the function with valid input and correct var_name
+  result <- .lLik(1, model, lmeUall_varIdent, var_name = "Mouse")
+  expect_type(result, "double")
+})
+
+test_that("Test .lLik function throws an error with missing var_name when needed", {
+  
+  # Update model to include varIdent structure
+  model <- update(model, weights = varIdent(form = ~1|Mouse))
+  
+  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
+  lmeUall_varIdent <- list(.lmeU(1, model))
+  names(lmeUall_varIdent) <- 1
+  
+  # Call the function without providing var_name when variance structure is used
+  expect_error(.lLik(1, model, lmeUall_varIdent, var_name = NULL),
+               "`var_name` cannot be NULL if a variance estructure has been specified in the model")
+})
+
+test_that("Test .lLik function with different variance structures", {
+  # Test with another variance structure (Day)
+  
+  model <- update(model, weights = varIdent(form = ~1|Day)) # Use `Day` as group for variance structure
+  
+  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
+  lmeUall_diff_var <- list(.lmeU(1, model))
+  names(lmeUall_diff_var) <- 1
+  
+  # Call the function and check the result is numeric
+  result <- .lLik(1, model, lmeUall_diff_var, var_name = "Day")
+  expect_type(result, "double")
+})
+
+# Tests for logLikSubjectDisplacements ----
+
+# Create test data
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create model
+model <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE
+  )
+
+
+test_that("Test logLikSubjectDisplacements with valid input without varIdent structure", {
+  
+  # Call the function with valid input and check that it runs without error
+  result <- logLikSubjectDisplacements(model)
+  
+  # Check that the result is numeric
+  expect_type(result, "double")
+  
+  # Check that all values are finite
+  expect_true(all(is.finite(result)))
+})
+
+test_that("Test logLikSubjectDisplacements with valid input with varIdent structure", {
+  
+  # Update model to include varStruct
+  model <- update(model, weights = varIdent(form = ~1|Mouse))
+  
+  # Call the function with valid input and correct var_name
+  result <- logLikSubjectDisplacements(model, var_name = "Mouse")
+  
+  # Check that the result is numeric
+  expect_type(result, "double")
+  
+  # Check that all values are finite
+  expect_true(all(is.finite(result)))
+})
+
+test_that("Test logLikSubjectDisplacements throws an error with missing var_name when needed", {
+  
+  # Update model to include varStruct
+  model <- update(model, weights = varIdent(form = ~1|Mouse))
+  
+  # Call the function without providing var_name when variance structure is used
+  expect_error(logLikSubjectDisplacements(model), 
+               "`var_name` cannot be NULL if a variance estructure has been specified in the model")
+})
+
+test_that("Test logLikSubjectDisplacements with different thresholds", {
+  # Test with threshold that is higher than any log-likelihood displacement
+  result <- logLikSubjectDisplacements(model, disp_thrh = 1000)
+  expect_true(all(result <= 1000))
+  expect_output(logLikSubjectDisplacements(model, disp_thrh = 1000),
+                 "No subject with a log-likelihood displacement greater than 1000")
+  
+  # Test with very low threshold (all displacements should be included in plot)
+  result <- logLikSubjectDisplacements(model, disp_thrh = -1000)
+  expect_true(any(result > -1000))
+})
+
+test_that("Test logLikSubjectDisplacements output consistency", {
+  # Run function and capture the output
+  result <- logLikSubjectDisplacements(model)
+  
+  # Check that result is named and length matches number of subjects
+  expect_named(result)
+  expect_equal(length(result), length(unique(test_data$Mouse)))
+})
+
+# Tests for .CookDfun ----
+
+test_that("Test .CookDfun with basic valid input", {
+  # Define input vectors and matrix
+  betaU <- c(1.1, 2.2, 3.3)
+  beta0 <- c(1.0, 2.0, 3.0)
+  vb.inv <- diag(c(0.5, 0.5, 0.5)) # Inverse variance-covariance matrix (diagonal for simplicity)
+  
+  # Call the function and check the result
+  result <- .CookDfun(betaU, beta0, vb.inv)
+  
+  # Manually calculate expected result
+  dbetaU <- betaU - beta0
+  expected_result <- t(dbetaU) %*% vb.inv %*% dbetaU
+  
+  # Check that the result matches the expected value
+  expect_equal(as.numeric(result), as.numeric(expected_result))
+})
+
+test_that("Test .CookDfun with zero differences in betaU and beta0", {
+  # Define input vectors and matrix
+  betaU <- c(1.0, 2.0, 3.0)
+  beta0 <- c(1.0, 2.0, 3.0)
+  vb.inv <- diag(c(0.5, 0.5, 0.5))
+  
+  # Call the function and check the result
+  result <- .CookDfun(betaU, beta0, vb.inv)
+  
+  # Expect Cook's distance to be zero
+  expect_equal(as.numeric(result), 0)
+})
+
+test_that("Test .CookDfun with high influence cases", {
+  # Define input vectors and matrix
+  betaU <- c(10, 20, 30)  # Significantly different from beta0
+  beta0 <- c(1.0, 2.0, 3.0)
+  vb.inv <- diag(c(0.5, 0.5, 0.5))
+  
+  # Call the function and check the result
+  result <- .CookDfun(betaU, beta0, vb.inv)
+  
+  # Expect a high Cook's distance value
+  expect_true(as.numeric(result) > 100)
+})
+
+test_that("Test .CookDfun with non-conformable inputs", {
+  # Define input vectors and matrix with non-conformable shapes
+  betaU <- c(1.1, 2.2)
+  beta0 <- c(1.0, 2.0, 3.0)  # Different length
+  vb.inv <- diag(c(0.5, 0.5, 0.5))
+  
+  # Expect an error due to non-conformable shapes
+  expect_warning(.CookDfun(betaU, beta0, vb.inv))
+  
+})
+
+# Tests for CookDistance ----
+
+# Create test data
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+# Create model
+model <- lmmModel(
+  data = test_data,
+  mouse_id = "Mouse",
+  day = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_ab = "Drug_AB",
+  day_start = 0,
+  min_observations = 1,
+  show_plot = FALSE
+)
+
+
+test_that("Test CookDistance with valid input without Cook threshold", {
+  # Call the function with a valid input and default cook_thr
+  result <- CookDistance(model)
+  
+  # Check that the result is a numeric vector
+  expect_type(result, "double")
+  
+  # Check that the length of the result matches the number of subjects
+  expect_equal(length(result), length(unique(test_data$Mouse)))
+  
+  # Check that all values are finite
+  expect_true(all(is.finite(result)))
+})
+
+test_that("Test CookDistance with different thresholds", {
+  
+  # Test with a threshold that is higher than any Cook's distance
+  expect_output(result <- CookDistance(model, cook_thr = 10), 
+                "No subject with a Cook's distance greater than 10")
+  expect_true(all(result <= 10))
+  
+  # Test with a threshold of zero (all distances should be included in the plot)
+  result <- CookDistance(model, cook_thr = -10)
+  expect_true(any(result > 0))
+})
+
+test_that("Test CookDistance output consistency", {
+  # Run the function and capture the output
+  result <- CookDistance(model)
+  
+  # Check that the result is named and length matches number of subjects
+  expect_named(result)
+  expect_equal(length(result), length(unique(test_data$Mouse)))
+})
+
+test_that("Test CookDistance with invalid model input", {
+  # Create an invalid model input (not an 'lme' object)
+  invalid_model <- list(a = 1, b = 2)
+  
+  # Expect an error due to invalid model input
+  expect_error(CookDistance(invalid_model))
+})
 
