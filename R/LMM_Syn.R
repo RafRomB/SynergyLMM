@@ -15,6 +15,7 @@
 #' @param norm_test If `method` is set to "RA", string indicating the test for checking the 
 #' normality of the hypothesis expression of synergy (see "Warning#3" in "Description" section of [marginaleffects::hypotheses()]).
 #' Possible values are "shapiroTest", "dagoTest" or "adTest", for Shapiro-Wilk, D'Agostino and Anderson-Darling normality tests, respectively.
+#' @param show_plot Logical indicating if a plot with the results of the synergy calculation should be generated.
 #' @param ... Additional arguments to be passed to [marginaleffects::hypotheses()].
 #' @returns The function returns a list with two elements:
 #' - `Constrasts`: List with the outputs of the (non)-linear test for the synergy null hypothesis obtained by [marginaleffects::hypotheses()] for each day.
@@ -23,12 +24,13 @@
 #' the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each day.
 #' @export
 
-LMM_Syn <- function(model,
+lmmSynergy <- function(model,
                     method = "Bliss",
                     min_day = 0,
                     robustSE = FALSE,
                     type = "CR2",
                     norm_test = "shapiroTest",
+                    show_plot = TRUE,
                     ...) {
   
   ci <- data.frame()
@@ -118,6 +120,8 @@ LMM_Syn <- function(model,
   colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Day")
   df <- rbind(ci, ss)
   result <- list(Contrasts = Contrasts, Synergy = df)
-  print(Plot_LMM_Syn(result))
+  if(show_plot) {
+    print(plot_lmmSynergy(result))
+  }
   return(result)
 }

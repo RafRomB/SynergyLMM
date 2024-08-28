@@ -108,7 +108,7 @@ plot_ObsvsPred <- function(model, nrow, ncol){
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) with the combination index (CI) and synergy score (SS)
 #' estimates, confidence intervals and p-values for the synergy calculation using linear mixed models.
 #' @export
-Plot_LMM_Syn <- function(syn_data){
+plot_lmmSynergy <- function(syn_data){
   syn_data <- syn_data$Synergy
   hline <- data.frame(Metric = c("CI", "SS"), yintercept = c(1,0))
   syn_data %>% ggplot(aes(x = .data$Day, y = .data$Estimate)) +
