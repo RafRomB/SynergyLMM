@@ -91,7 +91,7 @@ plot_residDiagnostics <- function(model){
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
-Plot_ObsvsPred <- function(model, nrow, ncol){
+plot_ObsvsPred <- function(model, nrow, ncol){
   TV.df <- model$data
   aug.Pred <- nlme::augPred(model, primary = ~Day, level = 0:1, length.out = 2)
   plot(aug.Pred, layout = c(ncol, nrow, 1), lty = c(1,2),

@@ -2,7 +2,7 @@
 % Please edit documentation in R/lmmDiagnostics.R
 \name{ObsvsPred}
 \alias{ObsvsPred}
-\title{Observed vs predicted values and performance}
+\title{Observed vs predicted values and performance of the model}
 \usage{
 ObsvsPred(model, nrow = 4, ncol = 5, ...)
 }
@@ -19,7 +19,7 @@ ObsvsPred(model, nrow = 4, ncol = 5, ...)
 A layout of the observed vs predicted values for each mouse and model performance metrics.
 }
 \description{
-Observed vs predicted values and performance
+Observed vs predicted values and performance of the model
 }
 \details{
 The function provides visual and quantitative information about the performance of the model:

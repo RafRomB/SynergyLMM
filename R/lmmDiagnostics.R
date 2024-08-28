@@ -1,3 +1,4 @@
+# Random Effects Diagnostics ----
 #' @title Diagnostics of random effects of the linear mixed model.
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
@@ -97,6 +98,7 @@ ranefDiagnostics <- function(model){
   ))
 }
 
+# Residual Diagnostics ----
 
 #' @title Diagnostics of residuals of the linear mixed model.
 #' 
@@ -151,7 +153,7 @@ residDiagnostics <- function(model, pvalue=0.05){
   ))
 }
 
-## Observed vs predicted ----
+# Observed vs predicted ----
 
 #' @title Observed vs predicted values and performance of the model
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
@@ -168,14 +170,22 @@ residDiagnostics <- function(model, pvalue=0.05){
 #' @export
 ObsvsPred <- function(model, nrow = 4, ncol = 5, ...) {
   print(performance::model_performance(model, metrics = c("AIC", "AICc", "BIC", "R2", "RMSE", "SIGMA")), ...)
-  Plot_ObsvsPred(model, nrow, ncol)
+  plot_ObsvsPred(model, nrow, ncol)
 }
 
-# Influential Diagnostics
+# Influential Diagnostics ----
 
-# Modified logLik1 function to deal with varIdent structure
+#' @title Modified [nlmeU::logLik1] helper function to deal with varIdent structure
+#' @param modfit An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
+#' with a variance structure defined by [nlme::varIdent], and fitted using maximum likelihood.
+#' @param dt1 A data frame with data for one subject, for whom the log-likelihood function is to be evaluated
+#' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
+#' @returns Numeric scalar value representing contribution of a given subject to the overall 
+#' log-likelihood returned by `logLik()` function applied to the "lme" object defined by `modfit` argument.
+#' @keywords internal
+#' @noRd
 
-logLik1.varIdent <- function(modfit, dt1, var_name){
+.logLik1.varIdent <- function(modfit, dt1, var_name){
   var_name <- as.character(unique(dt1[,var_name]))
   m <- modfit$modelStruct # Model structure
   sigma <- modfit$sigma # sigma
@@ -213,10 +223,14 @@ logLik1.varIdent <- function(modfit, dt1, var_name){
 #' @returns Returns a plot of the per-observation individual-subject log-likelihood contibutions to the model, indicating those subjects
 #' whose contribution is smaller than `lLik_thrh`. 
 #' @export
-logLik_cont <- function(model,
+logLikSubjectContributions <- function(model,
                         lLik_thrh = 0,
                         label_angle = 0,
                         var_name = NULL) {
+  
+  # Update model to use maximum-likelihood estimation
+  
+  model <- update(model, method = "ML")
   
   # Fixed-effect estimates and their variance-covariance matrix
   
@@ -241,7 +255,7 @@ logLik_cont <- function(model,
       model$data,
       model$data$Mouse,
       FUN = function(dfi) # Function to calculate log likelihood for subject i with a variance structure.
-        logLik1.varIdent(model, dfi, var_name = var_name)
+        .logLik1.varIdent(model, dfi, var_name = var_name)
     ) 
   }
   
@@ -289,9 +303,16 @@ logLik_cont <- function(model,
 
 ## Leave-one-out 
 
-# Creating object lmeUall containing fitted models
+#' @title Helper function for creating the object `lmeUall` containing fitted models
+#' with leave-one-out data
+#' @param cx Subject to remove from the data to build the model
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
+#' and fitted using maximum likelihood.
+#' @returns A list with the leave-one-out model fits
+#' @keywords internal
+#' @noRd
 
-lmeU <- function(cx, model){
+.lmeU <- function(cx, model){
   Mouse <- NULL
   dfU <- subset(model$data, Mouse != cx) ## LOO data
   update(model, data = dfU)
@@ -299,7 +320,19 @@ lmeU <- function(cx, model){
 
 # logLik1 function for varStruct with LOO data
 
-logLik1.varIdent_loo <- function(modfit, dt1, dtInit, var_name){
+#' @title Modified [nlmeU::logLik1] helper function to deal with varIdent structure for leave-one-out data
+#' @param modfit An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
+#' with a variance structure defined by [nlme::varIdent], fitted using maximum likelihood and using leave-one-out data.
+#' @param dt1 A data frame with data for one subject, for whom the log-likelihood function is to be evaluated
+#' @param dtInit An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
+#' with a variance structure defined by [nlme::varIdent], fitted using maximum likelihood, with the complete data.
+#' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
+#' @returns Numeric scalar value representing contribution of a given subject to the overall 
+#' log-likelihood returned by `logLik()` function applied to the "lme" object defined by `modfit` argument.
+#' @keywords internal
+#' @noRd
+
+.logLik1.varIdent_loo <- function(modfit, dt1, dtInit, var_name){
   var_name <- as.character(unique(dt1[,var_name]))
   m <- modfit$modelStruct # Model structure
   sigma <- modfit$sigma # sigma
@@ -328,8 +361,17 @@ logLik1.varIdent_loo <- function(modfit, dt1, dtInit, var_name){
 }
 
 # Calculation of the likelihood displacement
-
-lLik <- function(cx, model, lmeUall, var_name){
+#' @title Helper function for the calculation of the likelihood displacement
+#' @param cx Subject that has been remove from the data to build the model with leave-one-out data.
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
+#' fitted using maximum likelihood.
+#' @param lmeUall A list with the leave-one-out model fits obtained by [`.lmeU()`].
+#' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
+#' @returns Numeric value indicating the displacement in the log-likelihood due to removal of subject `cx`.
+#' @keywords internal
+#' @noRd
+#' 
+.lLik <- function(cx, model, lmeUall, var_name){
   Mouse <- NULL
   lmeU <- lmeUall[[cx]] # LOO fit extracted
   lLikU <- logLik(lmeU, REML = FALSE) # LOO log-likelihood
@@ -340,7 +382,7 @@ lLik <- function(cx, model, lmeUall, var_name){
     if(is.null(var_name)){
       stop("`var_name` cannot be NULL if a variance estructure has been specified in the model")
     }
-    lLik.s <- logLik1.varIdent_loo(lmeU, df.s, model, var_name) # ... and log-likelihood
+    lLik.s <- .logLik1.varIdent_loo(lmeU, df.s, model, var_name) # ... and log-likelihood
   }
   return(lLikU + lLik.s) # "Displaced" log-likelihood
 } 
@@ -350,29 +392,30 @@ lLik <- function(cx, model, lmeUall, var_name){
 #' @param disp_thrh Threshold of log-likelihood displacement.
 #' @param label_angle Angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
-#' @param ... Extra arguments, if any, for [lattice::panel.xyplot]. Usually passed on as 
-#' graphical parameters to low level plotting functions, or to the panel functions performing smoothing, if applicable.
+#' @param ... Extra arguments, if any, for [lattice::panel.xyplot].
 #' @returns Returns a plot of the log-likelihood displacement values for each subject, indicating those subjects
 #' whose contribution is greater than `disp_thrh`.
 #' @export
-loo_logLik_disp <- function(model,
+logLikSubjectDisplacements <- function(model,
                             disp_thrh = 0,
                             label_angle = 0,
                             var_name = NULL,
                             ...) {
   
+  model <- update(model, method = "ML")
+  
   # Fitting the model to "leave-one-out" data
   
   subject.c <- levels(model$data$Mouse)
   
-  lmeUall <- lapply(subject.c, lmeU, model = model)
+  lmeUall <- lapply(subject.c, .lmeU, model = model)
   names(lmeUall) <- subject.c
   
   # Likelihood Displacement for Model
   
   lLikUall <- sapply(
     subject.c,
-    lLik,
+    .lLik,
     model = model,
     lmeUall = lmeUall,
     var_name = var_name
@@ -453,7 +496,7 @@ Cooks_dist <- function(model,
                        cook_thr = 0,
                        label_angle = 0) {
   subject.c <- levels(model$data$Mouse)
-  lmeUall <- lapply(subject.c, lmeU, model = model)
+  lmeUall <- lapply(subject.c, .lmeU, model = model)
   names(lmeUall) <- subject.c
   
   betaUall <- sapply(lmeUall, fixef) # Matrix with betas(-i) estimates
