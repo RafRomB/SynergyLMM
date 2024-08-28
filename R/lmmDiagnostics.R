@@ -480,7 +480,7 @@ logLikSubjectDisplacements <- function(model,
 
 ## Cook's distance for beta estimates
 
-CookDfun <- function(betaU, beta0, vb.inv){
+.CookDfun <- function(betaU, beta0, vb.inv){
   dbetaU <- betaU - beta0 # beta(-i) - beta
   CookD.value <- t(dbetaU) %*% vb.inv %*% dbetaU # Compute Cook distance
 }
@@ -492,7 +492,7 @@ CookDfun <- function(betaU, beta0, vb.inv){
 #' @returns Plot of the Cook's distance value for each subject, indicating those subjects
 #' whose Cook's distance is greater than `cook_thr`.
 #' @export
-Cooks_dist <- function(model,
+CookDistance <- function(model,
                        cook_thr = 0,
                        label_angle = 0) {
   subject.c <- levels(model$data$Mouse)
@@ -506,7 +506,7 @@ Cooks_dist <- function(model,
   
   beta0 <- fixef(model) # estimated betas
   
-  CookD.num <- apply(betaUall, 2, CookDfun, beta0 = beta0, vb.inv = vb.inv)
+  CookD.num <- apply(betaUall, 2, .CookDfun, beta0 = beta0, vb.inv = vb.inv)
   
   n.fixeff <- length(beta0) # Number of fixed effects
   rankX <- n.fixeff # Rank of matrix X
