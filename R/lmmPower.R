@@ -11,7 +11,7 @@
 #' The power is expressed as the proportion of simulations that provides a p-value below the threshold specified in `pvalue`. 
 #' @export
 
-Pwr_simulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...){
+PwrSimulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...){
   
   if(method == "Bliss"){
     contrast <- "b4 = b2 + b3 - b1"
