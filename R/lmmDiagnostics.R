@@ -479,10 +479,16 @@ logLikSubjectDisplacements <- function(model,
 
 
 ## Cook's distance for beta estimates
-
+#' @title Helper function for the calculation of Cook's distance of beta estimates
+#' @param betaU A vector with beta estimates calculated for leave-one-out models.
+#' @param beta0 A vector with beta estimates calculated for the complete data model.
+#' @param vb.inv A matrix with the inverse variance-covariance matrix of beta estimates of the complete data model.
+#' @returns A numeric value of the numerator of Cook's distance, as described in Gałecki, A., & Burzykowski, T. (2013).
+#' @keywords internal
+#' @noRd
 .CookDfun <- function(betaU, beta0, vb.inv){
   dbetaU <- betaU - beta0 # beta(-i) - beta
-  CookD.value <- t(dbetaU) %*% vb.inv %*% dbetaU # Compute Cook distance
+  CookD.value <- t(dbetaU) %*% vb.inv %*% dbetaU # Compute Cook distance (Gałecki, A., & Burzykowski, T. (2013)
 }
 
 #' @title Cook's distance for the coefficient estimates.
