@@ -33,6 +33,12 @@ lmmSynergy <- function(model,
                     show_plot = TRUE,
                     ...) {
   
+  # Validate method input
+  valid_methods <- c("Bliss", "HSA", "RA")
+  if (!method %in% valid_methods) {
+    stop("Invalid 'method' provided. Choose from 'Bliss', 'HSA', or 'RA'.")
+  }
+  
   ci <- data.frame()
   ss <- data.frame()
   Contrasts <- list()
