@@ -73,12 +73,21 @@ lmmSynergy <- function(model,
     par(mfrow = c(1, 1))
     if (norm_test == "shapiroTest") {
       print(fBasics::shapiroTest(b4))
+      if(fBasics::shapiroTest(b4)@test$p.value < 0.05){
+        warning("Null hypothesis expression for RA method may not be normally distributed.\nSee '?lmmSynergy' for further details.")
+      }
     }
     if (norm_test == "dagoTest") {
       print(fBasics::dagoTest(b4))
+      if(sum(fBasics::dagoTest(b4)@test$p.value < 0.05) > 0){
+        warning("Null hypothesis expression for RA method may not be normally distributed.\nSee '?lmmSynergy' for further details.")
+      }
     }
     if (norm_test == "adTest") {
       print(fBasics::adTest(b4))
+      if(fBasics::adTest(b4)@test$p.value < 0.05){
+        warning("Null hypothesis expression for RA method may not be normally distributed.\nSee '?lmmSynergy' for further details.")
+      }
     }
   }
   
