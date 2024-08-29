@@ -12,3 +12,45 @@
 #' @param rhs A function call using the magrittr semantics.
 #' @return The result of calling `rhs(lhs)`.
 NULL
+
+#' @title Helper function to simulate tumor growth data
+#' @param npg Number of mouse per group.
+#' @param timepoints Vector with the time points at which the tumor volume measurements have been performed.
+#' @param initial_volume Initial volume for the tumor growth.
+#' @param grwrControl Coefficient for Control treatment group tumor growth rate.
+#' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
+#' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
+#' @param grwrComb Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.
+#' @param sd Standard deviation for the tumor growth.
+#' @returns A data frame with tumor growth data in long format.
+#' @export
+.simulateTumorGrowth <- function(npg = 5,
+                                 timepoints = c(0, 3, 5, 10),
+                                 initial_volume = 100,
+                                 grwrControl = 0.08,
+                                 grwrA = 0.07,
+                                 grwrB = 0.06,
+                                 grwrComb = 0.04,
+                                 sd = 0.1) {
+  
+  subject <- 1:(4 * npg) # Subjects' ids
+  Treatment <- gl(4, npg, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
+  dts <- data.frame(subject, Treatment) # Subject-level data
+  
+  dtL <- list(Day = timepoints, subject = subject)
+  dtLong <- expand.grid(dtL) # Long format
+  mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
+  
+  mrgDt$TumorVolume <- NULL
+  
+  # Simulate exponential growth for each subject
+  mrgDt$TumorVolume[mrgDt$Treatment == "Control"] <- initial_volume * exp(grwrControl * timepoints)
+  mrgDt$TumorVolume[mrgDt$Treatment == "DrugA"] <- initial_volume * exp(grwrA * timepoints)
+  mrgDt$TumorVolume[mrgDt$Treatment == "DrugB"] <- initial_volume * exp(grwrB * timepoints)
+  mrgDt$TumorVolume[mrgDt$Treatment == "Combination"] <- initial_volume * exp(grwrComb * timepoints)
+  
+  # Add random noise to simulate variability
+  mrgDt$TumorVolume <- mrgDt$TumorVolume * rnorm(nrow(mrgDt), mean = 1, sd = sd)
+  
+  return(mrgDt)
+}

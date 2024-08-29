@@ -3,6 +3,7 @@
 S3method(Pwr,lme)
 export("%>%")
 export(.getRTV)
+export(.simulateTumorGrowth)
 export(APrioriPwr)
 export(CookDistance)
 export(ObsvsPred)
