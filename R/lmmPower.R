@@ -11,36 +11,44 @@
 #' The power is expressed as the proportion of simulations that provides a p-value below the threshold specified in `pvalue`. 
 #' @export
 
-PwrSimulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...){
+PostHocPwr <- function(model,
+                       nsim = 1000,
+                       method = "Bliss",
+                       pvalue = 0.05,
+                       ...) {
+  # Validate method input
+  valid_methods <- c("Bliss", "HSA", "RA")
+  if (!method %in% valid_methods) {
+    stop("Invalid 'method' provided. Choose from 'Bliss', 'HSA', or 'RA'.")
+  }
   
-  if(method == "Bliss"){
+  if (method == "Bliss") {
     contrast <- "b4 = b2 + b3 - b1"
   }
-  if(method == "HSA" ){
+  if (method == "HSA") {
     fixef_betas <- nlme::fixef(model)[2:3]
-    if(which.min(fixef_betas) == 1){
+    if (which.min(fixef_betas) == 1) {
       contrast <- "b4 = b2"
     } else{
       contrast <- "b4 = b3"
     }
   }
-  if(method == "RA"){
+  if (method == "RA") {
     contrast <- "b4 = log(exp(b2) + exp(b3) - exp(b1))"
   }
   
   simA <- nlmeU::simulateY(model, nsim = nsim, ...) # Simulation
   dt <- model$data # working copy
-  simfmA <- apply(simA,
-                  2,
-                  function(y){
-                    dt$logRTV <- y
-                    auxFit <- update(model, data = dt)
-                    marginaleffects::hypotheses(auxFit, hypothesis = contrast)
-                  })
-  FstateE <- 
-    sapply(simfmA, function(x) x$p.value)
+  simfmA <- apply(simA, 2, function(y) {
+    dt$logRTV <- y
+    auxFit <- update(model, data = dt)
+    marginaleffects::hypotheses(auxFit, hypothesis = contrast)
+  })
+  FstateE <-
+    sapply(simfmA, function(x)
+      x$p.value)
   
-  powerE <- sum(FstateE < pvalue)/nsim
+  powerE <- sum(FstateE < pvalue) / nsim
   return(powerE)
 }
 
@@ -49,7 +57,7 @@ PwrSimulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...){
 
 #' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM.
 #' @param npg Number of mouse per group.
-#' @param Day Vector with the days at which the tumor volume measurements have been performed.
+#' @param day Vector with the days at which the tumor volume measurements have been performed.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
 #' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
@@ -79,20 +87,41 @@ PwrSimulate <- function(model, nsim=1000, method = "Bliss", pvalue = 0.05, ...){
 #' @importFrom cowplot theme_cowplot plot_grid
 #' @export
 
-Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, sd_eval = NULL, 
-                    sgma_eval = NULL, grwrComb_eval = NULL, method = "Bliss", ...){
-  
-  if(is.null(sd_eval) & is.null(sgma_eval) & is.null(grwrComb_eval)){
-    stop("One of the following, 'sd_eval' and 'sgma_eval', or 'grwrComb_eval', arguments must be specified")
+
+APrioriPwr <- function(npg = 5,
+                       day = c(0, 3, 5, 10),
+                       grwrControl = 0.08,
+                       grwrA = 0.07,
+                       grwrB = 0.06,
+                       grwrComb = 0.03,
+                       sd_ranef = 0.01,
+                       sgma = 0.1,
+                       sd_eval = NULL,
+                       sgma_eval = NULL,
+                       grwrComb_eval = NULL,
+                       method = "Bliss",
+                       ...) {
+  if (is.null(sd_eval) & is.null(sgma_eval) & is.null(grwrComb_eval)) {
+    stop(
+      "One of the following, 'sd_eval' and 'sgma_eval', or 'grwrComb_eval', arguments must be specified"
+    )
   }
-  if(!is.null(sd_eval) | !is.null(sgma_eval)){
+  if (!is.null(sd_eval) | !is.null(sgma_eval)) {
     stopifnot("Both, 'sd_eval' and 'sgma_eval', must be specified" = c(!is.null(sd_eval), !is.null(sgma_eval)))
+  }
+  
+  # Validate method input
+  valid_methods <- c("Bliss", "HSA")
+  if (!method %in% valid_methods) {
+    stop("Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
   }
   
   ## Constructing an exemplary dataset
   
   npg <- npg # No of subjects per group
-  subject <- 1:(4*npg) # Subjects' ids
+  Day <- day # Vector with days of tumor volume measurements
+  
+  subject <- 1:(4 * npg) # Subjects' ids
   Treatment <- gl(4, npg, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
   dts <- data.frame(subject, Treatment) # Subject-level data
   
@@ -100,7 +129,7 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
   dtLong <- expand.grid(dtL) # Long format
   mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
   
-  # Controls growth rate
+  # Control growth rate
   C <- grwrControl
   
   # Treatment A growth rate
@@ -113,10 +142,10 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
   AB <- grwrComb
   
   exmpDt <- within(mrgDt, {
-    m0 <- C*Day
-    mA <- A*Day
-    mB <- B*Day
-    mAB <- AB*Day
+    m0 <- C * Day
+    mA <- A * Day
+    mB <- B * Day
+    mAB <- AB * Day
   })
   
   exmpDt$mA[exmpDt$Treatment == "Control"] <- exmpDt$m0[exmpDt$Treatment == "Control"]
@@ -128,7 +157,15 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
   exmpDt$mB <- NULL
   
   # Ploting exemplary data
-  p1 <- Plot_exmpDt(exmpDt, grwrControl = C, grwrA = A, grwrB = B, grwrComb = AB, sd_ranef = sd_ranef, sgma = sgma)
+  p1 <- plot_exmpDt(
+    exmpDt,
+    grwrControl = C,
+    grwrA = A,
+    grwrB = B,
+    grwrComb = AB,
+    sd_ranef = sd_ranef,
+    sgma = sgma
+  )
   
   # Build lme object
   
@@ -137,28 +174,61 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
   sgma <- sgma
   D <- log(sd_ranef)
   
-  pd1 <- pdDiag(D, form = ~0+Day)
+  pd1 <- pdDiag(D, form = ~ 0 + Day)
   
-  cntrl <- lmeControl(maxIter = 0, msMaxIter = 0, niterEM = 0, returnObject = TRUE, opt = "optim")
+  cntrl <- lmeControl(
+    maxIter = 0,
+    msMaxIter = 0,
+    niterEM = 0,
+    returnObject = TRUE,
+    opt = "optim"
+  )
   
-  fmA <- lme(mA ~ Day:Treatment, random = list(subject = pd1), data = exmpDt, control = cntrl)
+  fmA <- lme(
+    mA ~ Day:Treatment,
+    random = list(subject = pd1),
+    data = exmpDt,
+    control = cntrl
+  )
   
   # Use of Pwr() function for a priori power calculations
   
   # Power for different values of variance
   
-  if(!is.null(sd_eval) & !is.null(sgma_eval)){
-    
+  if (!is.null(sd_eval) & !is.null(sgma_eval)) {
     # Ploting power curve
     
-    if(method == "Bliss"){
-      print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentDrugA" = -1,"Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1)), ...)
+    if (method == "Bliss") {
+      print(Pwr(
+        fmA,
+        sigma = sgma,
+        L = c(
+          "Day:TreatmentControl" = 1,
+          "Day:TreatmentDrugA" = -1,
+          "Day:TreatmentDrugB" = -1,
+          "Day:TreatmentCombination" = 1
+        )
+      ), ...)
     }
-    if(method == "HSA"){
-      if(which.min(c(grwrA, grwrB)) == 1){
-        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugA" = -1,"Day:TreatmentCombination" = 1)), ...)
+    if (method == "HSA") {
+      if (which.min(c(grwrA, grwrB)) == 1) {
+        print(Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugA" = -1,
+            "Day:TreatmentCombination" = 1
+          )
+        ), ...)
       } else{
-        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1)), ...)
+        print(Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugB" = -1,
+            "Day:TreatmentCombination" = 1
+          )
+        ), ...)
       }
     }
     
@@ -168,19 +238,50 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
     idx <- 1
     
     for (i in 1:length(sd_eval)) {
-      for(j in 1:length(sgma_eval)){
+      for (j in 1:length(sgma_eval)) {
         D <- log(sd_eval[i])
-        pd1 <- pdDiag(D, form = ~0+Day)
-        fmA <- lme(mA ~ 0+Day:Treatment, random = list(subject = pd1), data = exmpDt, control = cntrl)
-        if(method == "Bliss"){
-          dtF <- Pwr(fmA,sigma = sgma_eval[j], L = c("Day:TreatmentControl"=1, "Day:TreatmentDrugA"=-1,
-                                                     "Day:TreatmentDrugB"=-1, "Day:TreatmentCombination"=1), ...)
+        pd1 <- pdDiag(D, form = ~ 0 + Day)
+        fmA <- lme(
+          mA ~ 0 + Day:Treatment,
+          random = list(subject = pd1),
+          data = exmpDt,
+          control = cntrl
+        )
+        if (method == "Bliss") {
+          dtF <- Pwr(
+            fmA,
+            sigma = sgma_eval[j],
+            L = c(
+              "Day:TreatmentControl" = 1,
+              "Day:TreatmentDrugA" = -1,
+              "Day:TreatmentDrugB" =
+                -1,
+              "Day:TreatmentCombination" = 1
+            ),
+            ...
+          )
         }
-        if(method == "HSA"){
-          if(which.min(c(grwrA, grwrB)) == 1){
-            dtF <- Pwr(fmA, sigma = sgma_eval[j], L = c("Day:TreatmentDrugA" = -1,"Day:TreatmentCombination" = 1), ...)
+        if (method == "HSA") {
+          if (which.min(c(grwrA, grwrB)) == 1) {
+            dtF <- Pwr(
+              fmA,
+              sigma = sgma_eval[j],
+              L = c(
+                "Day:TreatmentDrugA" = -1,
+                "Day:TreatmentCombination" = 1
+              ),
+              ...
+            )
           } else{
-            dtF <- Pwr(fmA, sigma = sgma_eval[j], L = c("Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1), ...)
+            dtF <- Pwr(
+              fmA,
+              sigma = sgma_eval[j],
+              L = c(
+                "Day:TreatmentDrugB" = -1,
+                "Day:TreatmentCombination" = 1
+              ),
+              ...
+            )
           }
         }
         power.df[idx, "SD"] <- sd_eval[i]
@@ -190,39 +291,98 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
       }
     }
     
-    p2 <- power.df %>% ggplot(aes(x = .data$SD, y = .data$sigma, z = .data$Power)) + geom_raster(aes(fill = .data$Power)) + 
+    p2 <- power.df %>% ggplot(aes(
+      x = .data$SD,
+      y = .data$sigma,
+      z = .data$Power
+    )) + geom_raster(aes(fill = .data$Power)) +
       scale_fill_continuous(type = "viridis") + cowplot::theme_cowplot() + labs(title = paste("Power for", method, sep = " ")) +
       xlab("SD for random effects") + ylab("Sigma")
-    print(plot_grid(p1,p2, ncol = 2))
+    print(plot_grid(p1, p2, ncol = 2))
   }
   
-  if(!is.null(grwrComb_eval)){
-    
+  if (!is.null(grwrComb_eval)) {
     # Ploting power curve
     
     dif <- grwrComb_eval
     dim(dif) <- c(length(dif), 1)
     
     colnames(dif) <- "Day:TreatmentCombination"
-    if(method == "Bliss"){
-      print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentDrugA" = -1,"Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1)))
-      dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentDrugA" = -1,"Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1), altB = dif)
+    if (method == "Bliss") {
+      print(Pwr(
+        fmA,
+        sigma = sgma,
+        L = c(
+          "Day:TreatmentControl" = 1,
+          "Day:TreatmentDrugA" = -1,
+          "Day:TreatmentDrugB" = -1,
+          "Day:TreatmentCombination" = 1
+        )
+      ))
+      dtF <- Pwr(
+        fmA,
+        sigma = sgma,
+        L = c(
+          "Day:TreatmentControl" = 1,
+          "Day:TreatmentDrugA" = -1,
+          "Day:TreatmentDrugB" = -1,
+          "Day:TreatmentCombination" = 1
+        ),
+        altB = dif
+      )
     }
-    if(method == "HSA"){
-      if(which.min(c(grwrA, grwrB)) == 1){
-        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugA" = -1,"Day:TreatmentCombination" = 1)))
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugA" = -1,"Day:TreatmentCombination" = 1), altB = dif)
+    if (method == "HSA") {
+      if (which.min(c(grwrA, grwrB)) == 1) {
+        print(Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugA" = -1,
+            "Day:TreatmentCombination" = 1
+          )
+        ))
+        dtF <- Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugA" = -1,
+            "Day:TreatmentCombination" = 1
+          ),
+          altB = dif
+        )
       } else{
-        print(Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1)))
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1), altB = dif)
+        print(Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugB" = -1,
+            "Day:TreatmentCombination" = 1
+          )
+        ))
+        dtF <- Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugB" = -1,
+            "Day:TreatmentCombination" = 1
+          ),
+          altB = dif
+        )
       }
     }
-    p3 <- dtF %>% ggplot(aes(x = .data$`Day:TreatmentCombination`, y = .data$Power)) + geom_line() + cowplot::theme_cowplot() +
-      labs(title = paste("Power across growth rate\nvalues for combination treatment for ", method)) + xlab("Growth rate (logRTV/Days)") +
+    p3 <- dtF %>% ggplot(aes(
+      x = .data$`Day:TreatmentCombination`,
+      y = .data$Power
+    )) + geom_line() + cowplot::theme_cowplot() +
+      labs(title = paste(
+        "Power across growth rate\nvalues for combination treatment for ",
+        method
+      )) + xlab("Growth rate (logRTV/Days)") +
       geom_hline(yintercept = 0.8, lty = "dashed")
-    print(plot_grid(p1,p3, ncol = 2))
+    print(plot_grid(p1, p3, ncol = 2))
   }
-  if(!is.null(sd_eval) & !is.null(sgma_eval) & !is.null(grwrComb_eval)){
+  if (!is.null(sd_eval) &
+      !is.null(sgma_eval) & !is.null(grwrComb_eval)) {
     print(plot_grid(p1, p2, p3, ncol = 3))
   }
   return(invisible(exmpDt))
@@ -234,7 +394,7 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
 #' depending on the sample size per group
 #' @param npg A vector with the sample size (number of animals) per group to calculate the power of 
 #' the synergy analysis.
-#' @param Day Vector with the days at which the tumor volume measurements have been performed.
+#' @param day Vector with the days at which the tumor volume measurements have been performed.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
 #' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
@@ -255,14 +415,34 @@ Pwr_lmm <- function(npg = 5, Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrC
 #' especified in `npg`.
 #' @export 
 
-Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss", ...){
+
+PwrSampleSize <- function(npg = c(5, 8, 10),
+                          day = c(0, 3, 5, 10),
+                          grwrControl = 0.08,
+                          grwrA = 0.07,
+                          grwrB = 0.06,
+                          grwrComb = 0.03,
+                          sd_ranef = 0.01,
+                          sgma = 0.1,
+                          method = "Bliss",
+                          ...) {
+  
   ## Constructing an exemplary dataset
+  
+  # Validate method input
+  valid_methods <- c("Bliss", "HSA")
+  if (!method %in% valid_methods) {
+    stop("Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
+  }
+  
+  Day <- day # Vector with days for tumor volume measurements
   
   npg_vector <- c()
   Pwr_vector <- c()
   
-  for(n in npg){ # No of subjects per group
-    subject <- 1:(4*n) # Subjects' ids
+  for (n in npg) {
+    # No of subjects per group
+    subject <- 1:(4 * n) # Subjects' ids
     Treatment <- gl(4, n, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
     dts <- data.frame(subject, Treatment) # Subject-level data
     
@@ -283,10 +463,10 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
     AB <- grwrComb
     
     exmpDt <- within(mrgDt, {
-      m0 <- C*Day
-      mA <- A*Day
-      mB <- B*Day
-      mAB <- AB*Day
+      m0 <- C * Day
+      mA <- A * Day
+      mB <- B * Day
+      mAB <- AB * Day
     })
     
     exmpDt$mA[exmpDt$Treatment == "Control"] <- exmpDt$m0[exmpDt$Treatment == "Control"]
@@ -304,25 +484,61 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
     sgma <- sgma
     D <- log(sd_ranef)
     
-    pd1 <- pdDiag(D, form = ~0+Day)
+    pd1 <- pdDiag(D, form = ~ 0 + Day)
     
-    cntrl <- lmeControl(maxIter = 0, msMaxIter = 0, niterEM = 0, returnObject = TRUE, opt = "optim")
+    cntrl <- lmeControl(
+      maxIter = 0,
+      msMaxIter = 0,
+      niterEM = 0,
+      returnObject = TRUE,
+      opt = "optim"
+    )
     
-    fmA <- lme(mA ~ Day:Treatment, random = list(subject = pd1), data = exmpDt, control = cntrl)
+    fmA <- lme(
+      mA ~ Day:Treatment,
+      random = list(subject = pd1),
+      data = exmpDt,
+      control = cntrl
+    )
     
     # Use of Pwr() function for a priori power calculations
     
     # Ploting power curve
     
-    if(method == "Bliss"){
-      dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentDrugA" = -1,
-                                          "Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1), ...)
+    if (method == "Bliss") {
+      dtF <- Pwr(
+        fmA,
+        sigma = sgma,
+        L = c(
+          "Day:TreatmentControl" = 1,
+          "Day:TreatmentDrugA" = -1,
+          "Day:TreatmentDrugB" = -1,
+          "Day:TreatmentCombination" = 1
+        ),
+        ...
+      )
     }
-    if(method == "HSA"){
-      if(which.min(c(grwrA, grwrB)) == 1){
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugA" = -1,"Day:TreatmentCombination" = 1), ...)
+    if (method == "HSA") {
+      if (which.min(c(grwrA, grwrB)) == 1) {
+        dtF <- Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugA" = -1,
+            "Day:TreatmentCombination" = 1
+          ),
+          ...
+        )
       } else{
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1), ...)
+        dtF <- Pwr(
+          fmA,
+          sigma = sgma,
+          L = c(
+            "Day:TreatmentDrugB" = -1,
+            "Day:TreatmentCombination" = 1
+          ),
+          ...
+        )
       }
     }
     
@@ -331,15 +547,23 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
   }
   
   # Ploting exemplary data
-  p1 <- Plot_exmpDt(exmpDt, grwrControl = C, grwrA = A, grwrB = B, grwrComb = AB, sd_ranef = sd_ranef, sgma = sgma)
+  p1 <- plot_exmpDt(
+    exmpDt,
+    grwrControl = C,
+    grwrA = A,
+    grwrB = B,
+    grwrComb = AB,
+    sd_ranef = sd_ranef,
+    sgma = sgma
+  )
   
   npg_Pwr <- data.frame(N = npg_vector, Power = Pwr_vector)
   
-  p2 <- npg_Pwr %>% ggplot(aes(x = .data$N, y = .data$Power)) + geom_line() + cowplot::theme_cowplot() + xlab("N per group") + 
+  p2 <- npg_Pwr %>% ggplot(aes(x = .data$N, y = .data$Power)) + geom_line() + cowplot::theme_cowplot() + xlab("N per group") +
     labs(title = paste("Power depending on\nnumber of animals for", method)) + scale_x_continuous(breaks = npg) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
-  print(plot_grid(p1,p2, ncol = 2))
+  print(plot_grid(p1, p2, ncol = 2))
   return(invisible(npg_Pwr))
 }
 
@@ -348,7 +572,7 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
 #' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM
 #' depending on the days of follow-up or the frequency of measurements
 #' @param npg Number of mouse per group.
-#' @param Day A list in which element is a vector with the days at which the tumor volume measurements have been performed.
+#' @param day A list in which each element is a vector with the days at which the tumor volume measurements have been performed.
 #' If `type` is set to "max", each vector in the list should have the measurements taken at the same interval and differ in the final
 #' day of follow-up. If `type` is set to "freq", each vector in the list should have the same final day of follow-up and
 #' differ in the intervals at which the measurements have been taken. 
@@ -375,8 +599,37 @@ Pwr_lmm_N <- function(npg = c(5, 8, 10), Day = c(0,3,5,10), grwrControl, grwrA, 
 #' If saved to a variable, the function returns the power for the analysis for each value specified in ` Day`.
 #' @export 
 
-Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)), type = "max", 
+PwrTime <- function(npg = 5, day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)), type = "max", 
                         grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss", ...){
+  
+  # Validate method input
+  valid_methods <- c("Bliss", "HSA")
+  if (!method %in% valid_methods) {
+    stop("Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
+  }
+  
+  # Validate type input
+  valid_type <- c("max", "freq")
+  if (!type %in% valid_type) {
+    stop(paste(type, ": Invalid 'type' provided. Choose from 'max' or 'freq'.", sep = ""))
+  }
+  
+  # Validate day input
+  Day <- day # List with the days for the meassurements
+  
+  if(type == "max"){
+    m <- c()
+    for (i in Day) {
+      m <- c(m, max(i))
+    }
+    m <- unique(m)
+    if(length(m) < length(Day)){
+      warning(
+        "Your list 'day' has several vectors with the same maximum day of follow-up.\nConsider using 'type = freq' to evaluate the effect of frequency of masurements on power calculation."
+      )
+    }
+  }
+  
   ## Constructing an exemplary dataset
   
   day_vector <- c()
@@ -463,7 +716,7 @@ Pwr_lmm_Day <- function(npg = 5, Day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 
     Pwr_vector <- c(Pwr_vector, dtF$Power)
   }
   
-  p1 <- Plot_exmpDt(exmpDt, grwrControl = C, grwrA = A, grwrB = B, grwrComb = AB, sd_ranef = sd_ranef, sgma = sgma)
+  p1 <- plot_exmpDt(exmpDt, grwrControl = C, grwrA = A, grwrB = B, grwrComb = AB, sd_ranef = sd_ranef, sgma = sgma)
   
   npg_Pwr <- data.frame(Day = day_vector, Power = Pwr_vector)
   

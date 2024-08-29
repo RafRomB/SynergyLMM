@@ -249,25 +249,3 @@ Pwr.lme <- function (object, ...,
   .traceR(1, lbl="Pwr.lme ENDS <-")
   ret
 }
-
-#' @exportS3Method print Pwr
-print.Pwr <- function (x, verbose = attr(x, "verbose"), ...) 
-{
-  if ((rt <- attr(x, "rt")) == 1) {
-    if (!is.null(lab <- attr(x, "label"))) {
-      cat(lab)
-      if (!is.null(L <- attr(x, "L"))) {
-        print(zapsmall(L))
-      }
-    }
-    ## cat("??print \n")
-    pval <- format(round(x[, "Power"], 4))
-    pval[as.double(pval) == 0] <- "<.0001"
-    x[, "F-value"] <- format(zapsmall(x[, "F-value"]))
-    x[, "nc"] <- format(zapsmall(x[, "nc"]))
-    ## x[, "Fcrit"] <- format(zapsmall(round(x[, "Fcrit"], 3)))
-    x[, "Power"] <- pval
-    print(as.data.frame(x))
-  }
-}
-

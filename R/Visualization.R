@@ -103,8 +103,8 @@ plot_ObsvsPred <- function(model, nrow, ncol){
        par.strip.text=list(col="black", cex=.5))
 }
 
-#' @title Visualization of synergy results obtained by [LMM_Syn()].
-#' @param syn_data Object obtained by [LMM_Syn()] with the results of synergy calculation using linear mixed models.
+#' @title Visualization of synergy results obtained by [lmmSynergy()].
+#' @param syn_data Object obtained by [lmmSynergy()] with the results of synergy calculation using linear mixed models.
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) with the combination index (CI) and synergy score (SS)
 #' estimates, confidence intervals and p-values for the synergy calculation using linear mixed models.
 #' @export
@@ -122,7 +122,7 @@ plot_lmmSynergy <- function(syn_data){
 }
 
 #' @title Plot of exemplary data for power calculation
-#' @param exmpDt Data frame with exemplary data obtained with [Pwr_lmm()].
+#' @param exmpDt Data frame with exemplary data obtained with [APrioriPwr()].
 #' @param grwrControl Value for the label of the coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Value for the label of the coefficient for Drug A treatment group tumor growth rate.
 #' @param grwrB Value for the label of the coefficient for Drug B treatment group tumor growth rate.
@@ -132,7 +132,7 @@ plot_lmmSynergy <- function(syn_data){
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) showing the regression lines corresponding 
 #' to the fixed effects for each treatment of the exemplary data for power calculations.
 #' @export
-Plot_exmpDt <- function(exmpDt, grwrControl = NULL, grwrA = NULL, grwrB=NULL, grwrComb=NULL, sd_ranef=NULL, sgma=NULL){
+plot_exmpDt <- function(exmpDt, grwrControl = NULL, grwrA = NULL, grwrB=NULL, grwrComb=NULL, sd_ranef=NULL, sgma=NULL){
   # Ploting exemplary data
   
   selDt <- with(exmpDt,{

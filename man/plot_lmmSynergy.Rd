@@ -2,17 +2,17 @@
 % Please edit documentation in R/Visualization.R
 \name{plot_lmmSynergy}
 \alias{plot_lmmSynergy}
-\title{Visualization of synergy results obtained by \code{\link[=LMM_Syn]{LMM_Syn()}}.}
+\title{Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy()}}.}
 \usage{
 plot_lmmSynergy(syn_data)
 }
 \arguments{
-\item{syn_data}{Object obtained by \code{\link[=LMM_Syn]{LMM_Syn()}} with the results of synergy calculation using linear mixed models.}
+\item{syn_data}{Object obtained by \code{\link[=lmmSynergy]{lmmSynergy()}} with the results of synergy calculation using linear mixed models.}
 }
 \value{
 A ggplot2 plot (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more details) with the combination index (CI) and synergy score (SS)
 estimates, confidence intervals and p-values for the synergy calculation using linear mixed models.
 }
 \description{
-Visualization of synergy results obtained by \code{\link[=LMM_Syn]{LMM_Syn()}}.
+Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy()}}.
 }

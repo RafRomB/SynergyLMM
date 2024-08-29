@@ -184,6 +184,26 @@ test_that("lmmModel throws an error when an expected treatment is missing", {
   )
 })
 
+test_that("lmmModel throws an error when 'min_observations' is a negative value", {
+  expect_error(
+    lmmModel(
+    data = test_data,
+    mouse_id = "Mouse",
+    day = "Day",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    day_start = 0,
+    min_observations = -1,
+    show_plot = FALSE
+  ),
+  "The `min_observations` parameter must be a positive numeric value."
+  )
+})
+
 test_that("lmmModel correctly filters data based on day_start", {
   result <- lmmModel(
     data = test_data,
