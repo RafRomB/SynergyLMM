@@ -191,6 +191,9 @@ APrioriPwr <- function(npg = 5,
     control = cntrl
   )
   
+  fmB <- fmA # Save copy of the model to use with different
+             # values of grwrComb
+  
   # Use of Pwr() function for a priori power calculations
   
   # Power for different values of variance
@@ -310,7 +313,7 @@ APrioriPwr <- function(npg = 5,
     colnames(dif) <- "Day:TreatmentCombination"
     if (method == "Bliss") {
       print(Pwr(
-        fmA,
+        fmB,
         sigma = sgma,
         L = c(
           "Day:TreatmentControl" = 1,
@@ -320,7 +323,7 @@ APrioriPwr <- function(npg = 5,
         )
       ))
       dtF <- Pwr(
-        fmA,
+        fmB,
         sigma = sgma,
         L = c(
           "Day:TreatmentControl" = 1,
@@ -334,7 +337,7 @@ APrioriPwr <- function(npg = 5,
     if (method == "HSA") {
       if (which.min(c(grwrA, grwrB)) == 1) {
         print(Pwr(
-          fmA,
+          fmB,
           sigma = sgma,
           L = c(
             "Day:TreatmentDrugA" = -1,
@@ -342,7 +345,7 @@ APrioriPwr <- function(npg = 5,
           )
         ))
         dtF <- Pwr(
-          fmA,
+          fmB,
           sigma = sgma,
           L = c(
             "Day:TreatmentDrugA" = -1,
@@ -352,7 +355,7 @@ APrioriPwr <- function(npg = 5,
         )
       } else{
         print(Pwr(
-          fmA,
+          fmB,
           sigma = sgma,
           L = c(
             "Day:TreatmentDrugB" = -1,
@@ -360,7 +363,7 @@ APrioriPwr <- function(npg = 5,
           )
         ))
         dtF <- Pwr(
-          fmA,
+          fmB,
           sigma = sgma,
           L = c(
             "Day:TreatmentDrugB" = -1,
