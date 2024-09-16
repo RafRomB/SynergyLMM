@@ -13,10 +13,10 @@ plot_residDiagnostics(model)
 A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
 \itemize{
 \item A normal Q-Q plot of the normalized residuals of the model.
-\item A normal Q-Q plot of the normalized residuals of the model by Day.
+\item A normal Q-Q plot of the normalized residuals of the model by Time.
 \item A normal Q-Q plot of the normalized residuals of the model by Treatment.
 \item A dotplot of pearson residuals vs fitted values.
-\item A dotplot of the pearson residuals by Day and Treatment.
+\item A dotplot of the pearson residuals by Time and Treatment.
 }
 }
 \description{

@@ -6,15 +6,15 @@
 \usage{
 lmmModel(
   data,
-  mouse_id = "Mouse",
-  day = "Day",
+  sample_id = "SampleID",
+  time = "Time",
   treatment = "Treatment",
   tumor_vol = "TV",
   trt_control = "Control",
   drug_a = "Drug_A",
   drug_b = "Drug_B",
   drug_ab = "Drug_AB",
-  day_start = 0,
+  time_start = 0,
   min_observations = 1,
   show_plot = TRUE,
   ...
@@ -22,13 +22,13 @@ lmmModel(
 }
 \arguments{
 \item{data}{A data frame with the tumor growth data, in long format.
-It must contain at least contain the following columns: mice IDs, days of follow-up (numeric number), treatment and tumor volume (numeric number).}
+It must contain at least contain the following columns: mice IDs, time of follow-up (numeric number), treatment and tumor volume (numeric number).}
 
-\item{mouse_id}{String indicating the name of the column with the mice IDs.}
+\item{sample_id}{String indicating the name of the column with the mice IDs.}
 
-\item{day}{String indicating the name of the column with the days of follow-up.}
+\item{time}{String indicating the name of the column with the time of follow-up.}
 
-\item{treatment}{String indicating the name of the column with the treatment corresponding to each mouse.}
+\item{treatment}{String indicating the name of the column with the treatment corresponding to each sample.}
 
 \item{tumor_vol}{String indicating the name of the column with the tumor volume (or any other measurement representing the tumor growth).}
 
@@ -40,11 +40,11 @@ It must contain at least contain the following columns: mice IDs, days of follow
 
 \item{drug_ab}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
 
-\item{day_start}{Numeric value indicating the day at which the treatment started.}
+\item{time_start}{Numeric value indicating the time at which the treatment started.}
 
-\item{min_observations}{Minimum number of observation for each mouse to be included in the analysis.}
+\item{min_observations}{Minimum number of observation for each sample to be included in the analysis.}
 
-\item{show_plot}{Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Day for each mouse,
+\item{show_plot}{Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Time for each sample,
 and the model calculated marginal slope for each treatment, should be produced.}
 
 \item{...}{Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.}

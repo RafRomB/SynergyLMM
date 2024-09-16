@@ -11,15 +11,15 @@ test_data <- data.frame(
 
 model <- lmmModel(
   data = test_data,
-  mouse_id = "Mouse",
-  day = "Day",
+  sample_id = "Mouse",
+  time = "Day",
   treatment = "Treatment",
   tumor_vol = "TV",
   trt_control = "Control",
   drug_a = "Drug_A",
   drug_b = "Drug_B",
   drug_ab = "Drug_AB",
-  day_start = 0,
+  time_start = 0,
   min_observations = 1,
   show_plot = FALSE
 )
@@ -92,11 +92,11 @@ test_that("Test lmmSynergy with robust standard errors (robustSE = TRUE)", {
   expect_s3_class(result$Synergy, "data.frame")
 })
 
-test_that("Test lmmSynergy with different values of min_day", {
-  # Call the function with min_day = 5
-  result <- lmmSynergy(model, min_day = 5)
+test_that("Test lmmSynergy with different values of min_time", {
+  # Call the function with min_time = 5
+  result <- lmmSynergy(model, min_time = 5)
   
-  # Check that only days >= 5 are included
+  # Check that only times >= 5 are included
   expect_true(all(result$Synergy$Day >= 5))
 })
 

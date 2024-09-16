@@ -7,7 +7,7 @@
 lmmSynergy(
   model,
   method = "Bliss",
-  min_day = 0,
+  min_time = 0,
   robustSE = FALSE,
   type = "CR2",
   norm_test = "shapiroTest",
@@ -21,7 +21,7 @@ lmmSynergy(
 \item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 corresponding to Bliss, highest single agent and response additivity, respectively.}
 
-\item{min_day}{Minimun day from which to start calculating synergy.}
+\item{min_time}{Minimun time from which to start calculating synergy.}
 
 \item{robustSE}{If TRUE, uncertainty is estimated using robust standard errors
 using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}.}
@@ -40,10 +40,10 @@ Possible values are "shapiroTest", "dagoTest" or "adTest", for Shapiro-Wilk, D'A
 \value{
 The function returns a list with two elements:
 \itemize{
-\item \code{Constrasts}: List with the outputs of the (non)-linear test for the synergy null hypothesis obtained by \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for each day.
+\item \code{Constrasts}: List with the outputs of the (non)-linear test for the synergy null hypothesis obtained by \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for each time.
 See \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for more details.
 \item \code{Synergy}: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
-the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each day.
+the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each time.
 }
 }
 \description{

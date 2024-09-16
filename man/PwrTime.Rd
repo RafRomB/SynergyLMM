@@ -3,11 +3,11 @@
 \name{PwrTime}
 \alias{PwrTime}
 \title{A priori power calculation for a hypothetical study of synergy evaluation using LMM
-depending on the days of follow-up or the frequency of measurements}
+depending on the time of follow-up or the frequency of measurements}
 \usage{
 PwrTime(
   npg = 5,
-  day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
+  time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
   type = "max",
   grwrControl,
   grwrA,
@@ -22,12 +22,12 @@ PwrTime(
 \arguments{
 \item{npg}{Number of mouse per group.}
 
-\item{day}{A list in which each element is a vector with the days at which the tumor volume measurements have been performed.
+\item{time}{A list in which each element is a vector with the times at which the tumor volume measurements have been performed.
 If \code{type} is set to "max", each vector in the list should have the measurements taken at the same interval and differ in the final
-day of follow-up. If \code{type} is set to "freq", each vector in the list should have the same final day of follow-up and
+time of follow-up. If \code{type} is set to "freq", each vector in the list should have the same final time of follow-up and
 differ in the intervals at which the measurements have been taken.}
 
-\item{type}{String indicating whether to calculate the power depending on the days of follow-up ("max"), or the frequency
+\item{type}{String indicating whether to calculate the power depending on the time of follow-up ("max"), or the frequency
 of measurements ("freq").}
 
 \item{grwrControl}{Coefficient for Control treatment group tumor growth rate.}
@@ -54,14 +54,14 @@ The functions returns two plots:
 treatment group according to \code{grwrControl}, \code{grwrA}, \code{grwrB} and \code{grwrComb} values. The values
 assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \item A plot showing the values of the power calculation depending on the values assigned to
-\code{Day}. If \code{type} is set to "max", the plot shows how the power varies depending on the maximum day of follow-up.
+\code{Time}. If \code{type} is set to "max", the plot shows how the power varies depending on the maximum time of follow-up.
 If \code{type} is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
 been performed.
 }
 
-If saved to a variable, the function returns the power for the analysis for each value specified in \code{ Day}.
+If saved to a variable, the function returns the power for the analysis for each value specified in \code{ Time}.
 }
 \description{
 A priori power calculation for a hypothetical study of synergy evaluation using LMM
-depending on the days of follow-up or the frequency of measurements
+depending on the time of follow-up or the frequency of measurements
 }

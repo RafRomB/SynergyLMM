@@ -4,22 +4,22 @@
 set.seed(123)
 test_data <- data.frame(
   Mouse = rep(1:10, each = 10),
-  Day = rep(0:9, times = 10),
+  Time = rep(0:9, times = 10),
   Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
   TV = rnorm(100, mean = 100, sd = 20)
 )
 
 model <- lmmModel(
   data = test_data,
-  mouse_id = "Mouse",
-  day = "Day",
+  sample_id = "Mouse",
+  time = "Time",
   treatment = "Treatment",
   tumor_vol = "TV",
   trt_control = "Control",
   drug_a = "Drug_A",
   drug_b = "Drug_B",
   drug_ab = "Drug_AB",
-  day_start = 0,
+  time_start = 0,
   min_observations = 1,
   show_plot = FALSE
 )
@@ -50,15 +50,15 @@ test_that("Test PostHocPwr with HSA method independently of the other of treatme
   
   model <- lmmModel(
     data = test_data,
-    mouse_id = "Mouse",
-    day = "Day",
+    sample_id = "Mouse",
+    time = "Time",
     treatment = "Treatment",
     tumor_vol = "TV",
     trt_control = "Control",
     drug_a = "Drug_B", # Change order of treatments
     drug_b = "Drug_A", # Change order of treatments
     drug_ab = "Drug_AB",
-    day_start = 0,
+    time_start = 0,
     min_observations = 1,
     show_plot = FALSE
   )
@@ -172,8 +172,8 @@ test_that("APrioriPwr provides correct output structure when sd_eval and sgma_ev
     sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.2, 0.3), sgma_eval = c(0.2, 0.3)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Day", "mA", "m0") %in% colnames(result)))
-  expect_equal(nrow(result), 4 * 5 * 4)  # 4 treatments, 5 subjects per group, 4 days
+  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
+  expect_equal(nrow(result), 4 * 5 * 4)  # 4 treatments, 5 subjects per group, 4 times
 })
 
 test_that("APrioriPwr provides correct output structure when grwrComb_eval is provided", {
@@ -182,7 +182,7 @@ test_that("APrioriPwr provides correct output structure when grwrComb_eval is pr
     sd_ranef = 0.5, sgma = 0.5, grwrComb_eval = c(0.1, 0.2, 0.3)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Day", "mA", "m0") %in% colnames(result)))
+  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
 })
 
 test_that("APrioriPwr plots are generated correctly for different methods", {
@@ -220,7 +220,7 @@ test_that("APrioriPwr works with edge cases with single values in evaluation vec
     sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.3), sgma_eval = c(0.3)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Day", "mA", "m0") %in% colnames(result)))
+  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
 })
 
 test_that("APrioriPwr behaves correctly when all evaluation parameters are provided", {
@@ -229,7 +229,7 @@ test_that("APrioriPwr behaves correctly when all evaluation parameters are provi
     sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.2, 0.3), sgma_eval = c(0.2, 0.3), grwrComb_eval = c(0.1, 0.2)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Day", "mA", "m0") %in% colnames(result)))
+  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
 })
 
 # Tests for PwrSampleSize ----
@@ -237,7 +237,7 @@ test_that("APrioriPwr behaves correctly when all evaluation parameters are provi
 test_that("PwrSampleSize handles different sample sizes correctly and returns a data frame", {
   result <- PwrSampleSize(
     npg = c(5, 8, 10),
-    day = c(0, 3, 5, 10),
+    time = c(0, 3, 5, 10),
     grwrControl = 0.08,
     grwrA = 0.07,
     grwrB = 0.06,
@@ -255,7 +255,7 @@ test_that("PwrSampleSize handles different sample sizes correctly and returns a 
 test_that("PwrSampleSize handles a single value for npg correctly", {
   result <- PwrSampleSize(
     npg = c(5),
-    day = c(0, 3, 5, 10),
+    time = c(0, 3, 5, 10),
     grwrControl = 0.08,
     grwrA = 0.07,
     grwrB = 0.06,
@@ -273,7 +273,7 @@ test_that("PwrSampleSize handles a single value for npg correctly", {
 test_that("PwrSampleSize handles the 'HSA' method correctly", {
   result <- PwrSampleSize(
     npg = c(5, 8),
-    day = c(0, 3, 5, 10),
+    time = c(0, 3, 5, 10),
     grwrControl = 0.08,
     grwrA = 0.07,
     grwrB = 0.06,
@@ -291,7 +291,7 @@ test_that("PwrSampleSize generates the correct plots without errors for 'Bliss' 
   expect_silent(
     PwrSampleSize(
       npg = c(5, 8, 10),
-      day = c(0, 3, 5, 10),
+      time = c(0, 3, 5, 10),
       grwrControl = 0.08,
       grwrA = 0.07,
       grwrB = 0.06,
@@ -307,7 +307,7 @@ test_that("PwrSampleSize generates the correct plots without errors for 'HSA' me
   expect_silent(
     PwrSampleSize(
       npg = c(5, 8, 10),
-      day = c(0, 3, 5, 10),
+      time = c(0, 3, 5, 10),
       grwrControl = 0.08,
       grwrA = 0.07,
       grwrB = 0.06,
@@ -319,10 +319,10 @@ test_that("PwrSampleSize generates the correct plots without errors for 'HSA' me
   )
 })
 
-test_that("PwrSampleSize handles different numbers of days correctly", {
+test_that("PwrSampleSize handles different numbers of times correctly", {
   result <- PwrSampleSize(
     npg = c(5, 8, 10),
-    day = c(0, 5, 10),
+    time = c(0, 5, 10),
     grwrControl = 0.08,
     grwrA = 0.07,
     grwrB = 0.06,
@@ -339,7 +339,7 @@ test_that("PwrSampleSize handles incorrect method input gracefully", {
   expect_error(
     PwrSampleSize(
       npg = c(5, 8, 10),
-      day = c(0, 3, 5, 10),
+      time = c(0, 3, 5, 10),
       grwrControl = 0.08,
       grwrA = 0.07,
       grwrB = 0.06,
@@ -357,7 +357,7 @@ test_that("PwrSampleSize handles incorrect method input gracefully", {
 test_that("PwrTime returns a data frame with correct columns for 'max' type", {
   result <- PwrTime(
     npg = 5,
-    day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
+    time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
     type = "max",
     grwrControl = 0.08,
     grwrA = 0.07,
@@ -368,15 +368,15 @@ test_that("PwrTime returns a data frame with correct columns for 'max' type", {
     method = "Bliss"
   )
   expect_s3_class(result, "data.frame")
-  expect_equal(ncol(result), 2)  # Day and Power
-  expect_equal(colnames(result), c("Day", "Power"))
-  expect_equal(nrow(result), 3)  # 3 different max follow-up days
+  expect_equal(ncol(result), 2)  # Time and Power
+  expect_equal(colnames(result), c("Time", "Power"))
+  expect_equal(nrow(result), 3)  # 3 different max follow-up times
 })
 
 test_that("PwrTime returns a data frame with correct columns for 'freq' type", {
   result <- PwrTime(
     npg = 5,
-    day = list(seq(0, 30, 10), seq(0, 30, 5), seq(0, 30, 3)),
+    time = list(seq(0, 30, 10), seq(0, 30, 5), seq(0, 30, 3)),
     type = "freq",
     grwrControl = 0.08,
     grwrA = 0.07,
@@ -387,16 +387,16 @@ test_that("PwrTime returns a data frame with correct columns for 'freq' type", {
     method = "Bliss"
   )
   expect_s3_class(result, "data.frame")
-  expect_equal(ncol(result), 2)  # Day and Power
-  expect_equal(colnames(result), c("Day", "Power"))
+  expect_equal(ncol(result), 2)  # Time and Power
+  expect_equal(colnames(result), c("Time", "Power"))
   expect_equal(nrow(result), 3)  # 3 different frequencies
 })
 
-test_that("Warning is thrown when 'type' is 'max' and days have the same maximum", {
+test_that("Warning is thrown when 'type' is 'max' and times have the same maximum", {
   expect_warning(
     PwrTime(
       npg = 5,
-      day = list(seq(0, 21, 3), seq(0, 21, 5), seq(0, 21, 7)),
+      time = list(seq(0, 21, 3), seq(0, 21, 5), seq(0, 21, 7)),
       type = "max",
       grwrControl = 0.08,
       grwrA = 0.07,
@@ -406,14 +406,14 @@ test_that("Warning is thrown when 'type' is 'max' and days have the same maximum
       sgma = 0.1,
       method = "Bliss"
     ),
-    "Your list 'day' has several vectors with the same maximum day of follow-up."
+    "Your list 'time' has several vectors with the same maximum time of follow-up."
   )
 })
 
 test_that("PwrTime handles the 'HSA' method correctly", {
   result <- PwrTime(
     npg = 5,
-    day = list(seq(0, 9, 3), seq(0, 21, 3)),
+    time = list(seq(0, 9, 3), seq(0, 21, 3)),
     type = "max",
     grwrControl = 0.08,
     grwrA = 0.07,
@@ -432,7 +432,7 @@ test_that("PwrTime handles incorrect method input gracefully", {
   expect_error(
     PwrTime(
       npg = 5,
-      day = list(seq(0, 30, 10), seq(0, 30, 5), seq(0, 30, 3)),
+      time = list(seq(0, 30, 10), seq(0, 30, 5), seq(0, 30, 3)),
       type = "freq",
       grwrControl = 0.08,
       grwrA = 0.07,
@@ -449,7 +449,7 @@ test_that("PwrTime handles incorrect method input gracefully", {
 test_that("PwrTime generates the correct plots without errors for 'Bliss' method", {
   expect_silent(PwrTime(
     npg = 5,
-    day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
+    time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
     type = "max",
     grwrControl = 0.08,
     grwrA = 0.07,
@@ -464,7 +464,7 @@ test_that("PwrTime generates the correct plots without errors for 'Bliss' method
 test_that("PwrTime generates the correct plots without errors for 'HSA' method", {
   expect_silent(PwrTime(
     npg = 5,
-    day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
+    time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
     type = "freq",
     grwrControl = 0.08,
     grwrA = 0.07,
@@ -480,7 +480,7 @@ test_that("PwrTime handles incorrect 'type' input gracefully", {
   expect_error(
     PwrTime(
       npg = 5,
-      day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
+      time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
       type = "invalidType",
       grwrControl = 0.08,
       grwrA = 0.07,
@@ -493,3 +493,4 @@ test_that("PwrTime handles incorrect 'type' input gracefully", {
     "invalidType: Invalid 'type' provided. Choose from 'max' or 'freq'."
   )
 })
+

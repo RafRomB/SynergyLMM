@@ -16,7 +16,7 @@
 )
 }
 \arguments{
-\item{npg}{Number of mouse per group.}
+\item{npg}{Number of samples per group.}
 
 \item{timepoints}{Vector with the time points at which the tumor volume measurements have been performed.}
 

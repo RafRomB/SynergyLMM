@@ -7,8 +7,8 @@
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 #' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
-#' - `Levene.test`: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by mouse.
-#' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by mouse.
+#' - `Levene.test`: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by SampleID.
+#' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by SampleID.
 #' @export
 
 ranefDiagnostics <- function(model){
@@ -18,20 +18,20 @@ ranefDiagnostics <- function(model){
   
   # Normality test
   print(
-    ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Day, 
+    ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Time, 
                                           title = "Shapiro - Wilk Normality Test of random effects")
   )
   
-  if (length(nlme::ranef(model)$Day) < 20) {
+  if (length(nlme::ranef(model)$Time) < 20) {
     ranef_DAgostino <- warning("Sample size must be at least 20 for D'Agostino Normality Test")
   } else {
     print(
-      ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Day, 
+      ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Time, 
                                            title = "D'Agostino Normality Test of random effects")
     )
   }
   print(
-    ranef_ad <- fBasics::adTest(nlme::ranef(model)$Day, 
+    ranef_ad <- fBasics::adTest(nlme::ranef(model)$Time, 
                                 title = "Anderson - Darling Normality Test of random effects")
   )
   
@@ -47,46 +47,46 @@ ranefDiagnostics <- function(model){
   cond_res <- residuals(model, type = "response")
   cond_res <- data.frame(
     conditional_resid = cond_res,
-    Mouse = names(cond_res),
+    SampleID = names(cond_res),
     stringsAsFactors = T
   )
-  colnames(cond_res) <- c("conditional_resid", "Mouse")
+  colnames(cond_res) <- c("conditional_resid", "SampleID")
   
   # Marginal Residuals
   mar_res <- residuals(model, type = "response", level = 0)
   mar_res <- data.frame(
     marginal_resid = mar_res,
-    Mouse = names(mar_res),
+    SampleID = names(mar_res),
     stringsAsFactors = T
   )
-  colnames(mar_res) <- c("marginal_resid", "Mouse")
+  colnames(mar_res) <- c("marginal_resid", "SampleID")
   
   # Normalized Residuals
   
   norm_res <- residuals(model, type = "normalized")
   norm_res <- data.frame(
     normalized_resid = norm_res,
-    Mouse = names(norm_res),
+    SampleID = names(norm_res),
     stringsAsFactors = T
   )
-  colnames(norm_res) <- c("normalized_resid", "Mouse")
+  colnames(norm_res) <- c("normalized_resid", "SampleID")
   
   levene <- list()
   writeLines("Conditional Residuals")
-  print(levene$conditional_resid <- car::leveneTest(conditional_resid ~ Mouse, data = cond_res))
+  print(levene$conditional_resid <- car::leveneTest(conditional_resid ~ SampleID, data = cond_res))
   writeLines("Marginal Residuals")
-  print(levene$marginal_resid <- car::leveneTest(marginal_resid ~ Mouse, data = mar_res))
+  print(levene$marginal_resid <- car::leveneTest(marginal_resid ~ SampleID, data = mar_res))
   writeLines("Normalized Residuals")
-  print(levene$normalized_resid <- car::leveneTest(normalized_resid ~ Mouse, data = norm_res))
+  print(levene$normalized_resid <- car::leveneTest(normalized_resid ~ SampleID, data = norm_res))
   
   fligner <- list()
   
   writeLines("Conditional Residuals")
-  print(fligner$conditional_resid <- fligner.test(conditional_resid ~ Mouse, data = cond_res))
+  print(fligner$conditional_resid <- fligner.test(conditional_resid ~ SampleID, data = cond_res))
   writeLines("Marginal Residuals")
-  print(fligner$marginal_resid <- fligner.test(marginal_resid ~ Mouse, data = mar_res))
+  print(fligner$marginal_resid <- fligner.test(marginal_resid ~ SampleID, data = mar_res))
   writeLines("Normalized Residuals")
-  print(fligner$normalized_resid <- fligner.test(normalized_resid ~ Mouse, data = norm_res))
+  print(fligner$normalized_resid <- fligner.test(normalized_resid ~ SampleID, data = norm_res))
   
   return(invisible(
     list(
@@ -162,11 +162,11 @@ residDiagnostics <- function(model, pvalue=0.05){
 #' @param ... Additional arguments to be passed to [performance::model_performance()].
 #' @details
 #'  The function provides visual and quantitative information about the performance of the model:
-#' - A layout of the observed and predicted values of log(relative tumor volume) vs day for each mouse, 
-#' with the actual measurements, the regression line for each mouse, and the marginal, treatment-specific, 
+#' - A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID, 
+#' with the actual measurements, the regression line for each SampleID, and the marginal, treatment-specific, 
 #' regression line for each treatment group.
 #' - Performance metrics of the model obtain calculated using [performance::model_performance()].
-#' @returns A layout of the observed vs predicted values for each mouse and model performance metrics.
+#' @returns A layout of the observed vs predicted values for each SampleID and model performance metrics.
 #' @export
 ObsvsPred <- function(model, nrow = 4, ncol = 5, ...) {
   print(performance::model_performance(model, metrics = c("AIC", "AICc", "BIC", "R2", "RMSE", "SIGMA")), ...)
@@ -243,7 +243,7 @@ logLikSubjectContributions <- function(model,
   if(is.null(model$modelStruct$varStruct)) {
     lLik.i <- by(
       model$data,
-      model$data$Mouse,
+      model$data$SampleID,
       FUN = function(dfi) # Function to calculate log likelihood for subject i
         nlmeU::logLik1(model, dfi)
     ) 
@@ -253,7 +253,7 @@ logLikSubjectContributions <- function(model,
     }
     lLik.i <- by(
       model$data,
-      model$data$Mouse,
+      model$data$SampleID,
       FUN = function(dfi) # Function to calculate log likelihood for subject i with a variance structure.
         .logLik1.varIdent(model, dfi, var_name = var_name)
     ) 
@@ -263,7 +263,7 @@ logLikSubjectContributions <- function(model,
   
   # Plot of individual contributions to the log-likelihood (traditional graphics)
   
-  nx <- by(model$data, model$data$Mouse, nrow) # ni
+  nx <- by(model$data, model$data$SampleID, nrow) # ni
   lLik.n <- lLik.i / as.vector(nx) # logLiki/ni
   outL <- lLik.n < lLik_thrh # TRUE for value < lLik_thrh
   lLik.n[outL] # logLiki/ni < lLik_thrh
@@ -272,7 +272,7 @@ logLikSubjectContributions <- function(model,
     writeLines(paste("No subject with a log-likelihood contribution below", lLik_thrh))
   }
   
-  subject.c <- levels(model$data$Mouse)
+  subject.c <- levels(model$data$SampleID)
   subject.x <- 1:length(subject.c)
   plot(
     lLik.n ~ subject.x,
@@ -318,8 +318,8 @@ logLikSubjectContributions <- function(model,
 #' @noRd
 
 .lmeU <- function(cx, model){
-  Mouse <- NULL
-  dfU <- subset(model$data, Mouse != cx) ## LOO data
+  SampleID <- NULL
+  dfU <- subset(model$data, SampleID != cx) ## LOO data
   update(model, data = dfU)
 }
 
@@ -377,10 +377,10 @@ logLikSubjectContributions <- function(model,
 #' @noRd
 #' 
 .lLik <- function(cx, model, lmeUall, var_name){
-  Mouse <- NULL
+  SampleID <- NULL
   lmeU <- lmeUall[[cx]] # LOO fit extracted
   lLikU <- logLik(lmeU, REML = FALSE) # LOO log-likelihood
-  df.s <- subset(model$data, Mouse == cx) # Data for subject cx...
+  df.s <- subset(model$data, SampleID == cx) # Data for subject cx...
   if(is.null(model$modelStruct$varStruct)){
     lLik.s <- nlmeU::logLik1(lmeU, df.s) # ... and log-likelihood  
   } else{
@@ -411,7 +411,7 @@ logLikSubjectDisplacements <- function(model,
   
   # Fitting the model to "leave-one-out" data
   
-  subject.c <- levels(model$data$Mouse)
+  subject.c <- levels(model$data$SampleID)
   
   lmeUall <- lapply(subject.c, .lmeU, model = model)
   names(lmeUall) <- subject.c
@@ -509,7 +509,7 @@ logLikSubjectDisplacements <- function(model,
 CookDistance <- function(model,
                        cook_thr = 0,
                        label_angle = 0) {
-  subject.c <- levels(model$data$Mouse)
+  subject.c <- levels(model$data$SampleID)
   lmeUall <- lapply(subject.c, .lmeU, model = model)
   names(lmeUall) <- subject.c
   

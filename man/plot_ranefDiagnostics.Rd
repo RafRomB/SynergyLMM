@@ -13,9 +13,9 @@ plot_ranefDiagnostics(model)
 A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
 \itemize{
 \item A normal Q-Q plot of the random effects of the model.
-\item A normal Q-Q plot of the residuals by mouse.
-\item Boxplots of the conditional residuals by mouse.
-\item Dotplots of the pearson residuals vs fitted values by mouse.
+\item A normal Q-Q plot of the residuals by sample.
+\item Boxplots of the conditional residuals by sample.
+\item Dotplots of the pearson residuals vs fitted values by sample.
 }
 }
 \description{

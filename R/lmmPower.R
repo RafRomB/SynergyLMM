@@ -57,7 +57,7 @@ PostHocPwr <- function(model,
 
 #' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM.
 #' @param npg Number of mouse per group.
-#' @param day Vector with the days at which the tumor volume measurements have been performed.
+#' @param time Vector with the times at which the tumor volume measurements have been performed.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
 #' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
@@ -89,7 +89,7 @@ PostHocPwr <- function(model,
 
 
 APrioriPwr <- function(npg = 5,
-                       day = c(0, 3, 5, 10),
+                       time = c(0, 3, 5, 10),
                        grwrControl = 0.08,
                        grwrA = 0.07,
                        grwrB = 0.06,
@@ -119,13 +119,13 @@ APrioriPwr <- function(npg = 5,
   ## Constructing an exemplary dataset
   
   npg <- npg # No of subjects per group
-  Day <- day # Vector with days of tumor volume measurements
+  Time <- time # Vector with times of tumor volume measurements
   
   subject <- 1:(4 * npg) # Subjects' ids
   Treatment <- gl(4, npg, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
   dts <- data.frame(subject, Treatment) # Subject-level data
   
-  dtL <- list(Day = Day, subject = subject)
+  dtL <- list(Time = Time, subject = subject)
   dtLong <- expand.grid(dtL) # Long format
   mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
   
@@ -142,10 +142,10 @@ APrioriPwr <- function(npg = 5,
   AB <- grwrComb
   
   exmpDt <- within(mrgDt, {
-    m0 <- C * Day
-    mA <- A * Day
-    mB <- B * Day
-    mAB <- AB * Day
+    m0 <- C * Time
+    mA <- A * Time
+    mB <- B * Time
+    mAB <- AB * Time
   })
   
   exmpDt$mA[exmpDt$Treatment == "Control"] <- exmpDt$m0[exmpDt$Treatment == "Control"]
@@ -174,7 +174,7 @@ APrioriPwr <- function(npg = 5,
   sgma <- sgma
   D <- log(sd_ranef)
   
-  pd1 <- pdDiag(D, form = ~ 0 + Day)
+  pd1 <- pdDiag(D, form = ~ 0 + Time)
   
   cntrl <- lmeControl(
     maxIter = 0,
@@ -185,7 +185,7 @@ APrioriPwr <- function(npg = 5,
   )
   
   fmA <- lme(
-    mA ~ Day:Treatment,
+    mA ~ Time:Treatment,
     random = list(subject = pd1),
     data = exmpDt,
     control = cntrl
@@ -206,10 +206,10 @@ APrioriPwr <- function(npg = 5,
         fmA,
         sigma = sgma,
         L = c(
-          "Day:TreatmentControl" = 1,
-          "Day:TreatmentDrugA" = -1,
-          "Day:TreatmentDrugB" = -1,
-          "Day:TreatmentCombination" = 1
+          "Time:TreatmentControl" = 1,
+          "Time:TreatmentDrugA" = -1,
+          "Time:TreatmentDrugB" = -1,
+          "Time:TreatmentCombination" = 1
         )
       ), ...)
     }
@@ -219,8 +219,8 @@ APrioriPwr <- function(npg = 5,
           fmA,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugA" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugA" = -1,
+            "Time:TreatmentCombination" = 1
           )
         ), ...)
       } else{
@@ -228,8 +228,8 @@ APrioriPwr <- function(npg = 5,
           fmA,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugB" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugB" = -1,
+            "Time:TreatmentCombination" = 1
           )
         ), ...)
       }
@@ -243,9 +243,9 @@ APrioriPwr <- function(npg = 5,
     for (i in 1:length(sd_eval)) {
       for (j in 1:length(sgma_eval)) {
         D <- log(sd_eval[i])
-        pd1 <- pdDiag(D, form = ~ 0 + Day)
+        pd1 <- pdDiag(D, form = ~ 0 + Time)
         fmA <- lme(
-          mA ~ 0 + Day:Treatment,
+          mA ~ 0 + Time:Treatment,
           random = list(subject = pd1),
           data = exmpDt,
           control = cntrl
@@ -255,11 +255,11 @@ APrioriPwr <- function(npg = 5,
             fmA,
             sigma = sgma_eval[j],
             L = c(
-              "Day:TreatmentControl" = 1,
-              "Day:TreatmentDrugA" = -1,
-              "Day:TreatmentDrugB" =
+              "Time:TreatmentControl" = 1,
+              "Time:TreatmentDrugA" = -1,
+              "Time:TreatmentDrugB" =
                 -1,
-              "Day:TreatmentCombination" = 1
+              "Time:TreatmentCombination" = 1
             ),
             ...
           )
@@ -270,8 +270,8 @@ APrioriPwr <- function(npg = 5,
               fmA,
               sigma = sgma_eval[j],
               L = c(
-                "Day:TreatmentDrugA" = -1,
-                "Day:TreatmentCombination" = 1
+                "Time:TreatmentDrugA" = -1,
+                "Time:TreatmentCombination" = 1
               ),
               ...
             )
@@ -280,8 +280,8 @@ APrioriPwr <- function(npg = 5,
               fmA,
               sigma = sgma_eval[j],
               L = c(
-                "Day:TreatmentDrugB" = -1,
-                "Day:TreatmentCombination" = 1
+                "Time:TreatmentDrugB" = -1,
+                "Time:TreatmentCombination" = 1
               ),
               ...
             )
@@ -310,26 +310,26 @@ APrioriPwr <- function(npg = 5,
     dif <- grwrComb_eval
     dim(dif) <- c(length(dif), 1)
     
-    colnames(dif) <- "Day:TreatmentCombination"
+    colnames(dif) <- "Time:TreatmentCombination"
     if (method == "Bliss") {
       print(Pwr(
         fmB,
         sigma = sgma,
         L = c(
-          "Day:TreatmentControl" = 1,
-          "Day:TreatmentDrugA" = -1,
-          "Day:TreatmentDrugB" = -1,
-          "Day:TreatmentCombination" = 1
+          "Time:TreatmentControl" = 1,
+          "Time:TreatmentDrugA" = -1,
+          "Time:TreatmentDrugB" = -1,
+          "Time:TreatmentCombination" = 1
         )
       ))
       dtF <- Pwr(
         fmB,
         sigma = sgma,
         L = c(
-          "Day:TreatmentControl" = 1,
-          "Day:TreatmentDrugA" = -1,
-          "Day:TreatmentDrugB" = -1,
-          "Day:TreatmentCombination" = 1
+          "Time:TreatmentControl" = 1,
+          "Time:TreatmentDrugA" = -1,
+          "Time:TreatmentDrugB" = -1,
+          "Time:TreatmentCombination" = 1
         ),
         altB = dif
       )
@@ -340,16 +340,16 @@ APrioriPwr <- function(npg = 5,
           fmB,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugA" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugA" = -1,
+            "Time:TreatmentCombination" = 1
           )
         ))
         dtF <- Pwr(
           fmB,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugA" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugA" = -1,
+            "Time:TreatmentCombination" = 1
           ),
           altB = dif
         )
@@ -358,29 +358,29 @@ APrioriPwr <- function(npg = 5,
           fmB,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugB" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugB" = -1,
+            "Time:TreatmentCombination" = 1
           )
         ))
         dtF <- Pwr(
           fmB,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugB" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugB" = -1,
+            "Time:TreatmentCombination" = 1
           ),
           altB = dif
         )
       }
     }
     p3 <- dtF %>% ggplot(aes(
-      x = .data$`Day:TreatmentCombination`,
+      x = .data$`Time:TreatmentCombination`,
       y = .data$Power
     )) + geom_line() + cowplot::theme_cowplot() +
       labs(title = paste(
         "Power across growth rate\nvalues for combination treatment for ",
         method
-      )) + xlab("Growth rate (logRTV/Days)") +
+      )) + xlab("Growth rate (logRTV/Times)") +
       geom_hline(yintercept = 0.8, lty = "dashed")
     print(plot_grid(p1, p3, ncol = 2))
   }
@@ -397,7 +397,7 @@ APrioriPwr <- function(npg = 5,
 #' depending on the sample size per group
 #' @param npg A vector with the sample size (number of animals) per group to calculate the power of 
 #' the synergy analysis.
-#' @param day Vector with the days at which the tumor volume measurements have been performed.
+#' @param time Vector with the times at which the tumor volume measurements have been performed.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
 #' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
@@ -420,7 +420,7 @@ APrioriPwr <- function(npg = 5,
 
 
 PwrSampleSize <- function(npg = c(5, 8, 10),
-                          day = c(0, 3, 5, 10),
+                          time = c(0, 3, 5, 10),
                           grwrControl = 0.08,
                           grwrA = 0.07,
                           grwrB = 0.06,
@@ -438,7 +438,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
     stop("Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
   }
   
-  Day <- day # Vector with days for tumor volume measurements
+  Time <- time # Vector with times for tumor volume measurements
   
   npg_vector <- c()
   Pwr_vector <- c()
@@ -449,7 +449,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
     Treatment <- gl(4, n, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
     dts <- data.frame(subject, Treatment) # Subject-level data
     
-    dtL <- list(Day = Day, subject = subject)
+    dtL <- list(Time = Time, subject = subject)
     dtLong <- expand.grid(dtL) # Long format
     mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
     
@@ -466,10 +466,10 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
     AB <- grwrComb
     
     exmpDt <- within(mrgDt, {
-      m0 <- C * Day
-      mA <- A * Day
-      mB <- B * Day
-      mAB <- AB * Day
+      m0 <- C * Time
+      mA <- A * Time
+      mB <- B * Time
+      mAB <- AB * Time
     })
     
     exmpDt$mA[exmpDt$Treatment == "Control"] <- exmpDt$m0[exmpDt$Treatment == "Control"]
@@ -487,7 +487,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
     sgma <- sgma
     D <- log(sd_ranef)
     
-    pd1 <- pdDiag(D, form = ~ 0 + Day)
+    pd1 <- pdDiag(D, form = ~ 0 + Time)
     
     cntrl <- lmeControl(
       maxIter = 0,
@@ -498,7 +498,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
     )
     
     fmA <- lme(
-      mA ~ Day:Treatment,
+      mA ~ Time:Treatment,
       random = list(subject = pd1),
       data = exmpDt,
       control = cntrl
@@ -513,10 +513,10 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
         fmA,
         sigma = sgma,
         L = c(
-          "Day:TreatmentControl" = 1,
-          "Day:TreatmentDrugA" = -1,
-          "Day:TreatmentDrugB" = -1,
-          "Day:TreatmentCombination" = 1
+          "Time:TreatmentControl" = 1,
+          "Time:TreatmentDrugA" = -1,
+          "Time:TreatmentDrugB" = -1,
+          "Time:TreatmentCombination" = 1
         ),
         ...
       )
@@ -527,8 +527,8 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
           fmA,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugA" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugA" = -1,
+            "Time:TreatmentCombination" = 1
           ),
           ...
         )
@@ -537,8 +537,8 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
           fmA,
           sigma = sgma,
           L = c(
-            "Day:TreatmentDrugB" = -1,
-            "Day:TreatmentCombination" = 1
+            "Time:TreatmentDrugB" = -1,
+            "Time:TreatmentCombination" = 1
           ),
           ...
         )
@@ -570,16 +570,16 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
   return(invisible(npg_Pwr))
 }
 
-## Power with varying days of follow-up or frequency of measurements
+## Power with varying times of follow-up or frequency of measurements
 
 #' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM
-#' depending on the days of follow-up or the frequency of measurements
+#' depending on the time of follow-up or the frequency of measurements
 #' @param npg Number of mouse per group.
-#' @param day A list in which each element is a vector with the days at which the tumor volume measurements have been performed.
+#' @param time A list in which each element is a vector with the times at which the tumor volume measurements have been performed.
 #' If `type` is set to "max", each vector in the list should have the measurements taken at the same interval and differ in the final
-#' day of follow-up. If `type` is set to "freq", each vector in the list should have the same final day of follow-up and
+#' time of follow-up. If `type` is set to "freq", each vector in the list should have the same final time of follow-up and
 #' differ in the intervals at which the measurements have been taken. 
-#' @param type String indicating whether to calculate the power depending on the days of follow-up ("max"), or the frequency
+#' @param type String indicating whether to calculate the power depending on the time of follow-up ("max"), or the frequency
 #' of measurements ("freq").
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
@@ -595,14 +595,14 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
 #' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
 #' assigned to `sd_ranef` and `sgma` are also shown.
 #' - A plot showing the values of the power calculation depending on the values assigned to 
-#' `Day`. If `type` is set to "max", the plot shows how the power varies depending on the maximum day of follow-up. 
+#' `Time`. If `type` is set to "max", the plot shows how the power varies depending on the maximum time of follow-up. 
 #' If `type` is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
 #' been performed.
 #' 
-#' If saved to a variable, the function returns the power for the analysis for each value specified in ` Day`.
+#' If saved to a variable, the function returns the power for the analysis for each value specified in ` Time`.
 #' @export 
 
-PwrTime <- function(npg = 5, day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)), type = "max", 
+PwrTime <- function(npg = 5, time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)), type = "max", 
                         grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss", ...){
   
   # Validate method input
@@ -617,34 +617,34 @@ PwrTime <- function(npg = 5, day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 
     stop(paste(type, ": Invalid 'type' provided. Choose from 'max' or 'freq'.", sep = ""))
   }
   
-  # Validate day input
-  Day <- day # List with the days for the meassurements
+  # Validate time input
+  Time <- time # List with the times for the meassurements
   
   if(type == "max"){
     m <- c()
-    for (i in Day) {
+    for (i in Time) {
       m <- c(m, max(i))
     }
     m <- unique(m)
-    if(length(m) < length(Day)){
+    if(length(m) < length(Time)){
       warning(
-        "Your list 'day' has several vectors with the same maximum day of follow-up.\nConsider using 'type = freq' to evaluate the effect of frequency of masurements on power calculation."
+        "Your list 'time' has several vectors with the same maximum time of follow-up.\nConsider using 'type = freq' to evaluate the effect of frequency of masurements on power calculation."
       )
     }
   }
   
   ## Constructing an exemplary dataset
   
-  day_vector <- c()
+  time_vector <- c()
   Pwr_vector <- c()
   
-  for(d in Day){ # Vector with days
+  for(d in Time){ # Vector with times
     
     subject <- 1:(4*npg) # Subjects' ids
     Treatment <- gl(4, npg, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
     dts <- data.frame(subject, Treatment) # Subject-level data
     
-    dtL <- list(Day = d, subject = subject)
+    dtL <- list(Time = d, subject = subject)
     dtLong <- expand.grid(dtL) # Long format
     mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
     
@@ -663,10 +663,10 @@ PwrTime <- function(npg = 5, day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 
     AB <- grwrComb
     
     exmpDt <- within(mrgDt, {
-      m0 <- C*Day
-      mA <- A*Day
-      mB <- B*Day
-      mAB <- AB*Day
+      m0 <- C*Time
+      mA <- A*Time
+      mB <- B*Time
+      mAB <- AB*Time
     })
     
     exmpDt$mA[exmpDt$Treatment == "Control"] <- exmpDt$m0[exmpDt$Treatment == "Control"]
@@ -684,35 +684,35 @@ PwrTime <- function(npg = 5, day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 
     sgma <- sgma
     D <- log(sd_ranef)
     
-    pd1 <- pdDiag(D, form = ~0+Day)
+    pd1 <- pdDiag(D, form = ~0+Time)
     
     cntrl <- lmeControl(maxIter = 0, msMaxIter = 0, niterEM = 0, returnObject = TRUE, opt = "optim")
     
-    fmA <- lme(mA ~ Day:Treatment, random = list(subject = pd1), data = exmpDt, control = cntrl)
+    fmA <- lme(mA ~ Time:Treatment, random = list(subject = pd1), data = exmpDt, control = cntrl)
     
     # Use of Pwr() function for a priori power calculations
     
     # Ploting power curve
     
     if(method == "Bliss"){
-      dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentControl" = 1,"Day:TreatmentDrugA" = -1,
-                                          "Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1), ...)
+      dtF <- Pwr(fmA, sigma = sgma, L = c("Time:TreatmentControl" = 1,"Time:TreatmentDrugA" = -1,
+                                          "Time:TreatmentDrugB" = -1,"Time:TreatmentCombination" = 1), ...)
     }
     if(method == "HSA"){
       if(which.min(c(grwrA, grwrB)) == 1){
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugA" = -1,"Day:TreatmentCombination" = 1), ...)
+        dtF <- Pwr(fmA, sigma = sgma, L = c("Time:TreatmentDrugA" = -1,"Time:TreatmentCombination" = 1), ...)
       } else{
-        dtF <- Pwr(fmA, sigma = sgma, L = c("Day:TreatmentDrugB" = -1,"Day:TreatmentCombination" = 1), ...)
+        dtF <- Pwr(fmA, sigma = sgma, L = c("Time:TreatmentDrugB" = -1,"Time:TreatmentCombination" = 1), ...)
       }
     }
     
     if(type == "max"){
-      day_vector <- c(day_vector, max(d))
-      title <- "Power depending on\ndays of follow-up for"
-      x.lab <- "Maximum days of follow-up"
+      time_vector <- c(time_vector, max(d))
+      title <- "Power depending on\ntime of follow-up for"
+      x.lab <- "Maximum time of follow-up"
     }
     if(type == "freq"){
-      day_vector <- c(day_vector, length(d))
+      time_vector <- c(time_vector, length(d))
       title <- "Power depending on\nfrequency of measurements"
       x.lab <- "Number of measurements"
     }
@@ -721,10 +721,10 @@ PwrTime <- function(npg = 5, day = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 
   
   p1 <- plot_exmpDt(exmpDt, grwrControl = C, grwrA = A, grwrB = B, grwrComb = AB, sd_ranef = sd_ranef, sgma = sgma)
   
-  npg_Pwr <- data.frame(Day = day_vector, Power = Pwr_vector)
+  npg_Pwr <- data.frame(Time = time_vector, Power = Pwr_vector)
   
-  p2 <- npg_Pwr %>% ggplot(aes(x = .data$Day, y = .data$Power)) + geom_line() + cowplot::theme_cowplot() + xlab(x.lab) + 
-    labs(title = paste(title, method)) + scale_x_continuous(breaks = day_vector) +
+  p2 <- npg_Pwr %>% ggplot(aes(x = .data$Time, y = .data$Power)) + geom_line() + cowplot::theme_cowplot() + xlab(x.lab) + 
+    labs(title = paste(title, method)) + scale_x_continuous(breaks = time_vector) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
   print(plot_grid(p1,p2, ncol = 2))

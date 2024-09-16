@@ -4,19 +4,19 @@
 \alias{.getRTV}
 \title{Helper function to calculate the relative tumor volume from an imput data frame of tumor growth}
 \usage{
-.getRTV(data, day_start)
+.getRTV(data, time_start)
 }
 \arguments{
 \item{data}{Data frame with the tumor growth data.}
 
-\item{day_start}{Numeric value indicating the day at which the treatment started.}
+\item{time_start}{Numeric value indicating the time at which the treatment started.}
 }
 \value{
 The function returns the original data frame of tumor growth data, with 3 additional columns, corresponding to:
 \itemize{
-\item RTV: Relative tumor volume to the tumor volume at \code{start_day}.
+\item RTV: Relative tumor volume to the tumor volume at \code{start_time}.
 \item logRTV: Logarithm of RTV column.
-\item TV0: Tumor volume at \code{start_day}.
+\item TV0: Tumor volume at \code{start_time}.
 }
 }
 \description{

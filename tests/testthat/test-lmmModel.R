@@ -1,8 +1,8 @@
 # Dummy dataset for testing .getRTV ----
 set.seed(123)
 test_data <- data.frame(
-  Mouse = rep(1:5, each = 5),
-  Day = rep(0:4, times = 5),
+  SampleID = rep(1:5, each = 5),
+  Time = rep(0:4, times = 5),
   TV = c(100, 120, 140, 160, 180,   # Mouse 1
          80, 100, 120, 150, 190,    # Mouse 2
          90, 95, 100, 110, 130,     # Mouse 3
@@ -13,9 +13,9 @@ test_data <- data.frame(
 # Tests for .getRTV function ----
 # Test if .getRTV function correctly calculates RTV and logRTV
 test_that(".getRTV correctly calculates RTV and logRTV", {
-  result <- .getRTV(test_data, day_start = 0)
+  result <- .getRTV(test_data, time_start = 0)
   
-  # Expected RTV for each Mouse at each Day
+  # Expected RTV for each Mouse at each Time
   expected_RTV <- c(1, 1.2, 1.4, 1.6, 1.8,   # Mouse 1
                     1, 1.25, 1.5, 1.875, 2.375,  # Mouse 2
                     1, 1.055556, 1.111111, 1.222222, 1.444444, # Mouse 3
@@ -31,7 +31,7 @@ test_that(".getRTV correctly calculates RTV and logRTV", {
 
 # Test if .getRTV function correctly adds the TV0 column
 test_that(".getRTV correctly adds TV0 column", {
-  result <- .getRTV(test_data, day_start = 0)
+  result <- .getRTV(test_data, time_start = 0)
   
   # Expected TV0 for each Mouse
   expected_TV0 <- rep(c(100, 80, 90, 110, 70), each = 5)
@@ -40,37 +40,37 @@ test_that(".getRTV correctly adds TV0 column", {
   expect_equal(result$TV0, expected_TV0)
 })
 
-# Test if .getRTV function handles a case where some mice don't have data at day_start
-test_that(".getRTV handles cases with missing TV at day_start", {
-  missing_data <- test_data %>% dplyr::filter(!(Mouse == 2 & Day == 0))
-  result <- .getRTV(missing_data, day_start = 0)
+# Test if .getRTV function handles a case where some mice don't have data at time_start
+test_that(".getRTV handles cases with missing TV at time_start", {
+  missing_data <- test_data %>% dplyr::filter(!(SampleID == 2 & Time == 0))
+  result <- .getRTV(missing_data, time_start = 0)
   
-  # Mouse 2 should have NA for RTV and logRTV because there is no Day 0 record
-  expect_true(all(is.na(result$RTV[result$Mouse == 2])))
-  expect_true(all(is.na(result$logRTV[result$Mouse == 2])))
+  # Mouse 2 should have NA for RTV and logRTV because there is no Time 0 record
+  expect_true(all(is.na(result$RTV[result$SampleID == 2])))
+  expect_true(all(is.na(result$logRTV[result$SampleID == 2])))
   
   # Other mice should have calculated RTV and logRTV
-  expect_false(any(is.na(result$RTV[result$Mouse != 2])))
-  expect_false(any(is.na(result$logRTV[result$Mouse != 2])))
+  expect_false(any(is.na(result$RTV[result$SampleID != 2])))
+  expect_false(any(is.na(result$logRTV[result$SampleID != 2])))
 })
 
 # Test if .getRTV function handles an empty dataset
 test_that(".getRTV handles empty dataset", {
-  empty_data <- data.frame(Mouse = integer(0), Day = integer(0), TV = numeric(0))
+  empty_data <- data.frame(SampleID = integer(0), Time = integer(0), TV = numeric(0))
   
-  result <- .getRTV(empty_data, day_start = 0)
+  result <- .getRTV(empty_data, time_start = 0)
   
   # The result should be an empty data frame with the expected columns
   expect_true(is.data.frame(result))
   expect_equal(nrow(result), 0)
-  expect_equal(colnames(result), c("Mouse", "Day", "TV", "RTV", "logRTV", "TV0"))
+  expect_equal(colnames(result), c("SampleID", "Time", "TV", "RTV", "logRTV", "TV0"))
 })
 
 # Test if .getRTV function handles a dataset with a single mouse
 test_that(".getRTV handles a dataset with a single mouse", {
-  single_mouse_data <- test_data[test_data$Mouse == 1, ]
+  single_mouse_data <- test_data[test_data$SampleID == 1, ]
   
-  result <- .getRTV(single_mouse_data, day_start = 0)
+  result <- .getRTV(single_mouse_data, time_start = 0)
   
   # RTV should be correctly calculated for the single mouse
   expected_RTV <- c(1, 1.2, 1.4, 1.6, 1.8)
@@ -86,8 +86,8 @@ test_that(".getRTV handles a dataset with a single mouse", {
 # Dummy dataset for testing lmmModel ----
 set.seed(123)
 test_data <- data.frame(
-  Mouse = rep(1:10, each = 10),
-  Day = rep(0:9, times = 10),
+  SampleID = rep(1:10, each = 10),
+  Time = rep(0:9, times = 10),
   Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
   TV = rnorm(100, mean = 100, sd = 20)
 )
@@ -98,15 +98,15 @@ test_data <- data.frame(
 test_that("lmmModel runs without error on valid input", {
   result <- lmmModel(
     data = test_data,
-    mouse_id = "Mouse",
-    day = "Day",
+    sample_id = "SampleID",
+    time = "Time",
     treatment = "Treatment",
     tumor_vol = "TV",
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
     drug_ab = "Drug_AB",
-    day_start = 0,
+    time_start = 0,
     min_observations = 1,
     show_plot = FALSE
   )
@@ -117,24 +117,24 @@ test_that("lmmModel runs without error on valid input", {
 
 # Test if lmmModel function returns an error when required columns are missing
 test_that("lmmModel throws an error when required columns are missing", {
-  missing_data <- test_data[, -1] # Removing the 'Mouse' column
+  missing_data <- test_data[, -1] # Removing the 'SampleID' column
   
   expect_error(
     lmmModel(
       data = missing_data,
-      mouse_id = "Mouse",
-      day = "Day",
+      sample_id = "SampleID",
+      time = "Time",
       treatment = "Treatment",
       tumor_vol = "TV",
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
       drug_ab = "Drug_AB",
-      day_start = 0,
+      time_start = 0,
       min_observations = 1,
       show_plot = FALSE
     ),
-    "The following required columns are missing from the data: Mouse"
+    "The following required columns are missing from the data: SampleID"
   )
 })
 
@@ -146,15 +146,15 @@ test_that("lmmModel throws an error when treatment column contains unrecognized 
   expect_error(
     lmmModel(
       data = trt_data,
-      mouse_id = "Mouse",
-      day = "Day",
+      sample_id = "SampleID",
+      time = "Time",
       treatment = "Treatment",
       tumor_vol = "TV",
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
       drug_ab = "Drug_AB",
-      day_start = 0,
+      time_start = 0,
       min_observations = 1,
       show_plot = FALSE
     ),
@@ -168,15 +168,15 @@ test_that("lmmModel throws an error when an expected treatment is missing", {
   expect_error(
     lmmModel(
       data = test_data,
-      mouse_id = "Mouse",
-      day = "Day",
+      sample_id = "SampleID",
+      time = "Time",
       treatment = "Treatment",
       tumor_vol = "TV",
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
       drug_ab = "Drug_X",
-      day_start = 0,
+      time_start = 0,
       min_observations = 1,
       show_plot = FALSE
     ),
@@ -188,15 +188,15 @@ test_that("lmmModel throws an error when 'min_observations' is a negative value"
   expect_error(
     lmmModel(
     data = test_data,
-    mouse_id = "Mouse",
-    day = "Day",
+    sample_id = "SampleID",
+    time = "Time",
     treatment = "Treatment",
     tumor_vol = "TV",
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
     drug_ab = "Drug_AB",
-    day_start = 0,
+    time_start = 0,
     min_observations = -1,
     show_plot = FALSE
   ),
@@ -204,32 +204,32 @@ test_that("lmmModel throws an error when 'min_observations' is a negative value"
   )
 })
 
-test_that("lmmModel correctly filters data based on day_start", {
+test_that("lmmModel correctly filters data based on time_start", {
   result <- lmmModel(
     data = test_data,
-    mouse_id = "Mouse",
-    day = "Day",
+    sample_id = "SampleID",
+    time = "Time",
     treatment = "Treatment",
     tumor_vol = "TV",
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
     drug_ab = "Drug_AB",
-    day_start = 5,  # Change day_start to 5
+    time_start = 5,  # Change time_start to 5
     min_observations = 1,
     show_plot = FALSE
   )
   
   filtered_data <- result$dt1
-  expect_true(all(filtered_data$Day >= 0))  # Since day_start was subtracted
+  expect_true(all(filtered_data$Time >= 0))  # Since time_start was subtracted
 })
 
 test_that("lmmModel excludes samples with TV0 == 0", {
   # Create a small example dataset
   set.seed(123)
   test_data <- data.frame(
-    Mouse = rep(1:5, each = 5),
-    Day = rep(0:4, times = 5),
+    SampleID = rep(1:5, each = 5),
+    Time = rep(0:4, times = 5),
     Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), 
                     each = 5, length.out = 25),
     TV = c(0, 120, 140, 160, 180,   # Mouse 1
@@ -242,15 +242,15 @@ test_that("lmmModel excludes samples with TV0 == 0", {
   # Run the lmmModel function with this dataset
   model <- lmmModel(
     data = test_data,
-    mouse_id = "Mouse",
-    day = "Day",
+    sample_id = "SampleID",
+    time = "Time",
     treatment = "Treatment",
     tumor_vol = "TV",
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
     drug_ab = "Drug_AB",
-    day_start = 0,
+    time_start = 0,
     min_observations = 1,
     show_plot = FALSE
   )
@@ -259,36 +259,36 @@ test_that("lmmModel excludes samples with TV0 == 0", {
   model_data <- model$dt1
   
   # Check that Mouse1 and Mouse3 are not in the final data because their TV0 is 0
-  expect_false(1 %in% model_data$Mouse)
-  expect_false(4 %in% model_data$Mouse)
+  expect_false(1 %in% model_data$SampleID)
+  expect_false(4 %in% model_data$SampleID)
   
   # Check that only Mouse2 remains
-  expect_true(2 %in% model_data$Mouse)
-  expect_equal(levels(model_data$Mouse), as.character(c(2,3,5)))
+  expect_true(2 %in% model_data$SampleID)
+  expect_equal(levels(model_data$SampleID), as.character(c(2,3,5)))
 })
 
 # Test if lmmModel function respects the min_observations parameter
 test_that("lmmModel respects the min_observations parameter", {
   min_obs_data <- test_data
-  min_obs_data <- min_obs_data[-10, ]  # Remove last day measurement from Mouse 1
+  min_obs_data <- min_obs_data[-10, ]  # Remove last time measurement from Mouse 1
   
   result <- lmmModel(
     data = min_obs_data,
-    mouse_id = "Mouse",
-    day = "Day",
+    sample_id = "SampleID",
+    time = "Time",
     treatment = "Treatment",
     tumor_vol = "TV",
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
     drug_ab = "Drug_AB",
-    day_start = 0,
+    time_start = 0,
     min_observations = 10,  # Require at least 10 observations per mouse
     show_plot = FALSE
   )
   
   # Expect that Mouse 1 is not in the result because it was removed
-  expect_false(any(result$data$Mouse == 1))
+  expect_false(any(result$data$SampleID == 1))
 })
 
 
@@ -297,15 +297,15 @@ test_that("lmmModel produces plot when show_plot is TRUE", {
   expect_output(
     lmmModel(
       data = test_data,
-      mouse_id = "Mouse",
-      day = "Day",
+      sample_id = "SampleID",
+      time = "Time",
       treatment = "Treatment",
       tumor_vol = "TV",
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
       drug_ab = "Drug_AB",
-      day_start = 0,
+      time_start = 0,
       min_observations = 1,
       show_plot = TRUE
     ),
@@ -317,15 +317,15 @@ test_that("lmmModel produces plot when show_plot is TRUE", {
 test_that("lmmModel passes additional arguments correctly to nlme::lme", {
   result <- lmmModel(
     data = test_data,
-    mouse_id = "Mouse",
-    day = "Day",
+    sample_id = "SampleID",
+    time = "Time",
     treatment = "Treatment",
     tumor_vol = "TV",
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
     drug_ab = "Drug_AB",
-    day_start = 0,
+    time_start = 0,
     min_observations = 1,
     show_plot = FALSE,
     control = nlme::lmeControl(opt = "optim")  # Passing additional argument

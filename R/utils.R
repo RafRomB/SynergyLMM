@@ -14,7 +14,7 @@
 NULL
 
 #' @title Helper function to simulate tumor growth data
-#' @param npg Number of mouse per group.
+#' @param npg Number of samples per group.
 #' @param timepoints Vector with the time points at which the tumor volume measurements have been performed.
 #' @param initial_volume Initial volume for the tumor growth.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
@@ -37,7 +37,7 @@ NULL
   Treatment <- gl(4, npg, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
   dts <- data.frame(subject, Treatment) # Subject-level data
   
-  dtL <- list(Day = timepoints, subject = subject)
+  dtL <- list(Time = timepoints, subject = subject)
   dtLong <- expand.grid(dtL) # Long format
   mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
   

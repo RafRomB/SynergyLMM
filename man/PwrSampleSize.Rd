@@ -7,7 +7,7 @@ depending on the sample size per group}
 \usage{
 PwrSampleSize(
   npg = c(5, 8, 10),
-  day = c(0, 3, 5, 10),
+  time = c(0, 3, 5, 10),
   grwrControl = 0.08,
   grwrA = 0.07,
   grwrB = 0.06,
@@ -22,7 +22,7 @@ PwrSampleSize(
 \item{npg}{A vector with the sample size (number of animals) per group to calculate the power of
 the synergy analysis.}
 
-\item{day}{Vector with the days at which the tumor volume measurements have been performed.}
+\item{time}{Vector with the times at which the tumor volume measurements have been performed.}
 
 \item{grwrControl}{Coefficient for Control treatment group tumor growth rate.}
 

@@ -6,7 +6,7 @@
 \usage{
 APrioriPwr(
   npg = 5,
-  day = c(0, 3, 5, 10),
+  time = c(0, 3, 5, 10),
   grwrControl = 0.08,
   grwrA = 0.07,
   grwrB = 0.06,
@@ -23,7 +23,7 @@ APrioriPwr(
 \arguments{
 \item{npg}{Number of mouse per group.}
 
-\item{day}{Vector with the days at which the tumor volume measurements have been performed.}
+\item{time}{Vector with the times at which the tumor volume measurements have been performed.}
 
 \item{grwrControl}{Coefficient for Control treatment group tumor growth rate.}
 

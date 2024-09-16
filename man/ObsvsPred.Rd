@@ -16,7 +16,7 @@ ObsvsPred(model, nrow = 4, ncol = 5, ...)
 \item{...}{Additional arguments to be passed to \code{\link[performance:model_performance]{performance::model_performance()}}.}
 }
 \value{
-A layout of the observed vs predicted values for each mouse and model performance metrics.
+A layout of the observed vs predicted values for each SampleID and model performance metrics.
 }
 \description{
 Observed vs predicted values and performance of the model
@@ -24,8 +24,8 @@ Observed vs predicted values and performance of the model
 \details{
 The function provides visual and quantitative information about the performance of the model:
 \itemize{
-\item A layout of the observed and predicted values of log(relative tumor volume) vs day for each mouse,
-with the actual measurements, the regression line for each mouse, and the marginal, treatment-specific,
+\item A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID,
+with the actual measurements, the regression line for each SampleID, and the marginal, treatment-specific,
 regression line for each treatment group.
 \item Performance metrics of the model obtain calculated using \code{\link[performance:model_performance]{performance::model_performance()}}.
 }

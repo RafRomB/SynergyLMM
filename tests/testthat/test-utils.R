@@ -13,8 +13,8 @@ test_that(".simulateTumorGrowth returns a data frame with correct columns", {
   )
   
   expect_s3_class(result, "data.frame")
-  expect_equal(ncol(result), 4)  # subject, Treatment, Day, TumorVolume
-  expect_true(all(c("subject", "Treatment", "Day", "TumorVolume") %in% colnames(result)))
+  expect_equal(ncol(result), 4)  # subject, Treatment, Time, TumorVolume
+  expect_true(all(c("subject", "Treatment", "Time", "TumorVolume") %in% colnames(result)))
 })
 
 test_that(".simulateTumorGrowth returns correct number of rows for given npg and timepoints", {
@@ -48,8 +48,8 @@ test_that(".simulateTumorGrowth handles different growth rates correctly", {
   )
   
   # Check if the mean tumor volume is higher for groups with higher growth rates at the last time point
-  last_time <- max(result$Day)
-  last_time <- dplyr::filter(result, Day == last_time)
+  last_time <- max(result$Time)
+  last_time <- dplyr::filter(result, Time == last_time)
   means <- dplyr::summarize(last_time, .by = Treatment, mean_volume = mean(TumorVolume))
   
   expect_true(means$mean_volume[means$Treatment == "DrugA"] < means$mean_volume[means$Treatment == "Control"])
@@ -102,3 +102,4 @@ test_that(".simulateTumorGrowth handles single timepoint correctly", {
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 4 * 5)  # 4 groups, 5 subjects per group, 1 timepoint
 })
+

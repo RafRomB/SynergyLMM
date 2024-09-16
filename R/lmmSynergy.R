@@ -7,7 +7,7 @@
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 #' corresponding to Bliss, highest single agent and response additivity, respectively.
-#' @param min_day Minimun day from which to start calculating synergy.
+#' @param min_time Minimun time from which to start calculating synergy.
 #' @param robustSE If TRUE, uncertainty is estimated using robust standard errors 
 #' using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by [clubSandwich::vcovCR()].
 #' @param type Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3". 
@@ -18,15 +18,15 @@
 #' @param show_plot Logical indicating if a plot with the results of the synergy calculation should be generated.
 #' @param ... Additional arguments to be passed to [marginaleffects::hypotheses()].
 #' @returns The function returns a list with two elements:
-#' - `Constrasts`: List with the outputs of the (non)-linear test for the synergy null hypothesis obtained by [marginaleffects::hypotheses()] for each day.
+#' - `Constrasts`: List with the outputs of the (non)-linear test for the synergy null hypothesis obtained by [marginaleffects::hypotheses()] for each time.
 #' See [marginaleffects::hypotheses()] for more details.
 #' - `Synergy`: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
-#' the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each day.
+#' the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each time.
 #' @export
 
 lmmSynergy <- function(model,
                     method = "Bliss",
-                    min_day = 0,
+                    min_time = 0,
                     robustSE = FALSE,
                     type = "CR2",
                     norm_test = "shapiroTest",
@@ -91,22 +91,22 @@ lmmSynergy <- function(model,
     }
   }
   
-  days <- unique(model$data$Day)
-  days <- days[days >= min_day]
-  days <- days[order(days)]
+  times <- unique(model$data$Time)
+  times <- times[times >= min_time]
+  times <- times[order(times)]
   i <- 1
-  for (d in days) {
-    data <- model$data %>% dplyr::filter(.data$Day <= d)
-    model_day <- update(model, data = data)
+  for (d in times) {
+    data <- model$data %>% dplyr::filter(.data$Time <= d)
+    model_time <- update(model, data = data)
     if (robustSE) {
       Test <- hypotheses(
-        model_day,
+        model_time,
         hypothesis = contrast,
         vcov = clubSandwich::vcovCR(model, type = type),
         ...
       )
     } else {
-      Test <- hypotheses(model_day, hypothesis = contrast, ...)
+      Test <- hypotheses(model_time, hypothesis = contrast, ...)
     }
     ci <- rbind(ci, data.frame(
       method,
@@ -130,9 +130,9 @@ lmmSynergy <- function(model,
     Contrasts[[i]] <- Test
     i <- i + 1
   }
-  names(Contrasts) <- paste("Day", days, sep = "")
-  colnames(ci) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Day")
-  colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Day")
+  names(Contrasts) <- paste("Time", times, sep = "")
+  colnames(ci) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
+  colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
   df <- rbind(ci, ss)
   result <- list(Contrasts = Contrasts, Synergy = df)
   if(show_plot) {
