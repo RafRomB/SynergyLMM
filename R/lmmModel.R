@@ -65,7 +65,8 @@ NULL
 #' @param drug_a String indicating the name assigned to the 'Drug A' group.
 #' @param drug_b String indicating the name assigned to the 'Drug B' group.
 #' @param drug_ab String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
-#' @param time_start Numeric value indicating the time at which the treatment started.
+#' @param time_start Numeric value indicating the time point at which the treatment started.
+#' @param time_end Numeric value indicating the last time point to be included in the analysis. 
 #' @param min_observations Minimum number of observation for each sample to be included in the analysis.
 #' @param show_plot Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Time for each sample, 
 #' and the model calculated marginal slope for each treatment, should be produced.
@@ -73,18 +74,20 @@ NULL
 #' @return An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. 
 #' @export
 lmmModel <- function(data,
-                      sample_id = "SampleID",
-                      time = "Time",
-                      treatment = "Treatment",
-                      tumor_vol = "TV",
-                      trt_control = "Control",
-                      drug_a = "Drug_A",
-                      drug_b = "Drug_B",
-                      drug_ab = "Drug_AB",
-                      time_start = 0,
-                      min_observations = 1,
-                      show_plot = TRUE,
-                      ...) {
+                     sample_id = "SampleID",
+                     time = "Time",
+                     treatment = "Treatment",
+                     tumor_vol = "TV",
+                     trt_control = "Control",
+                     drug_a = "Drug_A",
+                     drug_b = "Drug_B",
+                     drug_ab = "Drug_AB",
+                     time_start = 0,
+                     time_end = NULL,
+                     min_observations = 1,
+                     show_plot = TRUE,
+                     ...) {
+  
   
   # Check if required columns are present
   tryCatch({
@@ -151,6 +154,11 @@ lmmModel <- function(data,
   # we will use only the data after the treatment start
   
   TV.df <- TV.df %>% dplyr::filter(.data$Time >= time_start & !is.na(.data$TV))
+  
+  # Filter data until the maximum day specified in time_end
+  if(!is.null(time_end)){
+    TV.df <- TV.df %>% dplyr::filter(.data$Time <= time_end)
+  }
   
   # Remove samples with less than the minimum of observations spececified
   
