@@ -107,6 +107,7 @@ test_that("lmmModel runs without error on valid input", {
     drug_b = "Drug_B",
     drug_ab = "Drug_AB",
     time_start = 0,
+    time_end = NULL,
     min_observations = 1,
     show_plot = FALSE
   )
@@ -223,6 +224,28 @@ test_that("lmmModel correctly filters data based on time_start", {
   filtered_data <- result$dt1
   expect_true(all(filtered_data$Time >= 0))  # Since time_start was subtracted
 })
+
+test_that("lmmModel correctly filters data based on time_end", {
+  result <- lmmModel(
+    data = test_data,
+    sample_id = "SampleID",
+    time = "Time",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    time_start = 0,
+    time_end = 5, # Change time_end to 5
+    min_observations = 1,
+    show_plot = FALSE
+  )
+  
+  filtered_data <- result$dt1
+  expect_true(all(filtered_data$Time <= 5))  # No time beyond 5 should be present
+})
+
 
 test_that("lmmModel excludes samples with TV0 == 0", {
   # Create a small example dataset
