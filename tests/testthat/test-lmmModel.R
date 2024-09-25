@@ -357,3 +357,38 @@ test_that("lmmModel passes additional arguments correctly to nlme::lme", {
   expect_equal(result$call$control$opt, "optim")  # Check if the control argument was passed correctly
 })
 
+# Test for lmmModel_estimates function ----
+
+set.seed(123)
+test_data <- data.frame(
+  SampleID = rep(1:10, each = 10),
+  Time = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+
+test_that("lmmModel_estimates returns a data frame with correct structure", {
+  model <- lmmModel(test_data)
+  result <- lmmModel_estimates(model)
+  
+  expect_s3_class(result, "data.frame")
+  expect_equal(ncol(result), 6)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
+  expect_equal(rownames(result), "estimate")
+  expect_equal(colnames(result), c("control", "drug_a", "drug_b", "combination", "sd_ranef", "sd_resid"))
+})
+
+test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
+  model <- lmmModel(test_data)
+  result <- lmmModel_estimates(model)
+  
+  # Check that the coefficients match the model's fixed effects
+  expect_equal(result$control, model$coefficients$fixed[[1]])
+  expect_equal(result$drug_a, model$coefficients$fixed[[2]])
+  expect_equal(result$drug_b, model$coefficients$fixed[[3]])
+  expect_equal(result$combination, model$coefficients$fixed[[4]])
+  
+  # Check that the standard deviations match the model's random effects and residuals
+  expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))
+  expect_equal(result$sd_resid, model$sigma)
+})
