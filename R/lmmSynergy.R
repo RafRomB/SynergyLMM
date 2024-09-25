@@ -56,13 +56,13 @@ lmmSynergy <- function(model,
     # Function to compute LHS AUC
     lhs_auc <- function(beta_AB) {
       integrate(function(t)
-        beta_AB * t, t1, t2)$value
+        exp(beta_AB * t), t1, t2)$value
     }
     
     # Function to compute RHS AUC
     rhs_auc <- function(beta_A, beta_B, beta_C) {
       integrate(function(t) {
-        log(exp(beta_A * t) + exp(beta_B * t) - exp(beta_C * t))
+        (exp(beta_A * t) + exp(beta_B * t) - exp(beta_C * t))
       }, t1, t2)$value
     }
     
