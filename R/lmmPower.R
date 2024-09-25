@@ -3,8 +3,8 @@
 #' @title Post hoc power calculation based on simulations of the synergy evaluation using LMM.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nsim Number of simulations to perform.
-#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
-#' corresponding to Bliss, highest single agent and response additivity, respectively.
+#' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
+#' corresponding to Bliss and highest single agent, respectively.
 #' @param pvalue Threshold for the p-value of synergy calculation to be considered statistically significant.
 #' @param ... Additional parameters to be passed to [nlmeU::simulateY].
 #' @returns Returns a numeric value of the power for the synergy calculation for the model using the method specified in `method`. 
@@ -17,9 +17,9 @@ PostHocPwr <- function(model,
                        pvalue = 0.05,
                        ...) {
   # Validate method input
-  valid_methods <- c("Bliss", "HSA", "RA")
+  valid_methods <- c("Bliss", "HSA")
   if (!method %in% valid_methods) {
-    stop("Invalid 'method' provided. Choose from 'Bliss', 'HSA', or 'RA'.")
+    stop("Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
   }
   
   if (method == "Bliss") {
@@ -32,9 +32,6 @@ PostHocPwr <- function(model,
     } else{
       contrast <- "b4 = b3"
     }
-  }
-  if (method == "RA") {
-    contrast <- "b4 = log(exp(b2) + exp(b3) - exp(b1))"
   }
   
   simA <- nlmeU::simulateY(model, nsim = nsim, ...) # Simulation
