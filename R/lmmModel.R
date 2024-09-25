@@ -217,3 +217,17 @@ lmmModel <- function(data,
   return(model)
 }
 
+#' @title Get estimates from a linear mixed model of tumor growth data
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
+#' @returns A data frame with the estimated values for the coefficients of the tumor growth for each treatment,
+#' the standard deviation of the random effects, and the standard deviation of the residuals of the model.
+#' These values can be useful for the power analysis of the model using [`APrioriPwr()`].
+#' @export
+
+lmmModel_estimates <- function(model){
+  dt <- data.frame(t(model$coefficients$fixed), sqrt(model$modelStruct$reStruct[[1]][1]), model$sigma)
+  colnames(dt) <- c("control", "drug_a", "drug_b", "combination", "sd_ranef", "sd_resid")
+  rownames(dt) <- "estimate"
+  return(dt)
+}
+
