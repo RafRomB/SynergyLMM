@@ -93,7 +93,7 @@ plot_residDiagnostics <- function(model){
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
 plot_ObsvsPred <- function(model, nrow, ncol){
   TV.df <- model$data
-  aug.Pred <- nlme::augPred(model, primary = ~Time, level = 0:1, length.out = 2)
+  aug.Pred <- nlme::augPred(model, primary = ~Time, level = 0:1, length.out = 2, minimum = 0)
   plot(aug.Pred, layout = c(ncol, nrow, 1), lty = c(1,2),
        key = list(lines = list(lty = c(1,2), col = c("slateblue", "orange")),
                   text = list(c("Marginal", "Subject-specific")),
