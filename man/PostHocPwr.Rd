@@ -11,8 +11,8 @@ PostHocPwr(model, nsim = 1000, method = "Bliss", pvalue = 0.05, ...)
 
 \item{nsim}{Number of simulations to perform.}
 
-\item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
-corresponding to Bliss, highest single agent and response additivity, respectively.}
+\item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
+corresponding to Bliss and highest single agent, respectively.}
 
 \item{pvalue}{Threshold for the p-value of synergy calculation to be considered statistically significant.}
 

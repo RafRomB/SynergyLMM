@@ -74,21 +74,10 @@ test_that("Test PostHocPwr with HSA method independently of the other of treatme
 })
 
 
-test_that("Test PostHocPwr with RA method", {
-  # Call the function with method = "RA"
-  result <- PostHocPwr(model, nsim = 10, method = "RA")
-  
-  # Check that the result is numeric
-  expect_type(result, "double")
-  
-  # Check that the result is between 0 and 1
-  expect_true(result >= 0 && result <= 1)
-})
-
 test_that("Test PostHocPwr with invalid method input", {
   # Expect an error when an invalid method is provided
   expect_error(PostHocPwr(model, method = "InvalidMethod"),
-               "Invalid 'method' provided. Choose from 'Bliss', 'HSA', or 'RA'.")
+               "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
 })
 
 test_that("Test PostHocPwr with different values of nsim", {

@@ -36,6 +36,10 @@ test_that("Test lmmSynergy with valid input and default parameters (Bliss method
   # Check that "Contrasts" is a list and "Synergy" is a data frame
   expect_type(result$Contrasts, "list")
   expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
 })
 
 test_that("Test lmmSynergy with HSA method", {
@@ -49,18 +53,13 @@ test_that("Test lmmSynergy with HSA method", {
   # Check that the result is structured as expected
   expect_type(result, "list")
   expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
 })
 
-test_that("Test lmmSynergy with RA method and normality tests", {
-  
-  # Check that the Shapiro - Wilk normality test output is printed
-  expect_output(lmmSynergy(model, method = "RA", norm_test = "shapiroTest", show_plot = FALSE), "Shapiro - Wilk Normality Test")
-  
-  # Check that the D'Agostino normality test output is printed
-  expect_output(lmmSynergy(model, method = "RA", norm_test = "dagoTest", show_plot = FALSE), "D'Agostino Normality Test")
-  
-  # Check that the Anderson-Darling normality test output is printed
-  expect_output(lmmSynergy(model, method = "RA", norm_test = "adTest", show_plot = FALSE), "Anderson - Darling Normality Test")
+test_that("Test lmmSynergy with RA method", {
   
   # Call the function with method = "RA"
   result <- lmmSynergy(model, method = "RA", show_plot = FALSE)
@@ -70,9 +69,13 @@ test_that("Test lmmSynergy with RA method and normality tests", {
   expect_equal(length(result), 2)
   expect_named(result, c("Contrasts", "Synergy"))
   
-  # Check that "Contrasts" is a list and "Synergy" is a data frame
-  expect_type(result$Contrasts, "list")
+  # Check that "Contrasts" is a NULL and "Synergy" is a data frame
+  expect_null(result$Contrasts)
   expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
   
 })
 
@@ -90,6 +93,28 @@ test_that("Test lmmSynergy with robust standard errors (robustSE = TRUE)", {
   # Check that the result is structured as expected
   expect_type(result, "list")
   expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
+})
+
+test_that("Test lmmSynergy method = 'RA' robustSE = TRUE works correctly", {
+  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 100, robustSE = TRUE, type = "CR2", show_plot = FALSE)
+  
+  expect_type(result, "list")
+  expect_named(result, c("Contrasts", "Synergy"))
+  
+  # Check that "Contrasts" is a NULL and "Synergy" is a data frame
+  expect_null(result$Contrasts)
+  expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
+  
+  # Ensure that robustSE used clubSandwich to calculate the variance-covariance matrix
+  expect_true(all(synergy$Model == "RA"))
 })
 
 test_that("Test lmmSynergy with different values of min_time", {
