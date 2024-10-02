@@ -11,7 +11,6 @@ lmmSynergy(
   robustSE = FALSE,
   type = "CR2",
   ra_nsim = 1000,
-  norm_test = "shapiroTest",
   t_ci = NULL,
   show_plot = TRUE,
   ...
@@ -32,10 +31,6 @@ using a sandwich estimate of the variance-covariance matrix of the regression co
 See "Details" section of \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}} for further information.}
 
 \item{ra_nsim}{Number of simulations to calculate the synergy for Response Additivity model.}
-
-\item{norm_test}{If \code{method} is set to "RA", string indicating the test for checking the
-normality of the hypothesis expression of synergy (see "Warning#3" in "Description" section of \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}}).
-Possible values are "shapiroTest", "dagoTest" or "adTest", for Shapiro-Wilk, D'Agostino and Anderson-Darling normality tests, respectively.}
 
 \item{t_ci}{Time for calculation of combination index value. The value of the CI represents the proportion of tumor cell survival at time \code{t_ci}
 in the drug combination group compared to the expected tumor cell survival according to the reference model. If not specified, \code{t_ci} is set to the

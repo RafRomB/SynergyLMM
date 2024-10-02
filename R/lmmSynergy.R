@@ -13,9 +13,6 @@
 #' @param type Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3". 
 #' See "Details" section of [clubSandwich::vcovCR()] for further information.
 #' @param ra_nsim Number of simulations to calculate the synergy for Response Additivity model.
-#' @param norm_test If `method` is set to "RA", string indicating the test for checking the 
-#' normality of the hypothesis expression of synergy (see "Warning#3" in "Description" section of [marginaleffects::hypotheses()]).
-#' Possible values are "shapiroTest", "dagoTest" or "adTest", for Shapiro-Wilk, D'Agostino and Anderson-Darling normality tests, respectively.
 #' @param t_ci Time for calculation of combination index value. The value of the CI represents the proportion of tumor cell survival at time `t_ci` 
 #' in the drug combination group compared to the expected tumor cell survival according to the reference model. If not specified, `t_ci` is set to the
 #' last time point of follow-up.
@@ -34,7 +31,6 @@ lmmSynergy <- function(model,
                     robustSE = FALSE,
                     type = "CR2",
                     ra_nsim = 1000,
-                    norm_test = "shapiroTest",
                     t_ci = NULL,
                     show_plot = TRUE,
                     ...) {
