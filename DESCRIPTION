@@ -18,10 +18,14 @@ Imports:
     nlmeU,
     fBasics,
     car,
+    MASS,
     performance,
     lattice,
-    marginaleffects
+    marginaleffects,
+    clubSandwich
 Suggests: 
     testthat (>= 3.0.0),
-    clubSandwich
 Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
+LazyData: true
