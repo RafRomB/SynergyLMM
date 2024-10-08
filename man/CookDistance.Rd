@@ -2,21 +2,59 @@
 % Please edit documentation in R/lmmDiagnostics.R
 \name{CookDistance}
 \alias{CookDistance}
-\title{Cook's distance for the coefficient estimates.}
+\title{Cook's distance for the coefficient estimates}
 \usage{
-CookDistance(model, cook_thr = 0, label_angle = 0)
+CookDistance(model, cook_thr = NA, label_angle = 0)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
-\item{cook_thr}{Threshold for the Cook's distance.}
+\item{cook_thr}{Numeric value indicating the threshold for the Cook's distance. If not specified, the threshold is set to the 90\% percentile of the Cook's
+distance values.}
 
-\item{label_angle}{Angle for the label of subjects with a Cook's distance greater than \code{cook_thr}.}
+\item{label_angle}{Numeric value indicating the angle for the label of subjects with a Cook's distance greater than \code{cook_thr}.}
 }
 \value{
 Plot of the Cook's distance value for each subject, indicating those subjects
 whose Cook's distance is greater than \code{cook_thr}.
 }
 \description{
-Cook's distance for the coefficient estimates.
+\code{CookDistance} allows the user to identify those subjects with a greater influence in the estimation of the
+\eqn{\beta} (tumor growth rate) for the treatment group, based in the calculation of Cook's distances.
+}
+\details{
+The identification of the subjects with a greater influence in each estimated \eqn{\beta} representing the tumor growth is based on the calculation of Cook's distances, as
+described in Gałecki and Burzykowsk (2013). To compute the Cook's distance for the \eqn{\beta} estimates (i.e., the contribution to each subject to the coefficient of its treatment group),
+first a matrix containing the leave-one-subject-out estimates or \eqn{\beta} is calculated. Then, the Cook's distances are calculated according to:
+
+\deqn{D_i \equiv  \frac{(\hat{\beta} - \hat{\beta}_{(-i)})[\widehat{Var(\hat{\beta})}]^{-1}(\hat{\beta} - \hat{\beta}_{(-i)})}{rank(X)}}
+
+where \eqn{\hat{\beta}_{(-i)}} is the estimate of the parameter vector \eqn{\beta} obtained by fitting the model to the data with the \eqn{i}-th subject excluded. The denominator of
+the expression is equal to the number of the fixed-effects coefficients, which, under the assumption that the design matrix is of full rank, is equivalent to the rank of the design matrix.
+}
+\examples{
+#' # Load the example data
+data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  ) 
+# Calulate Cook's distances for each subject
+CookDistance(model = lmm)
+# Change the Cook's distance threshold
+CookDistance(model = lmm, cook_thr = 0.15)
+
+}
+\references{
+\itemize{
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
 }

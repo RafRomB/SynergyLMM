@@ -2,7 +2,7 @@
 % Please edit documentation in R/lmmDiagnostics.R
 \name{logLikSubjectDisplacements}
 \alias{logLikSubjectDisplacements}
-\title{Likelihood displacement for the model.}
+\title{Likelihood displacements for the model}
 \usage{
 logLikSubjectDisplacements(
   model,
@@ -15,12 +15,13 @@ logLikSubjectDisplacements(
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
-\item{disp_thrh}{Threshold of log-likelihood displacement. If not specified, the threshold is set to the value of the third quartile of log-likelihood
+\item{disp_thrh}{Numeric value indicating the threshold of log-likelihood displacement. If not specified, the threshold is set to the 90\% percentile of the log-likelihood
 displacement values.}
 
-\item{label_angle}{Angle for the label of subjects with a log-likelihood displacement greater than \code{disp_thrh}.}
+\item{label_angle}{Numeric value indicating the angle for the label of subjects with a log-likelihood displacement greater than \code{disp_thrh}.}
 
-\item{var_name}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.}
+\item{var_name}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.
+(See examples in \code{\link[=lmmModel]{lmmModel()}}).}
 
 \item{...}{Extra arguments, if any, for \link[lattice:panel.xyplot]{lattice::panel.xyplot}.}
 }
@@ -43,6 +44,43 @@ maximum and displaced values of estimated parameters (Verbeke and Molenberghs (2
 
 where \eqn{\widehat{\Theta}} is the maximum-likelihood estimate of \eqn{\Theta} obtained by fitting the model to all data, while \eqn{\widehat{\Theta}_{-i}} is
 the maximum-likelihood estimate obtained by fitting the model to the data with the \eqn{i}-subject excluded.
+}
+\examples{
+# Load the example data
+data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  ) 
+# Obtain log-likelihood displacement for each subject
+logLikSubjectDisplacements(model = lmm)
+# Modifying the threshold for log-likelihood displacement
+logLikSubjectDisplacements(model = lmm, disp_thrh = 1.5)
+
+# Calculating the log-likelihood contribution in a model with a variance structure specified
+lmm_var <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination",
+  weights = nlme::varIdent(form = ~ 1|SampleID)
+  ) 
+# Calculate the log-likelihood contribution
+logLikSubjectDisplacements(model = lmm, var_name = "SampleID")
+
 }
 \references{
 \itemize{

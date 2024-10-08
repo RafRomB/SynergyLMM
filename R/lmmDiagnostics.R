@@ -538,15 +538,16 @@ logLikSubjectContributions <- function(model,
   return(lLikU + lLik.s) # "Displaced" log-likelihood
 } 
 
-#' @title Likelihood displacement for the model.
+#' @title Likelihood displacements for the model
 #' @description
 #' `logLikSubjectDisplacements` allows the user to evaluate the log-likelihood displacement for each subject, 
 #' indicating the influence of every subject to the model.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @param disp_thrh Threshold of log-likelihood displacement. If not specified, the threshold is set to the value of the third quartile of log-likelihood
+#' @param disp_thrh Numeric value indicating the threshold of log-likelihood displacement. If not specified, the threshold is set to the 90% percentile of the log-likelihood
 #' displacement values.
-#' @param label_angle Angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
+#' @param label_angle Numeric value indicating the angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
+#' (See examples in [`lmmModel()`]).
 #' @param ... Extra arguments, if any, for [lattice::panel.xyplot].
 #' @details
 #' The evaluation of the log-likelihood displacement is based in the analysis proposed in Verbeke and Molenberghs (2009) and Gałecki and Burzykowski (2013).
@@ -566,6 +567,41 @@ logLikSubjectContributions <- function(model,
 #' @references 
 #' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
 #' - Molenberghs, G., & Verbeke, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+#' @examples
+#' # Load the example data
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   ) 
+#' # Obtain log-likelihood displacement for each subject
+#' logLikSubjectDisplacements(model = lmm)
+#' # Modifying the threshold for log-likelihood displacement
+#' logLikSubjectDisplacements(model = lmm, disp_thrh = 1.5)
+#' 
+#' # Calculating the log-likelihood contribution in a model with a variance structure specified
+#' lmm_var <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination",
+#'   weights = nlme::varIdent(form = ~ 1|SampleID)
+#'   ) 
+#' # Calculate the log-likelihood contribution
+#' logLikSubjectDisplacements(model = lmm, var_name = "SampleID")
 #' 
 #' @export
 logLikSubjectDisplacements <- function(model,
@@ -597,7 +633,7 @@ logLikSubjectDisplacements <- function(model,
   # Plot of the likelihood displacements with an indication of outlying values
   
   if(is.na(disp_thrh)){
-    disp_thrh <- round(quantile(dif.2Lik, probs = 0.75),3)
+    disp_thrh <- round(quantile(dif.2Lik, probs = 0.9),3)
   }
   
   outL <- dif.2Lik > disp_thrh # Outlying LDi's
@@ -670,15 +706,53 @@ logLikSubjectDisplacements <- function(model,
   CookD.value <- t(dbetaU) %*% vb.inv %*% dbetaU # Compute Cook distance (Gałecki, A., & Burzykowski, T. (2013)
 }
 
-#' @title Cook's distance for the coefficient estimates.
+#' @title Cook's distance for the coefficient estimates
+#' @description
+#' `CookDistance` allows the user to identify those subjects with a greater influence in the estimation of the
+#' \eqn{\beta} (tumor growth rate) for the treatment group, based in the calculation of Cook's distances.
+#' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @param cook_thr Threshold for the Cook's distance.
-#' @param label_angle Angle for the label of subjects with a Cook's distance greater than `cook_thr`.
+#' @param cook_thr Numeric value indicating the threshold for the Cook's distance. If not specified, the threshold is set to the 90% percentile of the Cook's
+#' distance values.
+#' @param label_angle Numeric value indicating the angle for the label of subjects with a Cook's distance greater than `cook_thr`.
+#' @details
+#' The identification of the subjects with a greater influence in each estimated \eqn{\beta} representing the tumor growth is based on the calculation of Cook's distances, as
+#' described in Gałecki and Burzykowsk (2013). To compute the Cook's distance for the \eqn{\beta} estimates (i.e., the contribution to each subject to the coefficient of its treatment group), 
+#' first a matrix containing the leave-one-subject-out estimates or \eqn{\beta} is calculated. Then, the Cook's distances are calculated according to:
+#' 
+#' \deqn{D_i \equiv  \frac{(\hat{\beta} - \hat{\beta}_{(-i)})[\widehat{Var(\hat{\beta})}]^{-1}(\hat{\beta} - \hat{\beta}_{(-i)})}{rank(X)}}
+#' 
+#' where \eqn{\hat{\beta}_{(-i)}} is the estimate of the parameter vector \eqn{\beta} obtained by fitting the model to the data with the \eqn{i}-th subject excluded. The denominator of 
+#' the expression is equal to the number of the fixed-effects coefficients, which, under the assumption that the design matrix is of full rank, is equivalent to the rank of the design matrix.
+#' 
 #' @returns Plot of the Cook's distance value for each subject, indicating those subjects
 #' whose Cook's distance is greater than `cook_thr`.
+#' 
+#' @references 
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' @examples
+#' #' # Load the example data
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   ) 
+#' # Calulate Cook's distances for each subject
+#' CookDistance(model = lmm)
+#' # Change the Cook's distance threshold
+#' CookDistance(model = lmm, cook_thr = 0.15)
+#' 
 #' @export
 CookDistance <- function(model,
-                       cook_thr = 0,
+                       cook_thr = NA,
                        label_angle = 0) {
   subject.c <- levels(model$data$SampleID)
   lmeUall <- lapply(subject.c, .lmeU, model = model)
@@ -696,6 +770,10 @@ CookDistance <- function(model,
   n.fixeff <- length(beta0) # Number of fixed effects
   rankX <- n.fixeff # Rank of matrix X
   CookD <- CookD.num / rankX # Cook's distance Di
+  
+  if(is.na(cook_thr)){
+    cook_thr <- round(quantile(CookD, probs = 0.9),3)
+  }
   
   outD <- CookD > cook_thr # Outlying Di's
   
