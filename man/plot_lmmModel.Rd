@@ -2,7 +2,7 @@
 % Please edit documentation in R/Visualization.R
 \name{plot_lmmModel}
 \alias{plot_lmmModel}
-\title{Vizualization of tumor growth data and linear mixed model fitted regression line.}
+\title{Plotting of tumor growth data from a fitted model}
 \usage{
 plot_lmmModel(
   model,
@@ -28,5 +28,37 @@ A ggplot2 plot (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more det
 The regression lines corresponding to the fixed effects for each treatment group are also plotted.
 }
 \description{
-Vizualization of tumor growth data and linear mixed model fitted regression line.
+Vizualization of tumor growth data and linear mixed model fitted regression line for the fixed effects. This functions returns a \link{ggplot2} plot, allowing for
+further personalization.
+}
+\examples{
+#' data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination",
+  show_plot = FALSE
+  )
+# Default plot
+plot_lmmModel(lmm,
+trt_control = "Control",
+drug_a = "DrugA",
+drug_b = "DrugB",
+drug_ab = "Combination"
+)
+# Adding ggplot2 elements
+plot_lmmModel(lmm,
+trt_control = "Control",
+drug_a = "DrugA",
+drug_b = "DrugB",
+drug_ab = "Combination"
+) + ggplot2::labs(title = "Example Plot") + ggplot2::theme(legend.position = "top")
+
 }

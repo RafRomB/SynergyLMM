@@ -5,8 +5,10 @@
 #' @importFrom cowplot plot_grid
 NULL
 
-
-#' @title Vizualization of tumor growth data and linear mixed model fitted regression line.
+#' @title Plotting of tumor growth data from a fitted model
+#' @description
+#'  Vizualization of tumor growth data and linear mixed model fitted regression line for the fixed effects. This functions returns a [ggplot2] plot, allowing for
+#'  further personalization.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param trt_control String indicating the name assigned to the 'Control' group.
 #' @param drug_a String indicating the name assigned to the 'Drug A' group.
@@ -14,6 +16,36 @@ NULL
 #' @param drug_ab String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) showing the tumor growth data represented as log(relative tumor volume) versus time since treatment initiation. 
 #' The regression lines corresponding to the fixed effects for each treatment group are also plotted.
+#' @examples
+#' #' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination",
+#'   show_plot = FALSE
+#'   )
+#' # Default plot
+#' plot_lmmModel(lmm,
+#' trt_control = "Control",
+#' drug_a = "DrugA",
+#' drug_b = "DrugB",
+#' drug_ab = "Combination"
+#' )
+#' # Adding ggplot2 elements
+#' plot_lmmModel(lmm,
+#' trt_control = "Control",
+#' drug_a = "DrugA",
+#' drug_b = "DrugB",
+#' drug_ab = "Combination"
+#' ) + ggplot2::labs(title = "Example Plot") + ggplot2::theme(legend.position = "top")
+#' 
 #' @export
 plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", drug_b = "Drug_B", drug_ab= "Drug_AB"){
   segment_data <- data.frame(x = rep(0,4), 
@@ -39,13 +71,36 @@ plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", dru
 }
 
 
-#' @title Visualization of random effects diagnostics for a fitted linear mixed model of tumor growth data.
+
+#' @title Plots for random effects diagnostics
+#' @description
+#' Visualization of random effects diagnostics for a fitted linear mixed model of tumor growth data.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @returns A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
 #' - A normal Q-Q plot of the random effects of the model.
 #' - A normal Q-Q plot of the residuals by sample.
 #' - Boxplots of the conditional residuals by sample.
 #' - Dotplots of the pearson residuals vs fitted values by sample.
+#' @examples
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination",
+#'   show_plot = FALSE
+#'   )
+#' # Generate plots 
+#' plot_ranefDiagnostics(lmm)
+#' # Access to specific plots
+#' plot_ranefDiagnostics(lmm)[[1]]
+#' plot_ranefDiagnostics(lmm)[[2]]
 #' @export
 plot_ranefDiagnostics <- function(model){
   # Individual Plots
@@ -62,7 +117,9 @@ plot_ranefDiagnostics <- function(model){
   return(list(p1,p2,p3,p4,p5))
 }
 
-#' @title Visualization of residuals diagnostics for a fitted linear mixed model of tumor growth data.
+#' @title Plots for residuals diagnostics
+#' @description
+#' Visualization of residuals diagnostics for a fitted linear mixed model of tumor growth data.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @returns A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
 #' - A normal Q-Q plot of the normalized residuals of the model.
@@ -70,6 +127,26 @@ plot_ranefDiagnostics <- function(model){
 #' - A normal Q-Q plot of the normalized residuals of the model by Treatment.
 #' - A dotplot of pearson residuals vs fitted values.
 #' - A dotplot of the pearson residuals by Time and Treatment.
+#' @examples
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination",
+#'   show_plot = FALSE
+#'   )
+#' # Generate plots 
+#' plot_residDiagnostics(lmm)
+#' # Access to specific plots
+#' plot_residDiagnostics(lmm)[[1]]
+#' plot_residDiagnostics(lmm)[[2]]
 #' @export
 plot_residDiagnostics <- function(model){
   # Individual Plots
@@ -87,11 +164,35 @@ plot_residDiagnostics <- function(model){
   return(list(p1,p2,p3,p4,p5,p6))
 }
 
-#' @title Visualization of observed vs predicted values by a fitted linear mixed model of tumor growth data.
+#' @title Plots of Observed vs Predicted Values
+#' @description
+#' Visualization of observed vs predicted values by a fitted linear mixed model of tumor growth data.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
-plot_ObsvsPred <- function(model, nrow, ncol){
+#' @returns A layout (arranged in `nrow` rows and `ncol` columns) of the observed and predicted values of \eqn{log}(relative tumor volume) vs Time for each SampleID (i.e. subject), 
+#' with the actual measurements, the regression line for each SampleID, and the marginal, treatment-specific, 
+#' regression line for each treatment group.
+#' @examples
+#' #' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination",
+#'   show_plot = FALSE
+#'   )
+#' # Obtain the plots
+#' plot_ObsvsPred(lmm, nrow = 4, ncol = 8)    
+#' 
+#' @export
+plot_ObsvsPred <- function(model, nrow = 4, ncol = 5){
   TV.df <- model$data
   aug.Pred <- nlme::augPred(model, primary = ~Time, level = 0:1, length.out = 2, minimum = 0)
   plot(aug.Pred, layout = c(ncol, nrow, 1), lty = c(1,2),
