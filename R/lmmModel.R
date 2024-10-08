@@ -2,12 +2,29 @@
 NULL
 
 #' @title Helper function to calculate the relative tumor volume from an imput data frame of tumor growth
-#' @param data Data frame with the tumor growth data.
+#' 
+#' @description
+#' `.getRTV` is a helper function used inside [`lmmModel()`] to obtain a dataframe with a column _RTV_ corresponding
+#' to the relative tumor volume to time `time_start`, and a column _logRTV_ with the logarithm of _RTV_. 
+#' 
+#' @param data Data frame with the tumor growth data. The input data frame columns have to have the following names:
+#' - `SampleID`: Column with the identifiers for each sample.
+#' - `Time`: Column with the time for each measurement.
+#' - `TV`: Column with the tumor volume measurement.
 #' @param time_start Numeric value indicating the time at which the treatment started.
 #' @returns The function returns the original data frame of tumor growth data, with 3 additional columns, corresponding to:
 #' - RTV: Relative tumor volume to the tumor volume at `start_time`.
 #' - logRTV: Logarithm of RTV column.
 #' - TV0: Tumor volume at `start_time`.
+#' @examples
+#' # Load example dataset
+#' data("grwth_data")
+#' # Change column names
+#' colnames(grwth_data) <- c("SampleID", "Time", "Treatment", "TV")
+#' # Calculate relative tumor volume
+#' .getRTV(data = grwth_data, time_start = 0)
+
+#' 
 #' @export
 .getRTV <- function(data, time_start) {
   TV.df <- data
@@ -53,10 +70,15 @@ NULL
   return(TV.df)
 }
 
-#' @title Generate Linear Mixed Model for synergy calculation
+#' @title Linear Mixed Effect Model for Tumor Growth
+#' 
+#' @description
+#' `lmmModel()` fits a linear mixed effect model from a tumor growth dataset. The input data frame must be in long format and include at least the following columns: column with the sample ids,
+#' column with the time at which each measurement has been done, a column indicating the treatment group, and a column with the tumor measurement (e.g. tumor volume).
+#' 
 #' 
 #' @param data A data frame with the tumor growth data, in long format.
-#' It must contain at least contain the following columns: mice IDs, time of follow-up (numeric number), treatment and tumor volume (numeric number).
+#' It must contain at least the following columns: mice IDs, time of follow-up (numeric number), treatment and tumor volume (numeric number).
 #' @param sample_id String indicating the name of the column with the mice IDs.
 #' @param time String indicating the name of the column with the time of follow-up.
 #' @param treatment String indicating the name of the column with the treatment corresponding to each sample.
@@ -66,12 +88,82 @@ NULL
 #' @param drug_b String indicating the name assigned to the 'Drug B' group.
 #' @param drug_ab String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
 #' @param time_start Numeric value indicating the time point at which the treatment started.
-#' @param time_end Numeric value indicating the last time point to be included in the analysis. 
-#' @param min_observations Minimum number of observation for each sample to be included in the analysis.
+#' @param time_end Numeric value indicating the last time point to be included in the analysis. If not
+#' specified, the maximum value in the `time` column is used as the final time point.
+#' @param min_observations Minimum number of observation for each sample to be included in the analysis. 
 #' @param show_plot Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Time for each sample, 
 #' and the model calculated marginal slope for each treatment, should be produced.
 #' @param ... Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.
-#' @return An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. 
+#' 
+#' @details
+#' The model formula for the fitted model is:
+#' \deqn{\log RTV_{i}(t) = \beta_C \cdot t  \cdot Treatment_i^C + \beta_A \cdot t  \times Treatment_i^A + \beta_B \cdot t  \cdot Treatment_i^B + \beta_{AB} \cdot t  \cdot Treatment_i^{AB} + b_i \cdot t + \varepsilon_{i} (t).}
+#' 
+#' The term \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. In the fixed-effect part of the model, 
+#' \eqn{\beta_C}, \eqn{\beta_A}, \eqn{\beta_B} and \eqn{\beta_{AB}} are the coefficients corresponding to the specific growth rate for each treatment group, \eqn{t} is the time of measurement 
+#' and \eqn{Treatment^C}, \eqn{Treatment^A}, \eqn{Treatment^B}, and \eqn{Treatment^{AB}}, are the dummy variables for the treatment groups Control, Drug A, Drug B and Combination (Drug A+B), 
+#' respectively. In the random-effects part of the model, \eqn{b_i} is the random slope associated with time representing the subject-specific growth-rate. 
+#' Finally, \eqn{\varepsilon_{i}(t)} is the residual random error.
+#' 
+#' 
+#' The implementation of the linear mixed model in `lmmModel()` is done using \code{nlme::\link[nlme:lme]{lme}}, which also allows for the 
+#' specification of within-group correlations structures and/or unequal variances. These, and additional parameters,
+#' can be passed to the \code{nlme::\link[nlme:lme]{lme}} function through the `...` argument for fitting the model (see examples below).
+#' 
+#' 
+#' @return An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. If `show_plot = TRUE`, the plot
+#' of the tumor growth data is also shown. 
+#' @references
+#' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 <https://doi.org/10.1007/b98882>.
+#' - Pinheiro J, Bates D, R Core Team (2024). _nlme: Linear and Nonlinear Mixed Effects Models_. R package version 3.1-166, <https://CRAN.R-project.org/package=nlme>.
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' 
+#' @examples
+#' data("grwth_data")
+#' # Most simple model
+#' lmmModel(
+#'  data = grwth_data,
+#'  sample_id = "subject",
+#'  time = "Time",
+#'  treatment = "Treatment",
+#'  tumor_vol = "TumorVolume",
+#'  trt_control = "Control",
+#'  drug_a = "DrugA",
+#'  drug_b = "DrugB",
+#'  drug_ab = "Combination"
+#'  )
+
+#'# Changing the last time point of follow-up
+#'lmmModel(
+#'  data = grwth_data,
+#'  sample_id = "subject",
+#'  time = "Time",
+#'  treatment = "Treatment",
+#'  tumor_vol = "TumorVolume",
+#'  trt_control = "Control",
+#'  drug_a = "DrugA",
+#'  drug_b = "DrugB",
+#'  drug_ab = "Combination",
+#'  time_end = 21
+#'  )
+
+#'# Adding additional parameters for model fitting
+#'lmmModel(
+#'  data = grwth_data,
+#'  sample_id = "subject",
+#'  time = "Time",
+#'  treatment = "Treatment",
+#'  tumor_vol = "TumorVolume",
+#'  trt_control = "Control",
+#'  drug_a = "DrugA",
+#'  drug_b = "DrugB",
+#'  drug_ab = "Combination",
+#'  # Adding variance function to represent a different variance per subject
+#'  weights = nlme::varIdent(form = ~1|SampleID),
+#'  # Specifiying control values for lme Fit (useful when convergence problems appear)
+#'  control = nlme::lmeControl(maxIter = 1000, msMaxIter = 1000, niterEM = 100, msMaxEval = 1000)
+#'  )
+#' 
 #' @export
 lmmModel <- function(data,
                      sample_id = "SampleID",

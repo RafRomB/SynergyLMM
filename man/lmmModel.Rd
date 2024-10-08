@@ -2,7 +2,7 @@
 % Please edit documentation in R/lmmModel.R
 \name{lmmModel}
 \alias{lmmModel}
-\title{Generate Linear Mixed Model for synergy calculation}
+\title{Linear Mixed Effect Model for Tumor Growth}
 \usage{
 lmmModel(
   data,
@@ -23,7 +23,7 @@ lmmModel(
 }
 \arguments{
 \item{data}{A data frame with the tumor growth data, in long format.
-It must contain at least contain the following columns: mice IDs, time of follow-up (numeric number), treatment and tumor volume (numeric number).}
+It must contain at least the following columns: mice IDs, time of follow-up (numeric number), treatment and tumor volume (numeric number).}
 
 \item{sample_id}{String indicating the name of the column with the mice IDs.}
 
@@ -43,7 +43,8 @@ It must contain at least contain the following columns: mice IDs, time of follow
 
 \item{time_start}{Numeric value indicating the time point at which the treatment started.}
 
-\item{time_end}{Numeric value indicating the last time point to be included in the analysis.}
+\item{time_end}{Numeric value indicating the last time point to be included in the analysis. If not
+specified, the maximum value in the \code{time} column is used as the final time point.}
 
 \item{min_observations}{Minimum number of observation for each sample to be included in the analysis.}
 
@@ -53,8 +54,76 @@ and the model calculated marginal slope for each treatment, should be produced.}
 \item{...}{Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.}
 }
 \value{
-An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit.
+An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. If \code{show_plot = TRUE}, the plot
+of the tumor growth data is also shown.
 }
 \description{
-Generate Linear Mixed Model for synergy calculation
+\code{lmmModel()} fits a linear mixed effect model from a tumor growth dataset. The input data frame must be in long format and include at least the following columns: column with the sample ids,
+column with the time at which each measurement has been done, a column indicating the treatment group, and a column with the tumor measurement (e.g. tumor volume).
+}
+\details{
+The model formula for the fitted model is:
+\deqn{\log RTV_{i}(t) = \beta_C \cdot t  \cdot Treatment_i^C + \beta_A \cdot t  \times Treatment_i^A + \beta_B \cdot t  \cdot Treatment_i^B + \beta_{AB} \cdot t  \cdot Treatment_i^{AB} + b_i \cdot t + \varepsilon_{i} (t).}
+
+The term \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. In the fixed-effect part of the model,
+\eqn{\beta_C}, \eqn{\beta_A}, \eqn{\beta_B} and \eqn{\beta_{AB}} are the coefficients corresponding to the specific growth rate for each treatment group, \eqn{t} is the time of measurement
+and \eqn{Treatment^C}, \eqn{Treatment^A}, \eqn{Treatment^B}, and \eqn{Treatment^{AB}}, are the dummy variables for the treatment groups Control, Drug A, Drug B and Combination (Drug A+B),
+respectively. In the random-effects part of the model, \eqn{b_i} is the random slope associated with time representing the subject-specific growth-rate.
+Finally, \eqn{\varepsilon_{i}(t)} is the residual random error.
+
+The implementation of the linear mixed model in \code{lmmModel()} is done using \code{nlme::\link[nlme:lme]{lme}}, which also allows for the
+specification of within-group correlations structures and/or unequal variances. These, and additional parameters,
+can be passed to the \code{nlme::\link[nlme:lme]{lme}} function through the \code{...} argument for fitting the model (see examples below).
+}
+\examples{
+data("grwth_data")
+# Most simple model
+lmmModel(
+ data = grwth_data,
+ sample_id = "subject",
+ time = "Time",
+ treatment = "Treatment",
+ tumor_vol = "TumorVolume",
+ trt_control = "Control",
+ drug_a = "DrugA",
+ drug_b = "DrugB",
+ drug_ab = "Combination"
+ )
+# Changing the last time point of follow-up
+lmmModel(
+ data = grwth_data,
+ sample_id = "subject",
+ time = "Time",
+ treatment = "Treatment",
+ tumor_vol = "TumorVolume",
+ trt_control = "Control",
+ drug_a = "DrugA",
+ drug_b = "DrugB",
+ drug_ab = "Combination",
+ time_end = 21
+ )
+# Adding additional parameters for model fitting
+lmmModel(
+ data = grwth_data,
+ sample_id = "subject",
+ time = "Time",
+ treatment = "Treatment",
+ tumor_vol = "TumorVolume",
+ trt_control = "Control",
+ drug_a = "DrugA",
+ drug_b = "DrugB",
+ drug_ab = "Combination",
+ # Adding variance function to represent a different variance per subject
+ weights = nlme::varIdent(form = ~1|SampleID),
+ # Specifiying control values for lme Fit (useful when convergence problems appear)
+ control = nlme::lmeControl(maxIter = 1000, msMaxIter = 1000, niterEM = 100, msMaxEval = 1000)
+ )
+
+}
+\references{
+\itemize{
+\item Pinheiro JC, Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. Springer, New York. doi:10.1007/b98882 \url{https://doi.org/10.1007/b98882}.
+\item Pinheiro J, Bates D, R Core Team (2024). \emph{nlme: Linear and Nonlinear Mixed Effects Models}. R package version 3.1-166, \url{https://CRAN.R-project.org/package=nlme}.
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
 }
