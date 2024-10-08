@@ -15,5 +15,33 @@ the standard deviation of the random effects, and the standard deviation of the 
 These values can be useful for the power analysis of the model using \code{\link[=APrioriPwr]{APrioriPwr()}}.
 }
 \description{
-Get estimates from a linear mixed model of tumor growth data
+\code{lmmModel_estimates} allows the user to easily extract some of the interesting model estimates for further use in other functions,
+such as for power calculation.
+}
+\details{
+The model estimates provided by \code{lmmModel_estimates} include:
+\itemize{
+\item Fixed effect coefficients: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}},
+which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
+These are shown in columns \code{control}, \code{drug_a}, \code{drug_b}, and \code{combination}, respectively.
+\item Standard error of the random effects (between-subject variance). Column \code{sd_ranef}.
+\item Standard error of the residuals (within-subject variance). Column \code{sd_resid}.
+}
+}
+\examples{
+data("grwth_data")
+# Fit example model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  ) 
+# Get the estimates
+lmmModel_estimates(lmm)
 }
