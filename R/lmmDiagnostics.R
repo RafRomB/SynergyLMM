@@ -1,14 +1,73 @@
 # Random Effects Diagnostics ----
-#' @title Diagnostics of random effects of the linear mixed model.
+#' @title Diagnostics of random effects of the linear mixed model
+#' 
+#' @description
+#' `ranefDiagnostics` provides several plots as well as statistical test for the examination
+#' of the normality of the random effects of the input model.
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @import ggplot2
+#' @details
+#' One of the assumptions of the model obtained with [`lmmModel()`] (as in any other linear mixed model) is that
+#' the random effects are normally distributed:
+#' 
+#' \deqn{b_i = N(0,\psi)}
+#' 
+#' For the evaluation of this assumption, `ranefDiagnostics` provides Q-Q plots of the normalized residuals, 
+#' together with statistical assessment of their normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. 
+#' Additionally, Q-Q plots of the normalized residuals by time point and treatment group are provided to be able to detect time 
+#' points or treatment groups which could be notably different from the others and be affecting the adequacy of the model. 
+#' Additionally, scatter plots of the conditional Pearson residuals versus fitted values and Pearson residuals per time and per 
+#' treatment are provided to give information about variability of the residuals and possible outlier observations. 
+#' Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution 
+#' are identified and reported as potential outlier observations.
+#' 
 #' @returns A list with different elements for the diagnostics of the random effects are produced:
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 #' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
-#' - `Levene.test`: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by SampleID.
-#' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by SampleID.
+#' - `Levene.test`: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by SampleID (i.e. by subject).
+#' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by SampleID (i.e. by subject).
+#' 
+#' @references
+#' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 <https://doi.org/10.1007/b98882>.
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' 
+#' @examples
+#' # Load the example data
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   )
+#' # Run random effects diagnostics
+#' ranef_diag <- ranefDiagnostics(lmm)
+#' 
+#' #Access to individual plots
+#' 
+#' ranef_diag$Plots[1]
+#' ranef_diag$Plots[2]
+#' 
+#' # Access to normality tests
+#' 
+#' ranef_diag$Normality
+#' 
+#' ranef_diag$Normality$Shapiro.test
+#' 
+#' # Access to homoscedasticity tests of residuals by subject
+#' 
+#' ranef_diag$Levene.test
+#' 
+#' ranef_diag$Fligner.test
+#' 
 #' @export
 
 ranefDiagnostics <- function(model){
@@ -100,15 +159,66 @@ ranefDiagnostics <- function(model){
 
 # Residual Diagnostics ----
 
-#' @title Diagnostics of residuals of the linear mixed model.
+#' @title Diagnostics of residuals of the linear mixed model
+#' 
+#' @description
+#' `residDiagnostics` provides several plots as well as statistical test for the examination
+#' of the normality of the residuals of the input model.
 #' 
 #' @param model  An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param pvalue Threshold for the p-value of outlier observations based on their Pearson residuals.
+#' 
+#' @details
+#' One of the assumption of the model fit by [`lmmModel()`] is that the residuals are normally distributed:
+#' 
+#' \deqn{\varepsilon_{i} \sim \mathcal{N}(0, \sigma^2)}
+#' 
+#' For the evaluation of this assumption, `residDiagnostics` provides Q-Q plots of the normalized residuals, together with statistical assessment of their 
+#' normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and 
+#' treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be 
+#' affecting the adequacy of the model. Additionally, scatter plots of the conditional Pearson residuals versus fitted values and Pearson residuals 
+#' per time and per treatment are provided to give information about variability of the residuals and possible outlier observations. 
+#' Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution 
+#' are identified and reported as potential outlier observations.
+#' 
 #' @returns A list with different elements for the diagnostics of the residuals are produced:
 #' - `plots`: Different plots for evaluating the normality and homocedasticity of the residuals.
-#' - `outliers`: Data frame with the identified outliers based on the Pearson residuals and the value of `pval`.
+#' - `outliers`: Data frame with the identified outliers based on the Pearson residuals and the value of `pval`. The column `resid.p` contains the
+#' value of the Pearson residuals for each observation.
 #' - `Normality`: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
+#' 
+#' @references
+#' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 <https://doi.org/10.1007/b98882>.
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' 
+#' @examples
+#' # Load the example data
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   )
+#' # Residuals diagnostics
+#' resid_diag <- residDiagnostics(model = lmm, pvalue = 0.05)
+#' # Access outliers data frame
+#' resid_diag$outliers
+#' # Access individual plots
+#' resid_diag$plots[1]
+#' resid_diag$plots[2]
+#' 
+#' # Access results of normality tests
+#' resid_diag$Normality
+#' resid_diag$Normality$Shapiro.test
+#'
 #' @export
 residDiagnostics <- function(model, pvalue=0.05){
   # Plots
@@ -142,7 +252,9 @@ residDiagnostics <- function(model, pvalue=0.05){
     idx <- abs(resid.p) > -qnorm(pvalue / 2) # Indicator vector
   })
   print("Outlier observations")
-  print(outliers <- subset(outliers.idx, idx)) # Data with outliers
+  outliers <- subset(outliers.idx, idx) # Data with outliers
+  outliers <- outliers[,-8]
+  print(outliers)
   
   return(invisible(
     list(
@@ -156,17 +268,51 @@ residDiagnostics <- function(model, pvalue=0.05){
 # Observed vs predicted ----
 
 #' @title Observed vs predicted values and performance of the model
+#' 
+#' @description
+#' `ObsvsPred` allows the user to have a straight forward idea about how the model is fitting the data, providing
+#' plots of the predicted regression lines versus the actual data points.
+#' 
+#' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nrow Number of rows of the layout to organize the observed vs predicted plots.
 #' @param ncol Number of columns of the layout to organize the observed vs predicted plots.
 #' @param ... Additional arguments to be passed to [performance::model_performance()].
 #' @details
 #'  The function provides visual and quantitative information about the performance of the model:
-#' - A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID, 
+#' - A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID (i.e. subject), 
 #' with the actual measurements, the regression line for each SampleID, and the marginal, treatment-specific, 
 #' regression line for each treatment group.
-#' - Performance metrics of the model obtain calculated using [performance::model_performance()].
+#' - Performance metrics of the model obtain calculated using [performance::model_performance()]. The maximum likelihood-based Akaike's Information Criterion (AIC), 
+#' small sample AIC (AICc), and Bayesian Information Criterion, and the Nakagawa's r-squared 
+#' root mean squared error (RMSE) of the residuals, and the standard deviation of the residuals (sigma) are provided.
+#' 
 #' @returns A layout of the observed vs predicted values for each SampleID and model performance metrics.
+#' 
+#' @references
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' - Lüdecke et al., (2021). _performance: An R Package for Assessment, Comparison and Testing of Statistical Models_. Journal of Open Source Software, 6(60), 3139. https://doi.org/10.21105/joss.03139
+#' - Sakamoto, Y., M. Ishiguro, and G. Kitagawa. 1984. _Akaike Information Criterion Statistics_. Mathematics and Its Applications. Reidel.
+#' - Nakagawa, Shinichi, and Holger Schielzeth. 2013. _A General and Simple Method for Obtaining r2 from Generalized Linear Mixed-effects Models_. Methods in Ecology and Evolution 4 (February): 133–42. https://doi.org/10.1111/j.2041-210x.2012.00261.x.
+#' - Johnson, Paul C. D. 2014. _Extension of Nakagawa & Schielzeth’s r 2 GLMM to Random Slopes Models_. Methods in Ecology and Evolution 5 (September): 944–46. https://doi.org/10.1111/2041-210X.12225.
+#' - Nakagawa, Shinichi, Paul C. D. Johnson, and Holger Schielzeth. 2017. _The Coefficient of Determination r2 and Intra-Class Correlation Coefficient from Generalized Linear Mixed-Effects Models Revisited and Expanded_. Journal of The Royal Society Interface 14 (September): 20170213. https://doi.org/10.1098/rsif.2017.0213.
+#' @examples
+#' # Load the example data
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   )
+#'# Obtain Observed vs Predicted plots, and model performance metrics
+#' ObsvsPred(model = lmm, nrow = 4, ncol = 8)
 #' @export
 ObsvsPred <- function(model, nrow = 4, ncol = 5, ...) {
   print(performance::model_performance(model, metrics = c("AIC", "AICc", "BIC", "R2", "RMSE", "SIGMA")), ...)
@@ -393,16 +539,37 @@ logLikSubjectContributions <- function(model,
 } 
 
 #' @title Likelihood displacement for the model.
+#' @description
+#' `logLikSubjectDisplacements` allows the user to evaluate the log-likelihood displacement for each subject, 
+#' indicating the influence of every subject to the model.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @param disp_thrh Threshold of log-likelihood displacement.
+#' @param disp_thrh Threshold of log-likelihood displacement. If not specified, the threshold is set to the value of the third quartile of log-likelihood
+#' displacement values.
 #' @param label_angle Angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
 #' @param ... Extra arguments, if any, for [lattice::panel.xyplot].
+#' @details
+#' The evaluation of the log-likelihood displacement is based in the analysis proposed in Verbeke and Molenberghs (2009) and Gałecki and Burzykowski (2013).
+#' First, a list of models fitted to leave-one-subject-out datasets are obtained. Then, for each model, the maximum likelihood estimate obtained by fitting the 
+#' model to all data and the maximum likelihood estimate obtained by fitting the model to the data with the \eqn{i}-th subject removed are obtained and used for the 
+#' log-likelihood displacement calculation. The likelihood displacement, \eqn{LDi} , is defined as twice the difference between the log-likelihood computed at a 
+#' maximum and displaced values of estimated parameters (Verbeke and Molenberghs (2009), Gałecki and Burzykowsk (2013)):
+#' 
+#' \deqn{LD_i \equiv 2 \times \Bigr[\ell_\textrm{Full}(\widehat{\Theta};\textrm{y})-\ell_\textrm{Full}(\widehat{\Theta}_{(-i)};\textrm{y})\Bigr]}
+#' 
+#' where \eqn{\widehat{\Theta}} is the maximum-likelihood estimate of \eqn{\Theta} obtained by fitting the model to all data, while \eqn{\widehat{\Theta}_{-i}} is
+#' the maximum-likelihood estimate obtained by fitting the model to the data with the \eqn{i}-subject excluded.
+#' 
 #' @returns Returns a plot of the log-likelihood displacement values for each subject, indicating those subjects
 #' whose contribution is greater than `disp_thrh`.
+#' 
+#' @references 
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' - Molenberghs, G., & Verbeke, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+#' 
 #' @export
 logLikSubjectDisplacements <- function(model,
-                            disp_thrh = 0,
+                            disp_thrh = NA,
                             label_angle = 0,
                             var_name = NULL,
                             ...) {
@@ -428,6 +595,10 @@ logLikSubjectDisplacements <- function(model,
   dif.2Lik <- 2 * (logLik(model) - lLikUall) # Vector for LDi
   
   # Plot of the likelihood displacements with an indication of outlying values
+  
+  if(is.na(disp_thrh)){
+    disp_thrh <- round(quantile(dif.2Lik, probs = 0.75),3)
+  }
   
   outL <- dif.2Lik > disp_thrh # Outlying LDi's
   

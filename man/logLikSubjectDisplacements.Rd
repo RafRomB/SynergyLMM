@@ -6,7 +6,7 @@
 \usage{
 logLikSubjectDisplacements(
   model,
-  disp_thrh = 0,
+  disp_thrh = NA,
   label_angle = 0,
   var_name = NULL,
   ...
@@ -15,7 +15,8 @@ logLikSubjectDisplacements(
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
-\item{disp_thrh}{Threshold of log-likelihood displacement.}
+\item{disp_thrh}{Threshold of log-likelihood displacement. If not specified, the threshold is set to the value of the third quartile of log-likelihood
+displacement values.}
 
 \item{label_angle}{Angle for the label of subjects with a log-likelihood displacement greater than \code{disp_thrh}.}
 
@@ -28,5 +29,24 @@ Returns a plot of the log-likelihood displacement values for each subject, indic
 whose contribution is greater than \code{disp_thrh}.
 }
 \description{
-Likelihood displacement for the model.
+\code{logLikSubjectDisplacements} allows the user to evaluate the log-likelihood displacement for each subject,
+indicating the influence of every subject to the model.
+}
+\details{
+The evaluation of the log-likelihood displacement is based in the analysis proposed in Verbeke and Molenberghs (2009) and Gałecki and Burzykowski (2013).
+First, a list of models fitted to leave-one-subject-out datasets are obtained. Then, for each model, the maximum likelihood estimate obtained by fitting the
+model to all data and the maximum likelihood estimate obtained by fitting the model to the data with the \eqn{i}-th subject removed are obtained and used for the
+log-likelihood displacement calculation. The likelihood displacement, \eqn{LDi} , is defined as twice the difference between the log-likelihood computed at a
+maximum and displaced values of estimated parameters (Verbeke and Molenberghs (2009), Gałecki and Burzykowsk (2013)):
+
+\deqn{LD_i \equiv 2 \times \Bigr[\ell_\textrm{Full}(\widehat{\Theta};\textrm{y})-\ell_\textrm{Full}(\widehat{\Theta}_{(-i)};\textrm{y})\Bigr]}
+
+where \eqn{\widehat{\Theta}} is the maximum-likelihood estimate of \eqn{\Theta} obtained by fitting the model to all data, while \eqn{\widehat{\Theta}_{-i}} is
+the maximum-likelihood estimate obtained by fitting the model to the data with the \eqn{i}-subject excluded.
+}
+\references{
+\itemize{
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+\item Molenberghs, G., & Verbeke, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+}
 }

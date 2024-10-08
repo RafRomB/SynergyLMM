@@ -2,7 +2,7 @@
 % Please edit documentation in R/lmmDiagnostics.R
 \name{residDiagnostics}
 \alias{residDiagnostics}
-\title{Diagnostics of residuals of the linear mixed model.}
+\title{Diagnostics of residuals of the linear mixed model}
 \usage{
 residDiagnostics(model, pvalue = 0.05)
 }
@@ -15,11 +15,60 @@ residDiagnostics(model, pvalue = 0.05)
 A list with different elements for the diagnostics of the residuals are produced:
 \itemize{
 \item \code{plots}: Different plots for evaluating the normality and homocedasticity of the residuals.
-\item \code{outliers}: Data frame with the identified outliers based on the Pearson residuals and the value of \code{pval}.
+\item \code{outliers}: Data frame with the identified outliers based on the Pearson residuals and the value of \code{pval}. The column \code{resid.p} contains the
+value of the Pearson residuals for each observation.
 \item \code{Normality}: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test,
 D'Agostino normality test and Anderson - Darling normality test.
 }
 }
 \description{
-Diagnostics of residuals of the linear mixed model.
+\code{residDiagnostics} provides several plots as well as statistical test for the examination
+of the normality of the residuals of the input model.
+}
+\details{
+One of the assumption of the model fit by \code{\link[=lmmModel]{lmmModel()}} is that the residuals are normally distributed:
+
+\deqn{\varepsilon_{i} \sim \mathcal{N}(0, \sigma^2)}
+
+For the evaluation of this assumption, \code{residDiagnostics} provides Q-Q plots of the normalized residuals, together with statistical assessment of their
+normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and
+treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be
+affecting the adequacy of the model. Additionally, scatter plots of the conditional Pearson residuals versus fitted values and Pearson residuals
+per time and per treatment are provided to give information about variability of the residuals and possible outlier observations.
+Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution
+are identified and reported as potential outlier observations.
+}
+\examples{
+# Load the example data
+data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  )
+# Residuals diagnostics
+resid_diag <- residDiagnostics(model = lmm, pvalue = 0.05)
+# Access outliers data frame
+resid_diag$outliers
+# Access individual plots
+resid_diag$plots[1]
+resid_diag$plots[2]
+
+# Access results of normality tests
+resid_diag$Normality
+resid_diag$Normality$Shapiro.test
+
+}
+\references{
+\itemize{
+\item Pinheiro JC, Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. Springer, New York. doi:10.1007/b98882 \url{https://doi.org/10.1007/b98882}.
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
 }
