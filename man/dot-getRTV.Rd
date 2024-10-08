@@ -7,7 +7,12 @@
 .getRTV(data, time_start)
 }
 \arguments{
-\item{data}{Data frame with the tumor growth data.}
+\item{data}{Data frame with the tumor growth data. The input data frame columns have to have the following names:
+\itemize{
+\item \code{SampleID}: Column with the identifiers for each sample.
+\item \code{Time}: Column with the time for each measurement.
+\item \code{TV}: Column with the tumor volume measurement.
+}}
 
 \item{time_start}{Numeric value indicating the time at which the treatment started.}
 }
@@ -20,5 +25,15 @@ The function returns the original data frame of tumor growth data, with 3 additi
 }
 }
 \description{
-Helper function to calculate the relative tumor volume from an imput data frame of tumor growth
+\code{.getRTV} is a helper function used inside \code{\link[=lmmModel]{lmmModel()}} to obtain a dataframe with a column \emph{RTV} corresponding
+to the relative tumor volume to time \code{time_start}, and a column \emph{logRTV} with the logarithm of \emph{RTV}.
+}
+\examples{
+# Load example dataset
+data("grwth_data")
+# Change column names
+colnames(grwth_data) <- c("SampleID", "Time", "Treatment", "TV")
+# Calculate relative tumor volume
+.getRTV(data = grwth_data, time_start = 0)
+
 }
