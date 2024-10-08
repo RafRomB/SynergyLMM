@@ -81,13 +81,15 @@ lmmSynergy <- function(model,
       t2 <- d
       
       if (robustSE) {
-        cluster_robust_vcov <- clubSandwich::vcovCR(model_time, type = type)
-        summ <- clubSandwich::coef_test(model_time, vcov = cluster_robust_vcov)
+        cluster_robust_vcov <- clubSandwich::vcovCR(model_time, type = type) # Cluster-robust variance-covariance matrix
+        betas <- fixef(model_time) # model betas estimates
         
-        b1 <- rnorm(n = ra_nsim, mean = summ$beta[1], sd = summ$SE[1])
-        b2 <- rnorm(n = ra_nsim, mean = summ$beta[2], sd = summ$SE[2])
-        b3 <- rnorm(n = ra_nsim, mean = summ$beta[3], sd = summ$SE[3])
-        b4 <- rnorm(n = ra_nsim, mean = summ$beta[4], sd = summ$SE[4])
+        betas_mvnorm <- MASS::mvrnorm(n = ra_nsim, mu = betas, Sigma = cluster_robust_vcov) # Simulate from the multivariate normal distribution
+        
+        b1 <- betas_mvnorm[,1]
+        b2 <- betas_mvnorm[,2]
+        b3 <- betas_mvnorm[,3]
+        b4 <- betas_mvnorm[,4]
         
         # Compute AUC for each simulation sample
         lhs_aucs <- sapply(b4, lhs_auc)
@@ -102,7 +104,7 @@ lmmSynergy <- function(model,
         
         delta <- median(delta_aucs)
         ratio <- median(ratio_aucs)
-        median_rhs <- median(rhs_aucs)
+        sd_delta <- sd(delta_aucs)
         
         # 95% Confidence interval
         ci_delta <- quantile(delta_aucs, c(0.025, 0.975))
@@ -116,17 +118,15 @@ lmmSynergy <- function(model,
 
       } else {
         
-        summ <- summary(model_time)
+        vcov_mtx <- vcov(model_time) # Variance-Covariance Matrix for the Fitted Model Object
+        betas <- fixef(model_time) # model betas estimates
         
-        b1 <- summ$tTable[1, c("Value", "Std.Error")]
-        b2 <- summ$tTable[2, c("Value", "Std.Error")]
-        b3 <- summ$tTable[3, c("Value", "Std.Error")]
-        b4 <- summ$tTable[4, c("Value", "Std.Error")]
+        betas_mvnorm <- MASS::mvrnorm(n = ra_nsim, mu = betas, Sigma = vcov_mtx) # Simulate from the multivariate normal distribution
         
-        b1 <- rnorm(n = 1000, mean = b1["Value"], sd = b1["Std.Error"])
-        b2 <- rnorm(n = 1000, mean = b2["Value"], sd = b2["Std.Error"])
-        b3 <- rnorm(n = 1000, mean = b3["Value"], sd = b3["Std.Error"])
-        b4 <- rnorm(n = 1000, mean = b4["Value"], sd = b4["Std.Error"])
+        b1 <- betas_mvnorm[,1]
+        b2 <- betas_mvnorm[,2]
+        b3 <- betas_mvnorm[,3]
+        b4 <- betas_mvnorm[,4]
         
         # Compute AUC for each simulation sample
         lhs_aucs <- sapply(b4, lhs_auc)
@@ -142,8 +142,7 @@ lmmSynergy <- function(model,
         delta <- median(delta_aucs)
         ratio <- median(ratio_aucs)
         
-        median_rhs <- median(rhs_aucs)
-        
+        sd_delta <- sd(delta_aucs)
         
         # 95% Confidence interval
         ci_delta <- quantile(delta_aucs, c(0.025, 0.975))
@@ -161,9 +160,9 @@ lmmSynergy <- function(model,
                   data.frame(
                     method,
                     "SS",
-                    -100 * delta/median_rhs,
-                    -100 * ci_delta[2]/median_rhs,
-                    -100 * ci_delta[1]/median_rhs,
+                    - delta/sd_delta,
+                    - ci_delta[2]/sd_delta,
+                    - ci_delta[1]/sd_delta,
                     p_delta,
                     d
                   ))
@@ -218,9 +217,9 @@ lmmSynergy <- function(model,
                   data.frame(
                     method,
                     "SS",
-                    -100 * (Test$estimate)/(fixef_betas[2]+fixef_betas[3]-fixef_betas[1]),
-                    -100 * (Test$conf.high)/(fixef_betas[2]+fixef_betas[3]-fixef_betas[1]),
-                    -100 * (Test$conf.low)/(fixef_betas[2]+fixef_betas[3]-fixef_betas[1]),
+                    - (Test$estimate)/(Test$std.error),
+                    - (Test$conf.high)/(Test$std.error),
+                    - (Test$conf.low)/(Test$std.error),
                     Test$p.value,
                     d
                   ))
