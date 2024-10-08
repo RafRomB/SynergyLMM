@@ -75,8 +75,6 @@ NULL
 #' @description
 #' `lmmModel()` fits a linear mixed effect model from a tumor growth dataset. The input data frame must be in long format and include at least the following columns: column with the sample ids,
 #' column with the time at which each measurement has been done, a column indicating the treatment group, and a column with the tumor measurement (e.g. tumor volume).
-#' 
-#' 
 #' @param data A data frame with the tumor growth data, in long format.
 #' It must contain at least the following columns: mice IDs, time of follow-up (numeric number), treatment and tumor volume (numeric number).
 #' @param sample_id String indicating the name of the column with the mice IDs.
@@ -96,6 +94,10 @@ NULL
 #' @param ... Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.
 #' 
 #' @details
+#' 
+#' `lmmModel()` relies in the assumption that tumor growth follows an exponential kinetics. Any departure from this assumption can be tested using the diagnostics functions [`ranefDiagnostics()`],
+#'  [`residDiagnostics()`], and [`ObsvsPred()`].
+#' 
 #' The model formula for the fitted model is:
 #' \deqn{\log RTV_{i}(t) = \beta_C \cdot t  \cdot Treatment_i^C + \beta_A \cdot t  \times Treatment_i^A + \beta_B \cdot t  \cdot Treatment_i^B + \beta_{AB} \cdot t  \cdot Treatment_i^{AB} + b_i \cdot t + \varepsilon_{i} (t).}
 #' 
@@ -112,7 +114,7 @@ NULL
 #' 
 #' 
 #' @return An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. If `show_plot = TRUE`, the plot
-#' of the tumor growth data is also shown. 
+#' of the tumor growth data obtained with [plot_lmmModel()] is also shown. 
 #' @references
 #' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 <https://doi.org/10.1007/b98882>.
 #' - Pinheiro J, Bates D, R Core Team (2024). _nlme: Linear and Nonlinear Mixed Effects Models_. R package version 3.1-166, <https://CRAN.R-project.org/package=nlme>.
@@ -327,10 +329,38 @@ lmmModel <- function(data,
 }
 
 #' @title Get estimates from a linear mixed model of tumor growth data
+#' @description
+#' `lmmModel_estimates` allows the user to easily extract some of the interesting model estimates for further use in other functions, 
+#' such as for power calculation.
+#' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
+#' @details
+#' The model estimates provided by `lmmModel_estimates` include:
+#' - Fixed effect coefficients: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}}, 
+#' which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
+#' These are shown in columns `control`, `drug_a`, `drug_b`, and `combination`, respectively.
+#' - Standard error of the random effects (between-subject variance). Column `sd_ranef`.
+#' - Standard error of the residuals (within-subject variance). Column `sd_resid`.
+#' 
 #' @returns A data frame with the estimated values for the coefficients of the tumor growth for each treatment,
 #' the standard deviation of the random effects, and the standard deviation of the residuals of the model.
 #' These values can be useful for the power analysis of the model using [`APrioriPwr()`].
+#' @examples
+#' data("grwth_data")
+#' # Fit example model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   ) 
+#' # Get the estimates
+#' lmmModel_estimates(lmm)
 #' @export
 
 lmmModel_estimates <- function(model){

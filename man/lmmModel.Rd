@@ -55,13 +55,16 @@ and the model calculated marginal slope for each treatment, should be produced.}
 }
 \value{
 An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. If \code{show_plot = TRUE}, the plot
-of the tumor growth data is also shown.
+of the tumor growth data obtained with \code{\link[=plot_lmmModel]{plot_lmmModel()}} is also shown.
 }
 \description{
 \code{lmmModel()} fits a linear mixed effect model from a tumor growth dataset. The input data frame must be in long format and include at least the following columns: column with the sample ids,
 column with the time at which each measurement has been done, a column indicating the treatment group, and a column with the tumor measurement (e.g. tumor volume).
 }
 \details{
+\code{lmmModel()} relies in the assumption that tumor growth follows an exponential kinetics. Any departure from this assumption can be tested using the diagnostics functions \code{\link[=ranefDiagnostics]{ranefDiagnostics()}},
+\code{\link[=residDiagnostics]{residDiagnostics()}}, and \code{\link[=ObsvsPred]{ObsvsPred()}}.
+
 The model formula for the fitted model is:
 \deqn{\log RTV_{i}(t) = \beta_C \cdot t  \cdot Treatment_i^C + \beta_A \cdot t  \times Treatment_i^A + \beta_B \cdot t  \cdot Treatment_i^B + \beta_{AB} \cdot t  \cdot Treatment_i^{AB} + b_i \cdot t + \varepsilon_{i} (t).}
 
