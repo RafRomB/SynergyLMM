@@ -19,14 +19,45 @@ ObsvsPred(model, nrow = 4, ncol = 5, ...)
 A layout of the observed vs predicted values for each SampleID and model performance metrics.
 }
 \description{
-Observed vs predicted values and performance of the model
+\code{ObsvsPred} allows the user to have a straight forward idea about how the model is fitting the data, providing
+plots of the predicted regression lines versus the actual data points.
 }
 \details{
 The function provides visual and quantitative information about the performance of the model:
 \itemize{
-\item A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID,
+\item A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID (i.e. subject),
 with the actual measurements, the regression line for each SampleID, and the marginal, treatment-specific,
 regression line for each treatment group.
-\item Performance metrics of the model obtain calculated using \code{\link[performance:model_performance]{performance::model_performance()}}.
+\item Performance metrics of the model obtain calculated using \code{\link[performance:model_performance]{performance::model_performance()}}. The maximum likelihood-based Akaike's Information Criterion (AIC),
+small sample AIC (AICc), and Bayesian Information Criterion, and the Nakagawa's r-squared
+root mean squared error (RMSE) of the residuals, and the standard deviation of the residuals (sigma) are provided.
+}
+}
+\examples{
+# Load the example data
+data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  )
+# Obtain Observed vs Predicted plots, and model performance metrics
+ObsvsPred(model = lmm, nrow = 4, ncol = 8)
+}
+\references{
+\itemize{
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+\item Lüdecke et al., (2021). \emph{performance: An R Package for Assessment, Comparison and Testing of Statistical Models}. Journal of Open Source Software, 6(60), 3139. https://doi.org/10.21105/joss.03139
+\item Sakamoto, Y., M. Ishiguro, and G. Kitagawa. 1984. \emph{Akaike Information Criterion Statistics}. Mathematics and Its Applications. Reidel.
+\item Nakagawa, Shinichi, and Holger Schielzeth. 2013. \emph{A General and Simple Method for Obtaining r2 from Generalized Linear Mixed-effects Models}. Methods in Ecology and Evolution 4 (February): 133–42. https://doi.org/10.1111/j.2041-210x.2012.00261.x.
+\item Johnson, Paul C. D. 2014. \emph{Extension of Nakagawa & Schielzeth’s r 2 GLMM to Random Slopes Models}. Methods in Ecology and Evolution 5 (September): 944–46. https://doi.org/10.1111/2041-210X.12225.
+\item Nakagawa, Shinichi, Paul C. D. Johnson, and Holger Schielzeth. 2017. \emph{The Coefficient of Determination r2 and Intra-Class Correlation Coefficient from Generalized Linear Mixed-Effects Models Revisited and Expanded}. Journal of The Royal Society Interface 14 (September): 20170213. https://doi.org/10.1098/rsif.2017.0213.
 }
 }
