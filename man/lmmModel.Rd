@@ -119,6 +119,23 @@ lmmModel(
  control = nlme::lmeControl(maxIter = 1000, msMaxIter = 1000, niterEM = 100, msMaxEval = 1000)
  )
 
+# Fit a model specifying a different variance per Time
+lmmModel(
+ data = grwth_data,
+ sample_id = "subject",
+ time = "Time",
+ treatment = "Treatment",
+ tumor_vol = "TumorVolume",
+ trt_control = "Control",
+ drug_a = "DrugA",
+ drug_b = "DrugB",
+ drug_ab = "Combination",
+ # Adding variance function to represent a different variance per Time
+ weights = nlme::varIdent(form = ~1|Time)
+ )
+
+
+
 }
 \references{
 \itemize{
