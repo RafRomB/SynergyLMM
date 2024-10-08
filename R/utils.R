@@ -23,6 +23,14 @@ NULL
 #' @param grwrComb Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.
 #' @param sd Standard deviation for the tumor growth.
 #' @returns A data frame with tumor growth data in long format.
+#' @examples
+#' # This code generates the 'grwth_data' example dataset:
+#' set.seed(123)
+#' grwth_data <- .simulateTumorGrowth(npg = 8, timepoints = seq(0,30,3), 
+#'                                    initial_volume = 200, grwrControl = 0.08,
+#'                                    grwrA = 0.07, grwrB = 0.065, 
+#'                                    grwrComb = 0.04, sd = 0.2)
+#' 
 #' @export
 .simulateTumorGrowth <- function(npg = 5,
                                  timepoints = c(0, 3, 5, 10),
@@ -51,6 +59,6 @@ NULL
   
   # Add random noise to simulate variability
   mrgDt$TumorVolume <- mrgDt$TumorVolume * rnorm(nrow(mrgDt), mean = 1, sd = sd)
-  
+  mrgDt <- as.data.frame(mrgDt)
   return(mrgDt)
 }

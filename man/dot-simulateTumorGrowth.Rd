@@ -38,3 +38,12 @@ A data frame with tumor growth data in long format.
 \description{
 Helper function to simulate tumor growth data
 }
+\examples{
+# This code generates the 'grwth_data' example dataset:
+set.seed(123)
+grwth_data <- .simulateTumorGrowth(npg = 8, timepoints = seq(0,30,3), 
+                                   initial_volume = 200, grwrControl = 0.08,
+                                   grwrA = 0.07, grwrB = 0.065, 
+                                   grwrComb = 0.04, sd = 0.2)
+
+}
