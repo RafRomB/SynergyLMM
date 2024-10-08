@@ -25,7 +25,7 @@ plots of the predicted regression lines versus the actual data points.
 \details{
 The function provides visual and quantitative information about the performance of the model:
 \itemize{
-\item A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID (i.e. subject),
+\item A layout of the observed and predicted values of \eqn{log}(relative tumor volume) vs Time for each SampleID (i.e. subject),
 with the actual measurements, the regression line for each SampleID, and the marginal, treatment-specific,
 regression line for each treatment group.
 \item Performance metrics of the model obtain calculated using \code{\link[performance:model_performance]{performance::model_performance()}}. The maximum likelihood-based Akaike's Information Criterion (AIC),

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Visualization.R
 \name{plot_ranefDiagnostics}
 \alias{plot_ranefDiagnostics}
-\title{Visualization of random effects diagnostics for a fitted linear mixed model of tumor growth data.}
+\title{Plots for random effects diagnostics}
 \usage{
 plot_ranefDiagnostics(model)
 }
@@ -20,4 +20,25 @@ A list with different plots for evaluating the normality and homoscedasticity of
 }
 \description{
 Visualization of random effects diagnostics for a fitted linear mixed model of tumor growth data.
+}
+\examples{
+data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination",
+  show_plot = FALSE
+  )
+# Generate plots 
+plot_ranefDiagnostics(lmm)
+# Access to specific plots
+plot_ranefDiagnostics(lmm)[[1]]
+plot_ranefDiagnostics(lmm)[[2]]
 }

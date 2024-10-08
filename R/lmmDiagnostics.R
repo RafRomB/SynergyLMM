@@ -280,7 +280,7 @@ residDiagnostics <- function(model, pvalue=0.05){
 #' @param ... Additional arguments to be passed to [performance::model_performance()].
 #' @details
 #'  The function provides visual and quantitative information about the performance of the model:
-#' - A layout of the observed and predicted values of log(relative tumor volume) vs Time for each SampleID (i.e. subject), 
+#' - A layout of the observed and predicted values of \eqn{log}(relative tumor volume) vs Time for each SampleID (i.e. subject), 
 #' with the actual measurements, the regression line for each SampleID, and the marginal, treatment-specific, 
 #' regression line for each treatment group.
 #' - Performance metrics of the model obtain calculated using [performance::model_performance()]. The maximum likelihood-based Akaike's Information Criterion (AIC), 
