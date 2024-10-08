@@ -2,7 +2,7 @@
 % Please edit documentation in R/lmmSynergy.R
 \name{lmmSynergy}
 \alias{lmmSynergy}
-\title{Synergy calculation using linear-mixed models.}
+\title{Synergy calculation using linear-mixed models}
 \usage{
 lmmSynergy(
   model,
@@ -22,15 +22,15 @@ lmmSynergy(
 \item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 corresponding to Bliss, highest single agent and response additivity, respectively.}
 
-\item{min_time}{Minimun time from which to start calculating synergy.}
+\item{min_time}{Minimun time for which to start calculating synergy.}
 
 \item{robustSE}{If TRUE, uncertainty is estimated using robust standard errors
-using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}.}
+using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.}
 
 \item{type}{Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3".
 See "Details" section of \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}} for further information.}
 
-\item{ra_nsim}{Number of simulations to calculate the synergy for Response Additivity model.}
+\item{ra_nsim}{Number of random sampling to calculate the synergy for Response Additivity model.}
 
 \item{t_ci}{Time for calculation of combination index value. The value of the CI represents the proportion of tumor cell survival at time \code{t_ci}
 in the drug combination group compared to the expected tumor cell survival according to the reference model. If not specified, \code{t_ci} is set to the
@@ -43,12 +43,110 @@ last time point of follow-up.}
 \value{
 The function returns a list with two elements:
 \itemize{
-\item \code{Constrasts}: List with the outputs of the (non)-linear test for the synergy null hypothesis obtained by \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for each time.
+\item \code{Constrasts}: List with the outputs of the linear test for the synergy null hypothesis obtained by \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for each time.
 See \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for more details.
 \item \code{Synergy}: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
 the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each time.
 }
+
+If \code{show_plot = TRUE}, a plot with the synergy results is also shown.
 }
 \description{
-Synergy calculation using linear-mixed models.
+\code{lmmSynergy} allows for the calculation of synergy using 3 different references models: Bliss independence, highest single agent and
+response additivity. The calculation of synergy is based on hypothesis testing on the coefficient estimates from the model fitted by
+\code{\link[=lmmModel]{lmmModel()}}.
+}
+\details{
+\code{lmmSynergy} uses the statistical description provided by Demidenko and Miller (2019) for the calculation of synergy. It is based on hypothesis testing
+on the coefficients estimates from the model fitted by \code{\link[=lmmModel]{lmmModel()}}: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}},
+which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
+
+\strong{Bliss Indepence Model}
+
+For Bliss model, \code{lmmSynergy} test the following null hypothesis:
+\deqn{H_0: \beta_{AB} = \beta_A + \beta_B - \beta_C}
+
+\strong{Highes Single Agent (HSA)}
+
+For the HSA model, \code{lmmSynergy} test the following null hypothesis:
+\deqn{H_0: \beta_{AB} = \min(\beta_A, \beta_B)}
+
+\strong{Response Additivity (RA)}
+
+For the RA model, \code{lmmSynergy} test the following null hypothesis:
+
+\deqn{H_0: e^{\beta_{AB}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_Ct}}
+
+For \strong{Bliss} and \strong{HSA} models, \code{lmmSynergy} uses \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} to conduct hypothesis tests on the estimated coefficients of the model.
+
+In the case of the \strong{RA} model, the null hypothesis is tested comparing the area under the curve (i.e. cumulative effect from the beginning of a treatment to
+a time point of interest) obtained from each side of the equation \eqn{e^{\beta_{AB}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_Ct}}, based on \code{ra_sim} random samplings from the
+distribution of the coefficients.
+
+\strong{Combination Index and Synergy Score}
+
+The results obtained by \code{lmmSynergy} include the synergy score (SS) and combination index (CI) for the model, for each time point, together with their confidence interval,
+and the corresponding p-value. The values of SS and CI provided by \code{lmmSynergy} follow previous definitions of these metrics so they have the same interpretation:
+\itemize{
+\item The SS has been defined as the excess response due to drug interaction compared to the reference model (Ianevski et al. (2017), Ianevski, Giri, and Aittokallio (2022), Mao and Guo (2023)).
+Following this definition, a \eqn{SS>0}, \eqn{SS=0}, and \eqn{SS<0}, represent synergistic, additive and antagonistic effects, respectively.
+\item According to the common definition of the CI, a \eqn{CI<1}, \eqn{CI=1}, and \eqn{CI>1} represent synergistic, additive and antagonistic effects, respectively (Yadav et al. (2015), Demidenko and Miller (2019),
+Mao and Guo (2023)), and provides information about the observed drug combination effect versus the expected additive effect provided by the reference synergy model.
+A drug combination effect larger than the expected (\eqn{CI > 1}) would indicate synergism, a drug combination effect equal to the expected (\eqn{CI = 1}) would indicate additivity,
+and a lower drug combination effect than the expected (\eqn{CI < 1}) would indicate antagonism.
+}
+
+As mentioned above, the results include the synergy results for \strong{each day}. This means that \code{lmmSynergy} refits the model using the data from \code{time_start} defined in \code{\link[=lmmModel]{lmmModel()}} until
+each time point, providing the synergy results for each of these models.
+
+\strong{Uncertainty estimation using robust standard errors}
+
+If \code{robustSE = TRUE}, \code{lmmSynergy} deals with possible model misspecifications, allowing for cluster-robust variance estimation using  \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.
+When using \code{robustSE = TRUE}, setting \code{type = "CR2"} is recommended. See more details in \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}.
+
+\emph{Note}: When a variance structure has been specified in the model it is recommended to use always \code{robustSE = TRUE} to get a better estimation.
+}
+\examples{
+# Load the example data
+data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  ) 
+# Most simple use with default values
+syn <- lmmSynergy(lmm)
+# Accessing to synergy results data frame
+syn$Synergy
+# Selecting different reference models:
+## Bliss
+lmmSynergy(lmm, method = "Bliss")
+## HSA
+lmmSynergy(lmm, method = "HSA")
+## RA
+lmmSynergy(lmm, method = "RA", ra_sim = 1000)
+
+# Only calculate synergy from Time 12 onwards
+lmmSynergy(lmm, min_time = 12)
+
+# Using robust standard errors
+lmmSynergy(lmm, method = "Bliss", robustSE = TRUE, type = "CR2")
+
+}
+\references{
+\itemize{
+\item Demidenko, Eugene, and Todd W. Miller. 2019. \emph{Statistical Determination of Synergy Based on Bliss Definition of Drugs Independence.} PLoS ONE 14 (November). https://doi.org/10.1371/journal.pone.0224137.
+\item Yadav, Bhagwan, Krister Wennerberg, Tero Aittokallio, and Jing Tang. 2015. \emph{Searching for Drug Synergy in Complex Dose–Response Landscapes Using an Interaction Potency Model.} Computational and Structural Biotechnology Journal 13: 504–13. https://doi.org/10.1016/j.csbj.2015.09.001.
+\item Ianevski, Aleksandr, Liye He, Tero Aittokallio, and Jing Tang. 2017. \emph{SynergyFinder: A Web Application for Analyzing Drug Combination Dose–Response Matrix Data.} Bioinformatics 33 (August): 2413–15. https://doi.org/10.1093/bioinformatics/btx162.
+\item Ianevski, Aleksandr, Anil K Giri, and Tero Aittokallio. 2022. \emph{SynergyFinder 3.0: An Interactive Analysis and Consensus Interpretation of Multi-Drug Synergies Across Multiple Samples.} Nucleic Acids Research 50 (July): W739–43. https://doi.org/10.1093/nar/gkac382.
+\item Mao, Binchen, and Sheng Guo. 2023. \emph{Statistical Assessment of Drug Synergy from in Vivo Combination Studies Using Mouse Tumor Models.} Cancer Research Communications 3 (October): 2146–57. https://doi.org/10.1158/2767-9764.CRC-23-0243.
+\item Vincent Arel-Bundock, Noah Greifer, and Andrew Heiss. Forthcoming. How to Interpret Statistical Models Using marginaleffects in R and Python. Journal of Statistical Software. https://marginaleffects.com
+}
 }
