@@ -154,7 +154,7 @@ APrioriPwr <- function(npg = 5,
   exmpDt$mB <- NULL
   
   # Ploting exemplary data
-  p1 <- plot_exmpDt(
+  p1 <- .plot_exmpDt(
     exmpDt,
     grwrControl = C,
     grwrA = A,
@@ -547,7 +547,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
   }
   
   # Ploting exemplary data
-  p1 <- plot_exmpDt(
+  p1 <- .plot_exmpDt(
     exmpDt,
     grwrControl = C,
     grwrA = A,
@@ -716,7 +716,7 @@ PwrTime <- function(npg = 5, time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30,
     Pwr_vector <- c(Pwr_vector, dtF$Power)
   }
   
-  p1 <- plot_exmpDt(exmpDt, grwrControl = C, grwrA = A, grwrB = B, grwrComb = AB, sd_ranef = sd_ranef, sgma = sgma)
+  p1 <- .plot_exmpDt(exmpDt, grwrControl = C, grwrA = A, grwrB = B, grwrComb = AB, sd_ranef = sd_ranef, sgma = sgma)
   
   npg_Pwr <- data.frame(Time = time_vector, Power = Pwr_vector)
   
