@@ -49,7 +49,7 @@ See \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for 
 the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each time.
 }
 
-If \code{show_plot = TRUE}, a plot with the synergy results is also shown.
+If \code{show_plot = TRUE}, a plot with the synergy results obtained with \code{\link[=plot_lmmSynergy]{plot_lmmSynergy()}} is also shown.
 }
 \description{
 \code{lmmSynergy} allows for the calculation of synergy using 3 different references models: Bliss independence, highest single agent and

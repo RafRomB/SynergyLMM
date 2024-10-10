@@ -204,10 +204,39 @@ plot_ObsvsPred <- function(model, nrow = 4, ncol = 5){
        par.strip.text=list(col="black", cex=.5))
 }
 
-#' @title Visualization of synergy results obtained by [lmmSynergy()].
+#' @title Plotting synergy results
+#' @description Visualization of synergy results obtained by [lmmSynergy()].  This functions returns a [ggplot2] plot, allowing for
+#'  further personalization.
 #' @param syn_data Object obtained by [lmmSynergy()] with the results of synergy calculation using linear mixed models.
+#' @details
+#' `plot_lmmSynergy` produces a [ggplot2] plot with the results of the synergy calculation. Each dot represents the estimated combination index
+#' or synergy score, and the gray lines represent the 95% confidence intervals, for each day. Each dot is colored based on the \eqn{- \log_{10} (p-value)}, with
+#' purple colors indicating a \eqn{-\log_{10} (p-value) < 1.3; (p-value > 0.05)}, and green colors indicating a \eqn{-\log_{10} (p-value) > 1.3; (p-value < 0.05)}.
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) with the combination index (CI) and synergy score (SS)
 #' estimates, confidence intervals and p-values for the synergy calculation using linear mixed models.
+#' @examples
+#' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   )
+#' # Obtain synergy results
+#' lmmSyn <- lmmSynergy(lmm)
+#' # Plot synergy results
+#' plot_lmmSynergy(lmmSyn)
+#' # Adding ggplot2 elements
+#' plot_lmmSynergy(lmmSyn) + 
+#' ggplot2::labs(title = "Synergy Calculation for Bliss") + 
+#' ggplot2::theme(legend.position = "top")  
+#' 
 #' @export
 plot_lmmSynergy <- function(syn_data){
   syn_data <- syn_data$Synergy
@@ -222,7 +251,10 @@ plot_lmmSynergy <- function(syn_data){
     geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed")
 }
 
-#' @title Plot of exemplary data for power calculation
+#' @title Helper function to plot exemplary data for power calculation
+#' @description
+#' `plot_exmpDt` plots the regression lines of any exemplary data produced for a priori power
+#' calculation.
 #' @param exmpDt Data frame with exemplary data obtained with [APrioriPwr()].
 #' @param grwrControl Value for the label of the coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Value for the label of the coefficient for Drug A treatment group tumor growth rate.
@@ -232,8 +264,9 @@ plot_lmmSynergy <- function(syn_data){
 #' @param sgma Value for the label of the residuals standard deviation of the model.
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) showing the regression lines corresponding 
 #' to the fixed effects for each treatment of the exemplary data for power calculations.
-#' @export
-plot_exmpDt <- function(exmpDt, grwrControl = NULL, grwrA = NULL, grwrB=NULL, grwrComb=NULL, sd_ranef=NULL, sgma=NULL){
+#' @keywords internal
+#' @noRd
+.plot_exmpDt <- function(exmpDt, grwrControl = NULL, grwrA = NULL, grwrB=NULL, grwrComb=NULL, sd_ranef=NULL, sgma=NULL){
   # Ploting exemplary data
   
   selDt <- with(exmpDt,{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Visualization.R
 \name{plot_lmmSynergy}
 \alias{plot_lmmSynergy}
-\title{Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy()}}.}
+\title{Plotting synergy results}
 \usage{
 plot_lmmSynergy(syn_data)
 }
@@ -14,5 +14,35 @@ A ggplot2 plot (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more det
 estimates, confidence intervals and p-values for the synergy calculation using linear mixed models.
 }
 \description{
-Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy()}}.
+Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy()}}.  This functions returns a \link{ggplot2} plot, allowing for
+further personalization.
+}
+\details{
+\code{plot_lmmSynergy} produces a \link{ggplot2} plot with the results of the synergy calculation. Each dot represents the estimated combination index
+or synergy score, and the gray lines represent the 95\% confidence intervals, for each day. Each dot is colored based on the \eqn{- \log_{10} (p-value)}, with
+purple colors indicating a \eqn{-\log_{10} (p-value) < 1.3; (p-value > 0.05)}, and green colors indicating a \eqn{-\log_{10} (p-value) > 1.3; (p-value < 0.05)}.
+}
+\examples{
+data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  )
+# Obtain synergy results
+lmmSyn <- lmmSynergy(lmm)
+# Plot synergy results
+plot_lmmSynergy(lmmSyn)
+# Adding ggplot2 elements
+plot_lmmSynergy(lmmSyn) + 
+ggplot2::labs(title = "Synergy Calculation for Bliss") + 
+ggplot2::theme(legend.position = "top")  
+
 }

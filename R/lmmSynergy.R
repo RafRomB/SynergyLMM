@@ -78,7 +78,7 @@
 #' - `Synergy`: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
 #' the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each time.
 #' 
-#' If `show_plot = TRUE`, a plot with the synergy results is also shown.
+#' If `show_plot = TRUE`, a plot with the synergy results obtained with [plot_lmmSynergy()] is also shown.
 #' @references 
 #' - Demidenko, Eugene, and Todd W. Miller. 2019. _Statistical Determination of Synergy Based on Bliss Definition of Drugs Independence._ PLoS ONE 14 (November). https://doi.org/10.1371/journal.pone.0224137.
 #' - Yadav, Bhagwan, Krister Wennerberg, Tero Aittokallio, and Jing Tang. 2015. _Searching for Drug Synergy in Complex Dose–Response Landscapes Using an Interaction Potency Model._ Computational and Structural Biotechnology Journal 13: 504–13. https://doi.org/10.1016/j.csbj.2015.09.001.
