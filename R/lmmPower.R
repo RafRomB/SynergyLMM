@@ -652,7 +652,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
   npg_Pwr <- data.frame(N = npg_vector, Power = Pwr_vector)
   
   p2 <- npg_Pwr %>% ggplot(aes(x = .data$N, y = .data$Power)) + geom_line() + cowplot::theme_cowplot() + xlab("N per group") +
-    labs(title = paste("Power depending on\nnumber of animals for", method)) + scale_x_continuous(breaks = npg) +
+    labs(title = paste("Power depending on\nnumber of subjects per group for", method)) + scale_x_continuous(breaks = npg) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
   print(plot_grid(p1, p2, ncol = 2))
@@ -858,7 +858,7 @@ PwrTime <- function(npg = 5,
     }
     if(type == "freq"){
       time_vector <- c(time_vector, length(d))
-      title <- "Power depending on\nfrequency of measurements"
+      title <- "Power depending on\nfrequency of measurements for"
       x.lab <- "Number of measurements"
     }
     Pwr_vector <- c(Pwr_vector, dtF$Power)
