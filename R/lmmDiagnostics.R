@@ -566,7 +566,7 @@ logLikSubjectContributions <- function(model,
 #' 
 #' @references 
 #' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
-#' - Molenberghs, G., & Verbeke, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+#' - Verbeke, G. & Molenberghs, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
 #' @examples
 #' # Load the example data
 #' data(grwth_data)
