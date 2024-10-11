@@ -9,6 +9,8 @@
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 #' corresponding to Bliss and highest single agent, respectively.
 #' @param pvalue Threshold for the p-value of synergy calculation to be considered statistically significant.
+#' @param time Time point for which to calculate the statistical power. If not specified, the last time point is used
+#' by default.
 #' @param ... Additional parameters to be passed to [nlmeU::simulateY]:
 #' @details
 #' The _post hoc_ power calculation relies on simulation of the dependent variable, using [nlmeU::simulateY].
@@ -19,6 +21,9 @@
 #' explained in [lmmSynergy], and the p-values stored.
 #' 4. The power is returned as the proportion of simulations resulting in a significant synergy hypothesis testing
 #' (p-value < `pvalue`).
+#' 
+#' When `time` is specified, `PostHocPwr` refits the model using the data from the `time_start` time point defined in [lmmModel()] until `time`, and report the
+#' statistical power for that model. If `time` is not specified, the model fitted using all data points is used for statistical power calculation.
 #' 
 #' @returns Returns a numeric value of the power for the synergy calculation for the model using the method specified in `method`. 
 #' The power is expressed as the proportion of simulations that provides a p-value below the threshold specified in `pvalue`.
@@ -42,6 +47,8 @@
 #'  PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
 #'  # Using a seed to obtain reproducible results
 #'  PostHocPwr(lmm, seed = 123, nsim = 100)
+#'  # Calculating the power for an specific day
+#'  PostHocPwr(lmm, nsim = 100, time = 6)
 #' 
 #' @export
 
@@ -49,6 +56,7 @@ PostHocPwr <- function(model,
                        nsim = 1000,
                        method = "Bliss",
                        pvalue = 0.05,
+                       time = NA,
                        ...) {
   # Validate method input
   valid_methods <- c("Bliss", "HSA")
@@ -66,6 +74,11 @@ PostHocPwr <- function(model,
     } else{
       contrast <- "b4 = b3"
     }
+  }
+  
+  if(!is.na(time)){
+    data <- model$data %>% dplyr::filter(.data$Time <= time)
+    model <- update(model, data = data)
   }
   
   simA <- nlmeU::simulateY(model, nsim = nsim, ...) # Simulation

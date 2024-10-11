@@ -4,7 +4,7 @@
 \alias{PostHocPwr}
 \title{Post hoc power calculation based on simulations of the synergy evaluation using LMM.}
 \usage{
-PostHocPwr(model, nsim = 1000, method = "Bliss", pvalue = 0.05, ...)
+PostHocPwr(model, nsim = 1000, method = "Bliss", pvalue = 0.05, time = NA, ...)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
@@ -15,6 +15,9 @@ PostHocPwr(model, nsim = 1000, method = "Bliss", pvalue = 0.05, ...)
 corresponding to Bliss and highest single agent, respectively.}
 
 \item{pvalue}{Threshold for the p-value of synergy calculation to be considered statistically significant.}
+
+\item{time}{Time point for which to calculate the statistical power. If not specified, the last time point is used
+by default.}
 
 \item{...}{Additional parameters to be passed to \link[nlmeU:simulateY]{nlmeU::simulateY}:}
 }
@@ -37,6 +40,9 @@ explained in \link{lmmSynergy}, and the p-values stored.
 \item The power is returned as the proportion of simulations resulting in a significant synergy hypothesis testing
 (p-value < \code{pvalue}).
 }
+
+When \code{time} is specified, \code{PostHocPwr} refits the model using the data from the \code{time_start} time point defined in \code{\link[=lmmModel]{lmmModel()}} until \code{time}, and report the
+statistical power for that model. If \code{time} is not specified, the model fitted using all data points is used for statistical power calculation.
 }
 \examples{
 #' data(grwth_data)
@@ -55,6 +61,8 @@ lmm <- lmmModel(
  PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
  # Using a seed to obtain reproducible results
  PostHocPwr(lmm, seed = 123, nsim = 100)
+ # Calculating the power for an specific day
+ PostHocPwr(lmm, nsim = 100, time = 6)
 
 }
 \references{

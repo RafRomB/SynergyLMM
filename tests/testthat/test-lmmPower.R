@@ -46,7 +46,7 @@ test_that("Test PostHocPwr with HSA method", {
   expect_true(result >= 0 && result <= 1)
 })
 
-test_that("Test PostHocPwr with HSA method independently of the other of treatment input", {
+test_that("Test PostHocPwr with HSA method independently of the order of treatment input", {
   
   model <- lmmModel(
     data = test_data,
@@ -107,6 +107,21 @@ test_that("Test PostHocPwr with different pvalue thresholds", {
   expect_true(result < result2)
   
 })
+
+test_that("Test PostHocPwr setting a value for time", {
+  # Test with time = 5
+  result <- PostHocPwr(model, nsim = 100, time = 5)
+  expect_type(result, "double")
+  expect_true(result >= 0 && result <= 1)
+  
+  # Test with time = 9
+  result <- PostHocPwr(model, nsim = 100, time = 9)
+  expect_type(result, "double")
+  expect_true(result >= 0 && result <= 1)
+  
+  
+})
+
 
 test_that("Test PostHocPwr passess arguments to simulateY function", {
   
