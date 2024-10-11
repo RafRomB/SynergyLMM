@@ -1,3 +1,13 @@
+
+#' @title Helper function for Pwr(function) to change the residual standard error (sigma) of the model.
+#' @description
+#' Use this function only with Pwr(), because it  corrupts lme.object
+#' @param object an "lme" object containing the model fit, which provides information needed for power calculations
+#' @param value value for sigma
+#' @returns An "lme" object containing the model fit with changed sigma value.
+#' @keywords internal
+#' @noRd
+
 sigmaTolme <- function(object, value){ 
   ### Use this function only with Pwr(), because it  corrupts lme.object
   funNm <- "sigmaTolme"
