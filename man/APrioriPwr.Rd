@@ -2,7 +2,7 @@
 % Please edit documentation in R/lmmPower.R
 \name{APrioriPwr}
 \alias{APrioriPwr}
-\title{A priori power calculation for a hypothetical study of synergy evaluation using LMM.}
+\title{\emph{A Priori} Synergy Power Analysis Based on Variability and Drug Effect}
 \usage{
 APrioriPwr(
   npg = 5,
@@ -21,7 +21,7 @@ APrioriPwr(
 )
 }
 \arguments{
-\item{npg}{Number of mouse per group.}
+\item{npg}{Number of subjects per group.}
 
 \item{time}{Vector with the times at which the tumor volume measurements have been performed.}
 
@@ -33,9 +33,9 @@ APrioriPwr(
 
 \item{grwrComb}{Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.}
 
-\item{sd_ranef}{Random effects standard deviation for the model.}
+\item{sd_ranef}{Random effects standard deviation (between-subject variance) for the model.}
 
-\item{sgma}{Residuals standard deviation for the model.}
+\item{sgma}{Residuals standard deviation (within-subject variance) for the model.}
 
 \item{sd_eval}{A vector with values representing the standard deviations of random effects,
 through which the power for synergy calculation will be evaluated.}
@@ -61,9 +61,46 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \code{sd_eval} and \code{sgma_eval},
 \item A plot showing the values of the power calculation depending on the values assigned to
 \code{grwrComb_eval}.
+}
+
 If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
 }
-}
 \description{
-A priori power calculation for a hypothetical study of synergy evaluation using LMM.
+\emph{A priori} power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+with varying drug combination effect and/or experimental variability.
+}
+\details{
+\code{APrioriPwr} allows for total customization of an hypothetical drug combination study and allows the user
+to define several experimental parameters, such as the sample size, time of measurements, or drug effect,
+for the power evaluation of synergy for Bliss and HSA reference models. The power calculation is
+based on F-tests of the fixed effects of the model as previously described (Helms, R. W. (1992),
+Verbeke and Molenberghs (2009), Gałecki and Burzykowski (2013)).
+
+The focus the power analysis with \code{APrioriPwr} is on the \strong{drug combination effect} and the \strong{variability} in the
+experiment. For other \emph{a priori} power analysis see also \code{\link[=PwrSampleSize]{PwrSampleSize()}} and \code{\link[=PwrTime]{PwrTime()}}.
+\itemize{
+\item \code{npg}, \code{time}, \code{grwrControl}, \code{grwrA}, \code{grwrB}, \code{grwrComb}, \code{sd_ranef} and \code{sgma} are parameters referring to
+the initial exemplary data set and corresponding fitted model. These values can be obtained from a fitted model, using \code{\link[=lmmModel_estimates]{lmmModel_estimates()}},
+or be defined by the user.
+\item \code{sd_eval}, \code{sgma_eval}, and \code{grwrComb_eval} are the different values that will be modified in the initial
+exemplary data set to fit the corresponding model and calculate the power.
+}
+}
+\examples{
+APrioriPwr(
+sd_eval = seq(0.01, 0.2, 0.01),
+sgma_eval = seq(0.01, 0.2, 0.01),
+grwrComb_eval = seq(0.01, 0.1, 0.005)
+)
+
+}
+\references{
+\itemize{
+\item Helms, R. W. (1992). \emph{Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs}. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
+\item Verbeke, G. & Molenberghs, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
+}
+\seealso{
+\link{PostHocPwr},\code{\link[=PwrSampleSize]{PwrSampleSize()}}, \code{\link[=PwrTime]{PwrTime()}}.
 }

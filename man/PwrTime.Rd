@@ -2,19 +2,18 @@
 % Please edit documentation in R/lmmPower.R
 \name{PwrTime}
 \alias{PwrTime}
-\title{A priori power calculation for a hypothetical study of synergy evaluation using LMM
-depending on the time of follow-up or the frequency of measurements}
+\title{\emph{A Priori} Synergy Power Analysis Based on Time}
 \usage{
 PwrTime(
   npg = 5,
   time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
   type = "max",
-  grwrControl,
-  grwrA,
-  grwrB,
-  grwrComb,
-  sd_ranef,
-  sgma,
+  grwrControl = 0.08,
+  grwrA = 0.07,
+  grwrB = 0.06,
+  grwrComb = 0.03,
+  sd_ranef = 0.01,
+  sgma = 0.1,
   method = "Bliss",
   ...
 )
@@ -60,8 +59,57 @@ been performed.
 }
 
 If saved to a variable, the function returns the power for the analysis for each value specified in \code{ Time}.
+
+#' @references
+\itemize{
+\item Helms, R. W. (1992). \emph{Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs}. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
+\item Verbeke, G. & Molenberghs, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
 }
 \description{
-A priori power calculation for a hypothetical study of synergy evaluation using LMM
-depending on the time of follow-up or the frequency of measurements
+\emph{A priori} power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+depending on depending on the time of follow-up or the frequency of measurements.
+}
+\details{
+\code{PwrTime} allows the user to define an hypothetical drug combination study, customizing several
+experimental parameters, such as the sample size, time of measurements, or drug effect,
+for the power evaluation of synergy for Bliss and HSA reference models. The power calculation is
+based on F-tests of the fixed effects of the model as previously described (Helms, R. W. (1992),
+Verbeke and Molenberghs (2009), Gałecki and Burzykowski (2013)).
+
+The focus the power analysis with \code{PwrTime} is on the \strong{time} at which the measurements are done. The function allows
+for the evaluation of how the statistical power changes when the time of follow-up varies while the frequency
+of measurements is keep constant. It also allows to how the statistical power changes when the time of follow-up is
+kept constant, but the frequency of measurements varies.
+
+For other \emph{a priori} power analysis see also \code{\link[=APrioriPwr]{APrioriPwr()}} and \code{\link[=PwrSampleSize]{PwrSampleSize()}}.
+\itemize{
+\item \code{npg}, \code{grwrControl}, \code{grwrA}, \code{grwrB}, \code{grwrComb}, \code{sd_ranef} and \code{sgma} are parameters referring to
+the initial exemplary data set and corresponding fitted model. These values can be obtained from a fitted model, using \code{\link[=lmmModel_estimates]{lmmModel_estimates()}},
+or be defined by the user.
+\item \code{time} is a list in which each element is a vector with the times at which the tumor volume measurements have been performed, and for
+which the statistical power is going to be evaluated, keeping the rest of parameters fixed.
+}
+}
+\examples{
+# Power analysis maintaining the frequency of measurements 
+# and varying the time of follow-up ('type = "max"')
+PwrTime(time = list(seq(0, 9, 3), 
+                    seq(0, 12, 3), 
+                    seq(0, 15, 3), 
+                    seq(0, 21, 3), 
+                    seq(0, 30, 3)), 
+                    type = "max")
+
+# Power analysis maintaining the time of follow-up 
+# and varying the frequency of measurements ('type = "freq"')
+PwrTime(time = list(seq(0, 10, 1), 
+                    seq(0, 10, 2), 
+                    seq(0, 10, 5), 
+                    seq(0, 10, 10)), 
+                    type = "freq")
+}
+\seealso{
+\link{PostHocPwr}, \code{\link[=APrioriPwr]{APrioriPwr()}}, \code{\link[=PwrSampleSize]{PwrSampleSize()}}.
 }

@@ -2,8 +2,7 @@
 % Please edit documentation in R/lmmPower.R
 \name{PwrSampleSize}
 \alias{PwrSampleSize}
-\title{A priori power calculation for a hypothetical study of synergy evaluation using LMM
-depending on the sample size per group}
+\title{\emph{A Priori} Synergy Power Analysis Based on Sample Size}
 \usage{
 PwrSampleSize(
   npg = c(5, 8, 10),
@@ -19,7 +18,7 @@ PwrSampleSize(
 )
 }
 \arguments{
-\item{npg}{A vector with the sample size (number of animals) per group to calculate the power of
+\item{npg}{A vector with the sample size (number of subjects) per group to calculate the power of
 the synergy analysis.}
 
 \item{time}{Vector with the times at which the tumor volume measurements have been performed.}
@@ -51,10 +50,42 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \code{npg}.
 }
 
-If save to a variable, the fuction returns the data frame with the power for the analysis for each sample size
-especified in \code{npg}.
+If saved to a variable, the fuction returns the data frame with the power for the analysis for each sample size
+specified in \code{npg}.
 }
 \description{
-A priori power calculation for a hypothetical study of synergy evaluation using LMM
-depending on the sample size per group
+\emph{A priori} power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+depending on the sample size per group.
+}
+\details{
+\code{PwrSampleSize} allows the user to define an hypothetical drug combination study, customizing several
+experimental parameters, such as the sample size, time of measurements, or drug effect,
+for the power evaluation of synergy for Bliss and HSA reference models. The power calculation is
+based on F-tests of the fixed effects of the model as previously described (Helms, R. W. (1992),
+Verbeke and Molenberghs (2009), Gałecki and Burzykowski (2013)).
+
+The focus the power analysis with \code{PwrSampleSize} is on the \strong{sample size per group}. The function allows
+for the evaluation of how the statistical power changes when the sample size per group varies while the
+other parameters are kept constant. For other \emph{a priori} power analysis see also \code{\link[=APrioriPwr]{APrioriPwr()}} and \code{\link[=PwrTime]{PwrTime()}}.
+\itemize{
+\item \code{time}, \code{grwrControl}, \code{grwrA}, \code{grwrB}, \code{grwrComb}, \code{sd_ranef} and \code{sgma} are parameters referring to
+the initial exemplary data set and corresponding fitted model. These values can be obtained from a fitted model, using \code{\link[=lmmModel_estimates]{lmmModel_estimates()}},
+or be defined by the user.
+\item \code{npg} is a vector indicating the different sample sizes for which the statistical power is going to be evaluated, keeping the
+rest of parameters fixed.
+}
+}
+\examples{
+PwrSampleSize(npg = 1:20)
+
+}
+\references{
+\itemize{
+\item Helms, R. W. (1992). \emph{Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs}. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
+\item Verbeke, G. & Molenberghs, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
+}
+\seealso{
+\link{PostHocPwr}, \code{\link[=APrioriPwr]{APrioriPwr()}}, \code{\link[=PwrTime]{PwrTime()}}.
 }

@@ -16,12 +16,50 @@ corresponding to Bliss and highest single agent, respectively.}
 
 \item{pvalue}{Threshold for the p-value of synergy calculation to be considered statistically significant.}
 
-\item{...}{Additional parameters to be passed to \link[nlmeU:simulateY]{nlmeU::simulateY}.}
+\item{...}{Additional parameters to be passed to \link[nlmeU:simulateY]{nlmeU::simulateY}:}
 }
 \value{
 Returns a numeric value of the power for the synergy calculation for the model using the method specified in \code{method}.
 The power is expressed as the proportion of simulations that provides a p-value below the threshold specified in \code{pvalue}.
 }
 \description{
-Post hoc power calculation based on simulations of the synergy evaluation using LMM.
+\code{PostHocPwr} allows for the \emph{post hoc} power analysis of the synergy hypothesis testing for Bliss and HSA refence
+models for a given tumor growth data fitted model.
+}
+\details{
+The \emph{post hoc} power calculation relies on simulation of the dependent variable, using \link[nlmeU:simulateY]{nlmeU::simulateY}.
+\enumerate{
+\item For a given fitted model of the tumor growth data, \code{nsim} simulations of the dependent variable (\eqn{\log (RTV)})
+are done, based on the marginal distribution implied by the fitted model.
+\item The model is then fitted to the new values of the dependant variable.
+\item For each simulation, the new estimates from each model are then used for the synergy hypothesis testing as
+explained in \link{lmmSynergy}, and the p-values stored.
+\item The power is returned as the proportion of simulations resulting in a significant synergy hypothesis testing
+(p-value < \code{pvalue}).
+}
+}
+\examples{
+#' data(grwth_data)
+# Fit the model
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  drug_ab = "Combination"
+  )
+ PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
+ # Using a seed to obtain reproducible results
+ PostHocPwr(lmm, seed = 123, nsim = 100)
+
+}
+\references{
+Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
+\seealso{
+\code{\link[=APrioriPwr]{APrioriPwr()}}, \code{\link[=PwrSampleSize]{PwrSampleSize()}}, \code{\link[=PwrTime]{PwrTime()}}.
 }

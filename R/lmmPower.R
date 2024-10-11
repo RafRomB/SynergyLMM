@@ -1,14 +1,48 @@
 ## Power Evaluation using Simulations 
 
 #' @title Post hoc power calculation based on simulations of the synergy evaluation using LMM.
+#' @description
+#' `PostHocPwr` allows for the _post hoc_ power analysis of the synergy hypothesis testing for Bliss and HSA refence
+#' models for a given tumor growth data fitted model.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param nsim Number of simulations to perform.
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 #' corresponding to Bliss and highest single agent, respectively.
 #' @param pvalue Threshold for the p-value of synergy calculation to be considered statistically significant.
-#' @param ... Additional parameters to be passed to [nlmeU::simulateY].
+#' @param ... Additional parameters to be passed to [nlmeU::simulateY]:
+#' @details
+#' The _post hoc_ power calculation relies on simulation of the dependent variable, using [nlmeU::simulateY].
+#' 1. For a given fitted model of the tumor growth data, `nsim` simulations of the dependent variable (\eqn{\log (RTV)})
+#' are done, based on the marginal distribution implied by the fitted model.
+#' 2. The model is then fitted to the new values of the dependant variable.
+#' 3. For each simulation, the new estimates from each model are then used for the synergy hypothesis testing as
+#' explained in [lmmSynergy], and the p-values stored.
+#' 4. The power is returned as the proportion of simulations resulting in a significant synergy hypothesis testing
+#' (p-value < `pvalue`).
+#' 
 #' @returns Returns a numeric value of the power for the synergy calculation for the model using the method specified in `method`. 
-#' The power is expressed as the proportion of simulations that provides a p-value below the threshold specified in `pvalue`. 
+#' The power is expressed as the proportion of simulations that provides a p-value below the threshold specified in `pvalue`.
+#' @references 
+#' Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' @seealso [APrioriPwr()], [PwrSampleSize()], [PwrTime()].
+#' @examples
+#' #' data(grwth_data)
+#' # Fit the model
+#' lmm <- lmmModel(
+#'   data = grwth_data,
+#'   sample_id = "subject",
+#'   time = "Time",
+#'   treatment = "Treatment",
+#'   tumor_vol = "TumorVolume",
+#'   trt_control = "Control",
+#'   drug_a = "DrugA",
+#'   drug_b = "DrugB",
+#'   drug_ab = "Combination"
+#'   )
+#'  PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
+#'  # Using a seed to obtain reproducible results
+#'  PostHocPwr(lmm, seed = 123, nsim = 100)
+#' 
 #' @export
 
 PostHocPwr <- function(model,
@@ -52,15 +86,18 @@ PostHocPwr <- function(model,
 
 ## A priori Power Calculations
 
-#' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM.
-#' @param npg Number of mouse per group.
+#' @title _A Priori_ Synergy Power Analysis Based on Variability and Drug Effect 
+#' @description
+#' _A priori_ power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+#' with varying drug combination effect and/or experimental variability.
+#' @param npg Number of subjects per group.
 #' @param time Vector with the times at which the tumor volume measurements have been performed.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
 #' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
 #' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
 #' @param grwrComb Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.
-#' @param sd_ranef Random effects standard deviation for the model.
-#' @param sgma Residuals standard deviation for the model.
+#' @param sd_ranef Random effects standard deviation (between-subject variance) for the model.
+#' @param sgma Residuals standard deviation (within-subject variance) for the model.
 #' @param sd_eval A vector with values representing the standard deviations of random effects,
 #' through which the power for synergy calculation will be evaluated.
 #' @param sgma_eval A vector with values representing the standard deviations of the residuals,
@@ -70,6 +107,22 @@ PostHocPwr <- function(model,
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 #' corresponding to Bliss and highest single agent, respectively.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
+#' @details
+#' `APrioriPwr` allows for total customization of an hypothetical drug combination study and allows the user
+#' to define several experimental parameters, such as the sample size, time of measurements, or drug effect,
+#' for the power evaluation of synergy for Bliss and HSA reference models. The power calculation is
+#' based on F-tests of the fixed effects of the model as previously described (Helms, R. W. (1992), 
+#' Verbeke and Molenberghs (2009), Gałecki and Burzykowski (2013)). 
+#' 
+#' The focus the power analysis with `APrioriPwr` is on the **drug combination effect** and the **variability** in the
+#' experiment. For other _a priori_ power analysis see also [`PwrSampleSize()`] and [`PwrTime()`].
+#' 
+#' - `npg`, `time`, `grwrControl`, `grwrA`, `grwrB`, `grwrComb`, `sd_ranef` and `sgma` are parameters referring to
+#' the initial exemplary data set and corresponding fitted model. These values can be obtained from a fitted model, using [`lmmModel_estimates()`],
+#' or be defined by the user.
+#' - `sd_eval`, `sgma_eval`, and `grwrComb_eval` are the different values that will be modified in the initial
+#' exemplary data set to fit the corresponding model and calculate the power.
+#' 
 #' @returns The functions returns several plots:
 #' - A plot representing the hypothetical data, with the regression lines for each
 #' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
@@ -78,10 +131,23 @@ PostHocPwr <- function(model,
 #' `sd_eval` and `sgma_eval`,
 #' - A plot showing the values of the power calculation depending on the values assigned to
 #' `grwrComb_eval`.
+#' 
 #' If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
 #' @import ggplot2
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
+#' @references
+#' - Helms, R. W. (1992). _Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs_. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
+#' - Verbeke, G. & Molenberghs, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' @seealso [PostHocPwr],[PwrSampleSize()], [PwrTime()].
+#' @examples
+#' APrioriPwr(
+#' sd_eval = seq(0.01, 0.2, 0.01),
+#' sgma_eval = seq(0.01, 0.2, 0.01),
+#' grwrComb_eval = seq(0.01, 0.1, 0.005)
+#' )
+#' 
 #' @export
 
 
@@ -390,9 +456,11 @@ APrioriPwr <- function(npg = 5,
 
 ## Power with varying number of subjects 
 
-#' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM
-#' depending on the sample size per group
-#' @param npg A vector with the sample size (number of animals) per group to calculate the power of 
+#' @title _A Priori_ Synergy Power Analysis Based on Sample Size
+#' @description
+#'  _A priori_ power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+#' depending on the sample size per group.
+#' @param npg A vector with the sample size (number of subjects) per group to calculate the power of 
 #' the synergy analysis.
 #' @param time Vector with the times at which the tumor volume measurements have been performed.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
@@ -404,6 +472,22 @@ APrioriPwr <- function(npg = 5,
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 #' corresponding to Bliss and highest single agent, respectively.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
+#' @details
+#' `PwrSampleSize` allows the user to define an hypothetical drug combination study, customizing several 
+#' experimental parameters, such as the sample size, time of measurements, or drug effect,
+#' for the power evaluation of synergy for Bliss and HSA reference models. The power calculation is
+#' based on F-tests of the fixed effects of the model as previously described (Helms, R. W. (1992), 
+#' Verbeke and Molenberghs (2009), Gałecki and Burzykowski (2013)). 
+#' 
+#' The focus the power analysis with `PwrSampleSize` is on the **sample size per group**. The function allows
+#' for the evaluation of how the statistical power changes when the sample size per group varies while the
+#' other parameters are kept constant. For other _a priori_ power analysis see also [`APrioriPwr()`] and [`PwrTime()`].
+#' 
+#' - `time`, `grwrControl`, `grwrA`, `grwrB`, `grwrComb`, `sd_ranef` and `sgma` are parameters referring to
+#' the initial exemplary data set and corresponding fitted model. These values can be obtained from a fitted model, using [`lmmModel_estimates()`],
+#' or be defined by the user.
+#' -  `npg` is a vector indicating the different sample sizes for which the statistical power is going to be evaluated, keeping the 
+#' rest of parameters fixed.
 #' @returns The functions returns two plots:
 #' - A plot representing the hypothetical data, with the regression lines for each
 #' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
@@ -411,8 +495,16 @@ APrioriPwr <- function(npg = 5,
 #' - A plot showing the values of the power calculation depending on the values assigned to 
 #' `npg`.
 #' 
-#' If save to a variable, the fuction returns the data frame with the power for the analysis for each sample size
-#' especified in `npg`.
+#' If saved to a variable, the fuction returns the data frame with the power for the analysis for each sample size
+#' specified in `npg`.
+#' @references
+#' - Helms, R. W. (1992). _Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs_. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
+#' - Verbeke, G. & Molenberghs, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' @seealso [PostHocPwr], [APrioriPwr()], [PwrTime()].
+#' @examples
+#' PwrSampleSize(npg = 1:20)
+#' 
 #' @export 
 
 
@@ -569,8 +661,10 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
 
 ## Power with varying times of follow-up or frequency of measurements
 
-#' @title A priori power calculation for a hypothetical study of synergy evaluation using LMM
-#' depending on the time of follow-up or the frequency of measurements
+#' @title _A Priori_ Synergy Power Analysis Based on Time
+#' @description
+#'  _A priori_ power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+#' depending on depending on the time of follow-up or the frequency of measurements.
 #' @param npg Number of mouse per group.
 #' @param time A list in which each element is a vector with the times at which the tumor volume measurements have been performed.
 #' If `type` is set to "max", each vector in the list should have the measurements taken at the same interval and differ in the final
@@ -587,6 +681,26 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 #' corresponding to Bliss and highest single agent, respectively.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
+#' @details
+#' `PwrTime` allows the user to define an hypothetical drug combination study, customizing several 
+#' experimental parameters, such as the sample size, time of measurements, or drug effect,
+#' for the power evaluation of synergy for Bliss and HSA reference models. The power calculation is
+#' based on F-tests of the fixed effects of the model as previously described (Helms, R. W. (1992), 
+#' Verbeke and Molenberghs (2009), Gałecki and Burzykowski (2013)). 
+#' 
+#' The focus the power analysis with `PwrTime` is on the **time** at which the measurements are done. The function allows
+#' for the evaluation of how the statistical power changes when the time of follow-up varies while the frequency
+#' of measurements is keep constant. It also allows to how the statistical power changes when the time of follow-up is
+#' kept constant, but the frequency of measurements varies.
+#' 
+#' For other _a priori_ power analysis see also [`APrioriPwr()`] and [`PwrSampleSize()`].
+#' 
+#' - `npg`, `grwrControl`, `grwrA`, `grwrB`, `grwrComb`, `sd_ranef` and `sgma` are parameters referring to
+#' the initial exemplary data set and corresponding fitted model. These values can be obtained from a fitted model, using [`lmmModel_estimates()`],
+#' or be defined by the user.
+#' -  `time` is a list in which each element is a vector with the times at which the tumor volume measurements have been performed, and for
+#' which the statistical power is going to be evaluated, keeping the rest of parameters fixed.
+#' 
 #' @returns The functions returns two plots:
 #' - A plot representing the hypothetical data, with the regression lines for each
 #' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
@@ -597,10 +711,44 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
 #' been performed.
 #' 
 #' If saved to a variable, the function returns the power for the analysis for each value specified in ` Time`.
+#' 
+#' #' @references
+#' - Helms, R. W. (1992). _Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs_. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
+#' - Verbeke, G. & Molenberghs, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' @seealso [PostHocPwr], [APrioriPwr()], [PwrSampleSize()].
+#' @examples
+#' # Power analysis maintaining the frequency of measurements 
+#' # and varying the time of follow-up ('type = "max"')
+#' PwrTime(time = list(seq(0, 9, 3), 
+#'                     seq(0, 12, 3), 
+#'                     seq(0, 15, 3), 
+#'                     seq(0, 21, 3), 
+#'                     seq(0, 30, 3)), 
+#'                     type = "max")
+#' 
+#' # Power analysis maintaining the time of follow-up 
+#' # and varying the frequency of measurements ('type = "freq"')
+#' PwrTime(time = list(seq(0, 10, 1), 
+#'                     seq(0, 10, 2), 
+#'                     seq(0, 10, 5), 
+#'                     seq(0, 10, 10)), 
+#'                     type = "freq")
+
 #' @export 
 
-PwrTime <- function(npg = 5, time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)), type = "max", 
-                        grwrControl, grwrA, grwrB, grwrComb, sd_ranef, sgma, method = "Bliss", ...){
+PwrTime <- function(npg = 5,
+                    time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
+                    type = "max",
+                    grwrControl = 0.08,
+                    grwrA = 0.07,
+                    grwrB = 0.06,
+                    grwrComb = 0.03,
+                    sd_ranef = 0.01,
+                    sgma = 0.1 ,
+                    method = "Bliss",
+                    ...) {
+  
   
   # Validate method input
   valid_methods <- c("Bliss", "HSA")
