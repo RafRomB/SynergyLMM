@@ -8,7 +8,7 @@ lmmSynergy(
   model,
   method = "Bliss",
   min_time = 0,
-  robustSE = FALSE,
+  robust = FALSE,
   type = "CR2",
   ra_nsim = 1000,
   show_plot = TRUE,
@@ -23,8 +23,8 @@ corresponding to Bliss, highest single agent and response additivity, respective
 
 \item{min_time}{Minimun time for which to start calculating synergy.}
 
-\item{robustSE}{If TRUE, uncertainty is estimated using robust standard errors
-using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.}
+\item{robust}{If TRUE, uncertainty is estimated using sandwich-based robust estimators
+of the variance-covariance matrix of the regression coefficient estimates provided by \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.}
 
 \item{type}{Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3".
 See "Details" section of \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}} for further information.}
@@ -94,12 +94,12 @@ and a lower drug combination effect than the expected (\eqn{CI < 1}) would indic
 As mentioned above, the results include the synergy results for \strong{each day}. This means that \code{lmmSynergy} refits the model using the data from \code{time_start} defined in \code{\link[=lmmModel]{lmmModel()}} until
 each time point, providing the synergy results for each of these models and for that specific time point.
 
-\strong{Uncertainty estimation using robust standard errors}
+\strong{Uncertainty estimation using robust estimators}
 
-If \code{robustSE = TRUE}, \code{lmmSynergy} deals with possible model misspecifications, allowing for cluster-robust variance estimation using  \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.
-When using \code{robustSE = TRUE}, setting \code{type = "CR2"} is recommended. See more details in \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}.
+If \code{robust = TRUE}, \code{lmmSynergy} deals with possible model misspecifications, allowing for cluster-robust variance estimation using  \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.
+When using \code{robust = TRUE}, setting \code{type = "CR2"} is recommended. See more details in \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}.
 
-\emph{Note}: When a variance structure has been specified in the model it is recommended to use always \code{robustSE = TRUE} to get a better estimation.
+\emph{Note}: When a variance structure has been specified in the model it is recommended to use always \code{robust = TRUE} to get a better estimation.
 }
 \examples{
 # Load the example data
@@ -132,7 +132,7 @@ lmmSynergy(lmm, method = "RA", ra_sim = 1000)
 lmmSynergy(lmm, min_time = 12)
 
 # Using robust standard errors
-lmmSynergy(lmm, method = "Bliss", robustSE = TRUE, type = "CR2")
+lmmSynergy(lmm, method = "Bliss", robust = TRUE, type = "CR2")
 
 }
 \references{

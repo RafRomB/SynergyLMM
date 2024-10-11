@@ -79,16 +79,16 @@ test_that("Test lmmSynergy with RA method", {
   
 })
 
-test_that("Test lmmSynergy with robust standard errors (robustSE = TRUE)", {
-  # Call the function with robustSE = TRUE and type = "CR1"
-  result <- lmmSynergy(model, robustSE = TRUE, type = "CR1", show_plot = FALSE)
+test_that("Test lmmSynergy with robust sandwich estimators (robust = TRUE)", {
+  # Call the function with robust = TRUE and type = "CR1"
+  result <- lmmSynergy(model, robust = TRUE, type = "CR1", show_plot = FALSE)
   
   # Check that the result is structured as expected
   expect_type(result, "list")
   expect_s3_class(result$Synergy, "data.frame")
   
-  # Call the function with robustSE = TRUE and type = "CR2"
-  result <- lmmSynergy(model, robustSE = TRUE, type = "CR2", show_plot = FALSE)
+  # Call the function with robust = TRUE and type = "CR2"
+  result <- lmmSynergy(model, robust = TRUE, type = "CR2", show_plot = FALSE)
   
   # Check that the result is structured as expected
   expect_type(result, "list")
@@ -99,8 +99,8 @@ test_that("Test lmmSynergy with robust standard errors (robustSE = TRUE)", {
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
 })
 
-test_that("Test lmmSynergy method = 'RA' robustSE = TRUE works correctly", {
-  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 100, robustSE = TRUE, type = "CR2", show_plot = FALSE)
+test_that("Test lmmSynergy method = 'RA' robust = TRUE works correctly", {
+  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 100, robust = TRUE, type = "CR2", show_plot = FALSE)
   
   expect_type(result, "list")
   expect_named(result, c("Contrasts", "Synergy"))
@@ -113,7 +113,7 @@ test_that("Test lmmSynergy method = 'RA' robustSE = TRUE works correctly", {
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
   
-  # Ensure that robustSE used clubSandwich to calculate the variance-covariance matrix
+  # Ensure that robust used clubSandwich to calculate the variance-covariance matrix
   expect_true(all(synergy$Model == "RA"))
 })
 

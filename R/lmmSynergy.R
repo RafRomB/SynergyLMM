@@ -12,8 +12,8 @@
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 #' corresponding to Bliss, highest single agent and response additivity, respectively.
 #' @param min_time Minimun time for which to start calculating synergy.
-#' @param robustSE If TRUE, uncertainty is estimated using robust standard errors 
-#' using a sandwich estimate of the variance-covariance matrix of the regression coefficient estimates provided by [clubSandwich::vcovCR.lme].
+#' @param robust If TRUE, uncertainty is estimated using sandwich-based robust estimators
+#' of the variance-covariance matrix of the regression coefficient estimates provided by [clubSandwich::vcovCR.lme].
 #' @param type Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3". 
 #' See "Details" section of [clubSandwich::vcovCR()] for further information.
 #' @param ra_nsim Number of random sampling to calculate the synergy for Response Additivity model.
@@ -62,12 +62,12 @@
 #' As mentioned above, the results include the synergy results for **each day**. This means that `lmmSynergy` refits the model using the data from `time_start` defined in [lmmModel()] until 
 #' each time point, providing the synergy results for each of these models and for that specific time point. 
 #' 
-#' **Uncertainty estimation using robust standard errors**
+#' **Uncertainty estimation using robust estimators**
 #' 
-#' If `robustSE = TRUE`, `lmmSynergy` deals with possible model misspecifications, allowing for cluster-robust variance estimation using  [clubSandwich::vcovCR.lme].
-#' When using `robustSE = TRUE`, setting `type = "CR2"` is recommended. See more details in [clubSandwich::vcovCR()].
+#' If `robust = TRUE`, `lmmSynergy` deals with possible model misspecifications, allowing for cluster-robust variance estimation using  [clubSandwich::vcovCR.lme].
+#' When using `robust = TRUE`, setting `type = "CR2"` is recommended. See more details in [clubSandwich::vcovCR()].
 #' 
-#' _Note_: When a variance structure has been specified in the model it is recommended to use always `robustSE = TRUE` to get a better estimation. 
+#' _Note_: When a variance structure has been specified in the model it is recommended to use always `robust = TRUE` to get a better estimation. 
 #' 
 #' @returns The function returns a list with two elements:
 #' - `Constrasts`: List with the outputs of the linear test for the synergy null hypothesis obtained by [marginaleffects::hypotheses()] for each time.
@@ -114,7 +114,7 @@
 #' lmmSynergy(lmm, min_time = 12)
 #' 
 #' # Using robust standard errors
-#' lmmSynergy(lmm, method = "Bliss", robustSE = TRUE, type = "CR2")
+#' lmmSynergy(lmm, method = "Bliss", robust = TRUE, type = "CR2")
 #' 
 
 #' @export
@@ -122,7 +122,7 @@
 lmmSynergy <- function(model,
                     method = "Bliss",
                     min_time = 0,
-                    robustSE = FALSE,
+                    robust = FALSE,
                     type = "CR2",
                     ra_nsim = 1000,
                     show_plot = TRUE,
@@ -173,7 +173,7 @@ lmmSynergy <- function(model,
       # Define final time point for each model
       t2 <- d
       
-      if (robustSE) {
+      if (robust) {
         cluster_robust_vcov <- clubSandwich::vcovCR(model_time, type = type) # Cluster-robust variance-covariance matrix
         betas <- fixef(model_time) # model betas estimates
         
@@ -292,7 +292,7 @@ lmmSynergy <- function(model,
     for (d in times) {
       data <- model$data %>% dplyr::filter(.data$Time <= d)
       model_time <- update(model, data = data)
-      if (robustSE) {
+      if (robust) {
         Test <- hypotheses(
           model_time,
           hypothesis = contrast,
