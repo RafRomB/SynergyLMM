@@ -17,7 +17,7 @@ A data frame with 352 rows and 4 columns:
 data(grwth_data)
 }
 \description{
-A long format data frame with example tumor growth data, generated with \code{\link[=.simulateTumorGrowth]{.simulateTumorGrowth()}},
+A long format data frame with example tumor growth data, generated with \code{\link[=simulateTumorGrowth]{simulateTumorGrowth()}},
 representing a simulated \emph{in vivo} drug combination experiment, involving 8 subjects per group, with 30 days of follow-up, taking measurement
 every 3 days.
 }

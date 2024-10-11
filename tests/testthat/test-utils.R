@@ -1,7 +1,7 @@
-# Tests for .simulateTumorGrowth ----
+# Tests for simulateTumorGrowth ----
 
-test_that(".simulateTumorGrowth returns a data frame with correct columns", {
-  result <- .simulateTumorGrowth(
+test_that("simulateTumorGrowth returns a data frame with correct columns", {
+  result <- simulateTumorGrowth(
     npg = 5,
     timepoints = c(0, 3, 5, 10),
     initial_volume = 100,
@@ -17,10 +17,10 @@ test_that(".simulateTumorGrowth returns a data frame with correct columns", {
   expect_true(all(c("subject", "Treatment", "Time", "TumorVolume") %in% colnames(result)))
 })
 
-test_that(".simulateTumorGrowth returns correct number of rows for given npg and timepoints", {
+test_that("simulateTumorGrowth returns correct number of rows for given npg and timepoints", {
   npg <- 5
   timepoints <- c(0, 3, 5, 10)
-  result <- .simulateTumorGrowth(
+  result <- simulateTumorGrowth(
     npg = npg,
     timepoints = timepoints,
     initial_volume = 100,
@@ -35,8 +35,8 @@ test_that(".simulateTumorGrowth returns correct number of rows for given npg and
   expect_equal(nrow(result), 4 * npg * length(timepoints))
 })
 
-test_that(".simulateTumorGrowth handles different growth rates correctly", {
-  result <- .simulateTumorGrowth(
+test_that("simulateTumorGrowth handles different growth rates correctly", {
+  result <- simulateTumorGrowth(
     npg = 5,
     timepoints = c(0, 3, 5, 10),
     initial_volume = 100,
@@ -57,8 +57,8 @@ test_that(".simulateTumorGrowth handles different growth rates correctly", {
   expect_true(means$mean_volume[means$Treatment == "Combination"] < means$mean_volume[means$Treatment == "DrugB"])
 })
 
-test_that(".simulateTumorGrowth handles different standard deviations correctly", {
-  result_sd_low <- .simulateTumorGrowth(
+test_that("simulateTumorGrowth handles different standard deviations correctly", {
+  result_sd_low <- simulateTumorGrowth(
     npg = 5,
     timepoints = c(0, 3, 5, 10),
     initial_volume = 100,
@@ -69,7 +69,7 @@ test_that(".simulateTumorGrowth handles different standard deviations correctly"
     sd = 0.01
   )
   
-  result_sd_high <- .simulateTumorGrowth(
+  result_sd_high <- simulateTumorGrowth(
     npg = 5,
     timepoints = c(0, 3, 5, 10),
     initial_volume = 100,
@@ -87,8 +87,8 @@ test_that(".simulateTumorGrowth handles different standard deviations correctly"
   expect_true(var_high > var_low)
 })
 
-test_that(".simulateTumorGrowth handles single timepoint correctly", {
-  result <- .simulateTumorGrowth(
+test_that("simulateTumorGrowth handles single timepoint correctly", {
+  result <- simulateTumorGrowth(
     npg = 5,
     timepoints = c(0),
     initial_volume = 100,

@@ -21,18 +21,28 @@ NULL
 #' @param grwrA Coefficient for Drug A treatment group tumor growth rate.
 #' @param grwrB Coefficient for Drug B treatment group tumor growth rate.
 #' @param grwrComb Coefficient for Combination (Drug A + Drug B) treatment group tumor growth rate.
-#' @param sd Standard deviation for the tumor growth.
+#' @param sd Variability for the tumor growth.
+#' @details 
+#' The function simulates the tumor growth following exponential kinetics,
+#' given by
+#' \deqn{TV(t) = TV_0 \cdot e^{\beta_i \cdot t}}
+#' 
+#' where \eqn{TV_0} is given by `initial_volume`, \eqn{t} is given by `timepoints` 
+#' and \eqn{\beta_i} are the coefficients given by `grwrControl`, `grwrA`, `grwrB`, and `grwrComb`.
+#' 
+#' The variability is simulated using the `sd` argument to add random noise from a normal distribution \eqn{N(1, SD)},
+#' with \eqn{SD} = `sd`.
 #' @returns A data frame with tumor growth data in long format.
 #' @examples
 #' # This code generates the 'grwth_data' example dataset:
 #' set.seed(123)
-#' grwth_data <- .simulateTumorGrowth(npg = 8, timepoints = seq(0,30,3), 
+#' grwth_data <- simulateTumorGrowth(npg = 8, timepoints = seq(0,30,3), 
 #'                                    initial_volume = 200, grwrControl = 0.08,
 #'                                    grwrA = 0.07, grwrB = 0.065, 
 #'                                    grwrComb = 0.04, sd = 0.2)
 #' 
 #' @export
-.simulateTumorGrowth <- function(npg = 5,
+simulateTumorGrowth <- function(npg = 5,
                                  timepoints = c(0, 3, 5, 10),
                                  initial_volume = 100,
                                  grwrControl = 0.08,
