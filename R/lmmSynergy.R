@@ -17,9 +17,6 @@
 #' @param type Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3". 
 #' See "Details" section of [clubSandwich::vcovCR()] for further information.
 #' @param ra_nsim Number of random sampling to calculate the synergy for Response Additivity model.
-#' @param t_ci Time for calculation of combination index value. The value of the CI represents the proportion of tumor cell survival at time `t_ci` 
-#' in the drug combination group compared to the expected tumor cell survival according to the reference model. If not specified, `t_ci` is set to the
-#' last time point of follow-up.
 #' @param show_plot Logical indicating if a plot with the results of the synergy calculation should be generated.
 #' @param ... Additional arguments to be passed to [marginaleffects::hypotheses()].
 #' @details
@@ -63,7 +60,7 @@
 #' and a lower drug combination effect than the expected (\eqn{CI < 1}) would indicate antagonism.
 #' 
 #' As mentioned above, the results include the synergy results for **each day**. This means that `lmmSynergy` refits the model using the data from `time_start` defined in [lmmModel()] until 
-#' each time point, providing the synergy results for each of these models. 
+#' each time point, providing the synergy results for each of these models and for that specific time point. 
 #' 
 #' **Uncertainty estimation using robust standard errors**
 #' 
@@ -128,7 +125,6 @@ lmmSynergy <- function(model,
                     robustSE = FALSE,
                     type = "CR2",
                     ra_nsim = 1000,
-                    t_ci = NULL,
                     show_plot = TRUE,
                     ...) {
   
@@ -292,9 +288,6 @@ lmmSynergy <- function(model,
     times <- times[times >= min_time]
     times <- times[order(times)]
     
-    if(is.null(t_ci)){
-      t_ci <- max(times)
-    }
     i <- 1
     for (d in times) {
       data <- model$data %>% dplyr::filter(.data$Time <= d)
@@ -324,9 +317,9 @@ lmmSynergy <- function(model,
       ci <- rbind(ci, data.frame(
         method,
         "CI",
-        exp(Test$estimate*t_ci),
-        exp(Test$conf.low*t_ci),
-        exp(Test$conf.high*t_ci),
+        exp(Test$estimate*d),
+        exp(Test$conf.low*d),
+        exp(Test$conf.high*d),
         Test$p.value,
         d
       ))
@@ -337,9 +330,9 @@ lmmSynergy <- function(model,
     names(Contrasts) <- paste("Time", times, sep = "")
   }
   
-  colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
   colnames(ci) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
-  df <- rbind(ss, ci)
+  colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
+  df <- rbind(ci, ss)
   rownames(df) <- NULL
   result <- list(Contrasts = Contrasts, Synergy = df)
   if(show_plot) {
