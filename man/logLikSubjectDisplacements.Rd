@@ -85,6 +85,6 @@ logLikSubjectDisplacements(model = lmm, var_name = "SampleID")
 \references{
 \itemize{
 \item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
-\item Molenberghs, G., & Verbeke, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+\item Verbeke, G. & Molenberghs, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
 }
 }
