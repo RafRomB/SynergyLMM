@@ -656,7 +656,7 @@ logLikSubjectDisplacements <- function(model,
       x1[outL],
       y[outL],
       subject.c[outL],
-      cex = 0.66,
+      cex = 1,
       adj = c(0.5, 1),
       srt = label_angle
     ) 
@@ -685,7 +685,7 @@ logLikSubjectDisplacements <- function(model,
       lines = list(lty = 2, lwd = 0.5),
       text = list(c(
         paste("logLik displacement threshold:", as.character(disp_thrh))
-      ), cex = 0.66),
+      ), cex = 1.2),
       space = "top"
     )
   ))
@@ -799,7 +799,7 @@ CookDistance <- function(model,
       x = subject.x[outD],
       y = CookD[outD],
       labels = subject.c[outD],
-      cex = 0.6,
+      cex = 1,
       adj = c(0.5, 0.1),
       srt = label_angle,
       xpd = TRUE
@@ -812,9 +812,9 @@ CookDistance <- function(model,
     inset = c(0, -0.1),
     legend = c(as.character(cook_thr)),
     lty = 2,
-    title = "Cook's distance\n threshold",
+    title = "Cook's distance threshold",
     bty = "n",
-    cex = 0.66,
+    cex = 0.8,
     xpd = TRUE
   )
   return(invisible(CookD))

@@ -107,11 +107,15 @@ plot_ranefDiagnostics <- function(model){
   p1 <- ggplot(nlme::ranef(model), aes(sample = nlme::ranef(model)$Time)) + stat_qq(col = "gray20") + stat_qq_line() +
     labs(title = "Normal Q-Q Plot of Random Effects") + xlab("Theoretical Quantiles") + ylab("Sample Quantiles") + cowplot::theme_cowplot()+
     theme(plot.title = element_text(size = 10, hjust = 0.5), axis.title = element_text(size = 12))
-  p2 <- qqnorm(model, ~resid(.)|SampleID, pch=20, cex = 0.5, col = "gray20",
-               main = list("Normal Q-Q Plot by Sample", cex = 0.8), par.strip.text=list(col="black", cex=.66))
-  p3 <- plot(model, SampleID ~ resid(., type = "response"), abline = 0, main = list("Conditional Residuals by Sample", cex = 0.8))
-  p4 <- plot(model, residuals(., type = "pearson") ~ fitted(.)|SampleID, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.5,
-             main = list("Pearson Residuals vs Fitted Values by Sample", cex =0.8),par.strip.text=list(col="black", cex=.66))
+  p2 <- qqnorm(model, ~resid(., type = "normalized")|SampleID, pch=20, cex = 0.5, col = "gray20",
+               main = list("Normal Q-Q Plot of Normalized Residuals by Sample", cex = 0.8), 
+               par.strip.text=list(col="black", cex=0.8), xlab = "Normalized Residuals",
+               abline = c(0,1))
+  p3 <- plot(model, SampleID ~ resid(., type = "response"), abline = 0, main = list("Raw Residuals by Subject", cex = 0.8),
+             xlab = "Residuals")
+  p4 <- plot(model, residuals(., type = "pearson") ~ fitted(.)|SampleID, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.75,
+             main = list("Pearson Residuals vs Fitted Values by Sample", cex =0.8),par.strip.text=list(col="black", cex=0.8), idLabels = ~Time,
+             abline = 0, ylab = "Pearson residuals")
   # Arranged plots
   p5 <- cowplot::plot_grid(p1,p2,p3,p4, ncol = 2)
   return(list(p1,p2,p3,p4,p5))
@@ -150,15 +154,18 @@ plot_ranefDiagnostics <- function(model){
 #' @export
 plot_residDiagnostics <- function(model){
   # Individual Plots
-  p1 <- qqnorm(model, ~resid(., type = "normalized"),pch = 20, main = "Q-Q Plot of Normalized Residuals")
+  p1 <- qqnorm(model, ~resid(., type = "normalized"),pch = 20, main = "Q-Q Plot of Normalized Residuals", abline = c(0,1),
+               xlab = "Normalized residuals")
   p2 <- qqnorm(model, ~resid(., type = "normalized")|Time,pch = 20, main = "Q-Q Plot of Normalized Residuals by Time",
-               par.strip.text=list(col="black", cex=.5))
+               par.strip.text=list(col="black", cex=1), abline = c(0,1),
+               xlab = "Normalized residuals")
   p3 <- qqnorm(model, ~resid(., type = "normalized")|Treatment, pch = 20, main = "Q-Q Plot of Normalized Residuals by Treatment",
-               par.strip.text=list(col="black", cex=.5))
-  p4 <- plot(model,main = "Pearson Residuals vs Fitted Values", pch = 20)
+               par.strip.text=list(col="black", cex=1), abline = c(0,1),
+               xlab = "Normalized residuals")
+  p4 <- plot(model,main = "Pearson Residuals vs Fitted Values", pch = 20, ylab = "Pearson residuals")
   p5 <- plot(model, resid(., type = "pearson") ~Time|Treatment, id = 0.05, pch=20,
-             adj = -0.03, cex = 0.6, main = "Pearson Residuals per Time and Treatment", 
-             par.strip.text=list(col="black", cex=.5))
+             adj = -0.03, cex = 1, main = "Pearson Residuals per Time and Treatment", 
+             par.strip.text=list(col="black", cex=1), ylab = "Pearson residuals", abline = 0)
   # Arranged plots
   p6 <- cowplot::plot_grid(p1,p2,p3,p4,p5, nrow = 3, ncol = 2, align = "hv")
   return(list(p1,p2,p3,p4,p5,p6))
@@ -201,7 +208,8 @@ plot_ObsvsPred <- function(model, nrow = 4, ncol = 5){
                   columns = 2,
                   space="top"), 
        pch = 20, lwd = 1.5, main = "Observed and Predicted Values by Time",
-       par.strip.text=list(col="black", cex=.5))
+       par.strip.text=list(col="black", cex=1),
+       xlab = list("Time", cex = 1.2), ylab = list("log RTV", cex = 1.2))
 }
 
 #' @title Plotting synergy results
