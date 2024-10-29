@@ -14,7 +14,7 @@ lmmModel(
   drug_a = "Drug_A",
   drug_b = "Drug_B",
   drug_ab = "Drug_AB",
-  time_start = 0,
+  time_start = NULL,
   time_end = NULL,
   min_observations = 1,
   show_plot = TRUE,
@@ -41,7 +41,8 @@ It must contain at least the following columns: mice IDs, time of follow-up (num
 
 \item{drug_ab}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
 
-\item{time_start}{Numeric value indicating the time point at which the treatment started.}
+\item{time_start}{Numeric value indicating the time point at which the treatment started. If not
+specified, the minimum value in the \code{time} column is used as the starting time point.}
 
 \item{time_end}{Numeric value indicating the last time point to be included in the analysis. If not
 specified, the maximum value in the \code{time} column is used as the final time point.}

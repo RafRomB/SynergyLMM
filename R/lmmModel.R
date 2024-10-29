@@ -85,7 +85,8 @@ NULL
 #' @param drug_a String indicating the name assigned to the 'Drug A' group.
 #' @param drug_b String indicating the name assigned to the 'Drug B' group.
 #' @param drug_ab String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
-#' @param time_start Numeric value indicating the time point at which the treatment started.
+#' @param time_start Numeric value indicating the time point at which the treatment started. If not
+#' specified, the minimum value in the `time` column is used as the starting time point.
 #' @param time_end Numeric value indicating the last time point to be included in the analysis. If not
 #' specified, the maximum value in the `time` column is used as the final time point.
 #' @param min_observations Minimum number of observation for each sample to be included in the analysis. 
@@ -193,7 +194,7 @@ lmmModel <- function(data,
                      drug_a = "Drug_A",
                      drug_b = "Drug_B",
                      drug_ab = "Drug_AB",
-                     time_start = 0,
+                     time_start = NULL,
                      time_end = NULL,
                      min_observations = 1,
                      show_plot = TRUE,
@@ -263,6 +264,12 @@ lmmModel <- function(data,
   
   # First, we will remove those rows for which we don't have the total volume, and
   # we will use only the data after the treatment start
+  
+  # If time of treatment start is not defined, use the minimum value:
+  
+  if(is.null(time_start)) {
+    time_start <- min(TV.df$Time)
+  }
   
   TV.df <- TV.df %>% dplyr::filter(.data$Time >= time_start & !is.na(.data$TV))
   
