@@ -253,8 +253,8 @@ plot_lmmSynergy <- function(syn_data){
     geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray70", lwd = 1) + cowplot::theme_cowplot() +
     geom_point(aes(colour  = -log10(.data$pval)), size = 5, shape = 18) +
     scale_color_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
-    ylab("Value") + scale_x_continuous(breaks = unique(syn_data$Time)) +
-    facet_wrap(~Metric, scales = "free") + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold")) + 
+    ylab("Metric Value") + scale_x_continuous(breaks = unique(syn_data$Time)) +
+    facet_wrap(~Metric, scales = "free", labeller = "label_both") + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold")) + 
     labs(title = paste("Combination Index and Synergy Score for", unique(syn_data$Model), "Synergy")) +
     geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed")
 }
