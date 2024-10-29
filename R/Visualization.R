@@ -109,8 +109,7 @@ plot_ranefDiagnostics <- function(model){
     theme(plot.title = element_text(size = 10, hjust = 0.5), axis.title = element_text(size = 12))
   p2 <- qqnorm(model, ~resid(., type = "normalized")|SampleID, pch=20, cex = 0.5, col = "gray20",
                main = list("Normal Q-Q Plot of Normalized Residuals by Sample", cex = 0.8), 
-               par.strip.text=list(col="black", cex=0.8), xlab = "Normalized Residuals",
-               abline = c(0,1))
+               par.strip.text=list(col="black", cex=0.8), xlab = "Normalized Residuals")
   p3 <- plot(model, SampleID ~ resid(., type = "response"), abline = 0, main = list("Raw Residuals by Subject", cex = 0.8),
              xlab = "Residuals")
   p4 <- plot(model, residuals(., type = "pearson") ~ fitted(.)|SampleID, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.75,
@@ -154,13 +153,13 @@ plot_ranefDiagnostics <- function(model){
 #' @export
 plot_residDiagnostics <- function(model){
   # Individual Plots
-  p1 <- qqnorm(model, ~resid(., type = "normalized"),pch = 20, main = "Q-Q Plot of Normalized Residuals", abline = c(0,1),
+  p1 <- qqnorm(model, ~resid(., type = "normalized"),pch = 20, main = "Q-Q Plot of Normalized Residuals",
                xlab = "Normalized residuals")
   p2 <- qqnorm(model, ~resid(., type = "normalized")|Time,pch = 20, main = "Q-Q Plot of Normalized Residuals by Time",
-               par.strip.text=list(col="black", cex=1), abline = c(0,1),
+               par.strip.text=list(col="black", cex=1),
                xlab = "Normalized residuals")
   p3 <- qqnorm(model, ~resid(., type = "normalized")|Treatment, pch = 20, main = "Q-Q Plot of Normalized Residuals by Treatment",
-               par.strip.text=list(col="black", cex=1), abline = c(0,1),
+               par.strip.text=list(col="black", cex=1),
                xlab = "Normalized residuals")
   p4 <- plot(model,main = "Pearson Residuals vs Fitted Values", pch = 20, ylab = "Pearson residuals")
   p5 <- plot(model, resid(., type = "pearson") ~Time|Treatment, id = 0.05, pch=20,
