@@ -296,7 +296,7 @@ lmmSynergy <- function(model,
         Test <- hypotheses(
           model_time,
           hypothesis = contrast,
-          vcov = clubSandwich::vcovCR(model, type = type),
+          vcov = clubSandwich::vcovCR(model_time, type = type),
           ...
         )
       } else {
