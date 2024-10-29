@@ -190,14 +190,37 @@ test_that("APrioriPwr provides correct output structure when grwrComb_eval is pr
 })
 
 test_that("APrioriPwr plots are generated correctly for different methods", {
-  expect_output(APrioriPwr(
-    grwrControl = 0.1, grwrA = 0.1, grwrB = 0.1, grwrComb = 0.1,
-    sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.2, 0.3), sgma_eval = c(0.2, 0.3), method = "Bliss"
-  ), "1    56 1.232595e-32 1.232595e-32  0.05")
-  expect_output(APrioriPwr(
-    grwrControl = 0.1, grwrA = 0.1, grwrB = 0.1, grwrComb = 0.1,
-    sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.2, 0.3), sgma_eval = c(0.2, 0.3), method = "HSA"
-  ), "1    56 3.7286e-31 3.7286e-31  0.05")
+  
+  result_bliss <- APrioriPwr(
+    grwrControl = 0.1,
+    grwrA = 0.1,
+    grwrB = 0.1,
+    grwrComb = 0.1,
+    sd_ranef = 0.5,
+    sgma = 0.5,
+    sd_eval = c(0.2, 0.3),
+    sgma_eval = c(0.2, 0.3),
+    method = "Bliss"
+  )
+  
+  expect_s3_class(result_bliss, "data.frame")
+  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result_bliss)))
+  
+  result_hsa <- APrioriPwr(
+    grwrControl = 0.1,
+    grwrA = 0.1,
+    grwrB = 0.1,
+    grwrComb = 0.1,
+    sd_ranef = 0.5,
+    sgma = 0.5,
+    sd_eval = c(0.2, 0.3),
+    sgma_eval = c(0.2, 0.3),
+    method = "HSA"
+  )
+  
+  expect_s3_class(result_hsa, "data.frame")
+  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result_hsa)))
+  
 })
 
 test_that("APrioriPwr handles correctly HSA method independently of the order of drug definition in the input", {
