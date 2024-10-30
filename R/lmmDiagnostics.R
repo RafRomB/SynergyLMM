@@ -496,6 +496,10 @@ logLikSubjectContributions <- function(model,
   } else{
     vecR <- vecR[var_name]
   }  
+  
+  # Ensure right dimension of vecR
+  vecR <- vecR[seq_len(nrow(dt1))]
+  
   vecR2 <- vecR^2
   R <- diag(vecR2, nrow=length(vecR)) # R_i matrix     
   Z <- model.matrix(m$reStruc, data=dt1) # Z_i matrix
