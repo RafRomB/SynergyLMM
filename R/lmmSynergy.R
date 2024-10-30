@@ -193,6 +193,8 @@ lmmSynergy <- function(model,
         
         ratio_aucs <- lhs_aucs/rhs_aucs
         
+        ratio_aucs[which(ratio_aucs<0)] <- 1
+        
         # Estimates
         
         delta <- median(delta_aucs)
