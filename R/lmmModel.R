@@ -285,13 +285,20 @@ lmmModel <- function(data,
   
   TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
   
-  # Calculate the relative tumor volume
-  TV.df <- .getRTV(TV.df, time_start)
-  
   # Remove those samples for which TV0 == 0
   # (and therefore, no RTV can be calculated)
   
-  TV.df <- TV.df %>% dplyr::filter(.data$TV0 != 0)
+  samples <- TV.df %>% dplyr::filter(.data$Time == time_start & .data$TV != 0) %>% dplyr::select(.data$SampleID)
+  TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
+  
+  # Handling cases in which the tumor volume is 0
+  
+  if (sum(TV.df$TV == 0) > 0) {
+    TV.df$TV <- TV.df$TV + 1 # Add 1 to all measurements to avoid errors when taking log
+  }
+  
+  # Calculate the relative tumor volume
+  TV.df <- .getRTV(TV.df, time_start)
   
   # Convert SampleID to factor
   

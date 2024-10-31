@@ -290,6 +290,45 @@ test_that("lmmModel excludes samples with TV0 == 0", {
   expect_equal(levels(model_data$SampleID), as.character(c(2,3,5)))
 })
 
+test_that("lmmModel handle samples with TV == 0", {
+  # Create a small example dataset
+  set.seed(123)
+  test_data <- data.frame(
+    SampleID = rep(1:5, each = 5),
+    Time = rep(0:4, times = 5),
+    Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), 
+                    each = 5, length.out = 25),
+    TV = c(65, 120, 140, 160, 180,   # Mouse 1
+           80, 100, 120, 0, 190,    # Mouse 2
+           90, 95, 100, 110, 130,     # Mouse 3
+           50, 115, 120, 125, 130,   # Mouse 4
+           70, 75, 85, 90, 0)       # Mouse 5
+  )
+  
+  # Run the lmmModel function with this dataset
+  model <- lmmModel(
+    data = test_data,
+    sample_id = "SampleID",
+    time = "Time",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    time_start = 0,
+    min_observations = 1,
+    show_plot = FALSE
+  )
+  
+  # Extract the data used in the model
+  model_data <- model$dt1
+  
+  # Check that there are no values with TV 0 in the final data
+  expect_equal(sum(model_data[model_data$SampleID == 2,"TV"] == 0), 0)
+  expect_equal(sum(model_data[model_data$SampleID == 5,"TV"] == 0), 0)
+})
+
 # Test if lmmModel function respects the min_observations parameter
 test_that("lmmModel respects the min_observations parameter", {
   min_obs_data <- test_data
