@@ -288,12 +288,23 @@ lmmModel <- function(data,
   # Remove those samples for which TV0 == 0
   # (and therefore, no RTV can be calculated)
   
+  samples0 <- TV.df %>% dplyr::filter(.data$Time == time_start & .data$TV == 0) %>% dplyr::select(.data$SampleID)
+  
+  if (length(samples0$SampleID) > 0) {
+    warning(paste(paste(samples0$SampleID, collapse = ","), 
+                  " subjects have measurements with value 0 at time ",time_start,". ",
+                  "These subjects will be removed from the analysis.", sep = ""))
+  }
+  
   samples <- TV.df %>% dplyr::filter(.data$Time == time_start & .data$TV != 0) %>% dplyr::select(.data$SampleID)
+  
   TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
   
   # Handling cases in which the tumor volume is 0
   
   if (sum(TV.df$TV == 0) > 0) {
+    warning("Some tumor measurements are 0. ",
+    "All measurements will be converted to 'value + 1' to avoid obtaining Inf values when taking log.")
     TV.df$TV <- TV.df$TV + 1 # Add 1 to all measurements to avoid errors when taking log
   }
   

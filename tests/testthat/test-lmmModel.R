@@ -288,6 +288,22 @@ test_that("lmmModel excludes samples with TV0 == 0", {
   # Check that only Mouse2 remains
   expect_true(2 %in% model_data$SampleID)
   expect_equal(levels(model_data$SampleID), as.character(c(2,3,5)))
+  
+  expect_warning(lmmModel(
+    data = test_data,
+    sample_id = "SampleID",
+    time = "Time",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_ab = "Drug_AB",
+    time_start = 0,
+    min_observations = 1,
+    show_plot = FALSE
+  ), "1,4 subjects have measurements with value 0 at time 0. These subjects will be removed from the analysis.")
+  
 })
 
 test_that("lmmModel handle samples with TV == 0", {
