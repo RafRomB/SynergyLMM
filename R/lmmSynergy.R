@@ -193,7 +193,7 @@ lmmSynergy <- function(model,
         
         ratio_aucs <- lhs_aucs/rhs_aucs
         
-        ratio_aucs[which(ratio_aucs<0)] <- 1
+        ratio_aucs[which(ratio_aucs<0)] <- max(ratio_aucs) + 1
         
         # Estimates
         
@@ -231,6 +231,8 @@ lmmSynergy <- function(model,
         delta_aucs <- lhs_aucs - rhs_aucs
         
         ratio_aucs <- lhs_aucs/rhs_aucs
+        
+        ratio_aucs[which(ratio_aucs<0)] <- max(ratio_aucs) + 1
         
         # Estimates
         
