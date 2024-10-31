@@ -56,7 +56,7 @@ plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", dru
   segment_data$yend <- segment_data$Max*segment_data$yend
   colnames(segment_data) <- c("x", "xend", "y", "yend")
   segment_data$Treatment <- factor(x = c(trt_control, drug_a, drug_b, drug_ab), levels = c(trt_control, drug_a, drug_b, drug_ab))
-  
+  hline <- data.frame(yintercept = 0)
   p <- model$dt1 %>% 
           ggplot(aes(.data$Time, .data$logRTV, color = .data$Treatment)) +
           geom_line(aes(group = .data$SampleID), alpha = 0.33) + geom_point(aes(group = .data$SampleID)) +
@@ -66,7 +66,7 @@ plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", dru
           cowplot::theme_cowplot() + facet_wrap(~Treatment) +
           geom_segment(data = segment_data, 
                        aes(x = .data$x, xend = .data$xend, y = .data$y, yend = .data$yend), 
-                       lwd = 1.25, alpha = 0.75)
+                       lwd = 1.25, alpha = 0.75) + geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed")
   return(p)
 }
 
