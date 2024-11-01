@@ -66,7 +66,9 @@ plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", dru
           cowplot::theme_cowplot() + facet_wrap(~Treatment) +
           geom_segment(data = segment_data, 
                        aes(x = .data$x, xend = .data$xend, y = .data$y, yend = .data$yend), 
-                       lwd = 1.25, alpha = 0.75) + geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed")
+                       lwd = 1.25, alpha = 0.75) + 
+          geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed") +
+          scale_color_manual(values = c("#3c3c3b", "#d50c52", "#00a49c", "#601580"))
   return(p)
 }
 
@@ -293,7 +295,8 @@ plot_lmmSynergy <- function(syn_data){
     annotate(geom = "text", x = max(selDt$Time)+3, y = max(selDt$mA)*0.85, label = paste("GR Combination=", grwrComb), hjust = -0.05, size = 4) +
     annotate(geom = "text", x = max(selDt$Time)+3, y = max(selDt$mA)*0.8, label = paste("SD=",sd_ranef), hjust = -0.05, size = 4) +
     annotate(geom = "text", x = max(selDt$Time)+3, y = max(selDt$mA)*0.75, label = paste("Sigma=",sgma), hjust = -0.05, size = 4) +
-    coord_cartesian(xlim = c(0, max(selDt$Time)+5), clip = "off")
+    coord_cartesian(xlim = c(0, max(selDt$Time)+5), clip = "off") +
+    scale_color_manual(values = c("#3c3c3b", "#d50c52", "#00a49c", "#601580"))
 }
 
 
