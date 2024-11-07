@@ -1,7 +1,7 @@
 #' Example Tumor Growth Data
 #' 
 #' A long format data frame with example tumor growth data, generated with [`simulateTumorGrowth()`], 
-#' representing a simulated _in vivo_ drug combination experiment, involving 8 subjects per group, with 30 days of follow-up, taking measurement
+#' representing a simulated _in vivo_ two-drugs combination experiment, involving 8 subjects per group, with 30 days of follow-up, taking measurement
 #' every 3 days.
 #' 
 #' @format

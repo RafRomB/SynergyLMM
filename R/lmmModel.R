@@ -101,14 +101,18 @@ NULL
 #'  [`residDiagnostics()`], and [`ObsvsPred()`].
 #' 
 #' The model formula for the fitted model is:
-#' \deqn{\log RTV_{i}(t) = \beta_C \cdot t  \cdot Treatment_i^C + \beta_A \cdot t  \times Treatment_i^A + \beta_B \cdot t  \cdot Treatment_i^B + \beta_{AB} \cdot t  \cdot Treatment_i^{AB} + b_i \cdot t + \varepsilon_{i} (t).}
+#' \deqn{\log RTV_{i}(t) = \beta_{T_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
 #' 
 #' The term \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. In the fixed-effect part of the model, 
-#' \eqn{\beta_C}, \eqn{\beta_A}, \eqn{\beta_B} and \eqn{\beta_{AB}} are the coefficients corresponding to the specific growth rate for each treatment group, \eqn{t} is the time of measurement 
-#' and \eqn{Treatment^C}, \eqn{Treatment^A}, \eqn{Treatment^B}, and \eqn{Treatment^{AB}}, are the dummy variables for the treatment groups Control, Drug A, Drug B and Combination (Drug A+B), 
-#' respectively. In the random-effects part of the model, \eqn{b_i} is the random slope associated with time representing the subject-specific growth-rate. 
-#' Finally, \eqn{\varepsilon_{i}(t)} is the residual random error.
+#' \eqn{\beta_{T_i}} represents the coefficients corresponding to the specific growth rate for each treatment \eqn{T_i}, where \eqn{T_i \in \{control, A, B, combination\}} in the case of
+#' two-drugs combination experiments, or \eqn{T_i \in \{control, A, B, C, combination\}} in the case of three-drugs combination experiments. That means that \eqn{\beta_{control}} corresponds
+#' to the control group, \eqn{\beta_{A}} to Drug A, \eqn{\beta_{B}} to Drug B, \eqn{\beta_{C}} to Drug C (if present), and \eqn{\beta_{combination}} to the combination of Drug A + Drug B (or
+#' Drug A + Drug B + Drug C, in the case of a three-drugs experiment). 
 #' 
+#' \eqn{t} is the time of measurement. 
+#' 
+#' In the random-effects part of the model, \eqn{b_i} is the random slope associated with time representing the subject-specific growth-rate. 
+#' Finally, \eqn{\varepsilon_{i}(t)} is the residual random error.
 #' 
 #' The implementation of the linear mixed model in `lmmModel()` is done using \code{nlme::\link[nlme:lme]{lme}}, which also allows for the 
 #' specification of within-group correlations structures and/or unequal variances. These, and additional parameters,

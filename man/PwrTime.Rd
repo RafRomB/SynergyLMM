@@ -68,7 +68,7 @@ If saved to a variable, the function returns the power for the analysis for each
 }
 }
 \description{
-\emph{A priori} power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+\emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
 depending on depending on the time of follow-up or the frequency of measurements.
 }
 \details{

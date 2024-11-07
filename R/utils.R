@@ -13,7 +13,7 @@
 #' @return The result of calling `rhs(lhs)`.
 NULL
 
-#' @title Helper function to simulate tumor growth data
+#' @title Helper function to simulate tumor growth data for a two-drug combination experiment.
 #' @param npg Number of samples per group.
 #' @param timepoints Vector with the time points at which the tumor volume measurements have been performed.
 #' @param initial_volume Initial volume for the tumor growth.

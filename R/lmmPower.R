@@ -117,8 +117,8 @@ PostHocPwr <- function(model,
 
 #' @title _A Priori_ Synergy Power Analysis Based on Variability and Drug Effect 
 #' @description
-#' _A priori_ power calculation for a hypothetical study of synergy evaluation using linear-mixed models
-#' with varying drug combination effect and/or experimental variability.
+#' _A priori_ power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
+#' with varying drug combination effect and/or experimental variability. 
 #' @param npg Number of subjects per group.
 #' @param time Vector with the times at which the tumor volume measurements have been performed.
 #' @param grwrControl Coefficient for Control treatment group tumor growth rate.
@@ -487,7 +487,7 @@ APrioriPwr <- function(npg = 5,
 
 #' @title _A Priori_ Synergy Power Analysis Based on Sample Size
 #' @description
-#'  _A priori_ power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+#'  _A priori_ power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
 #' depending on the sample size per group.
 #' @param npg A vector with the sample size (number of subjects) per group to calculate the power of 
 #' the synergy analysis.
@@ -692,7 +692,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
 
 #' @title _A Priori_ Synergy Power Analysis Based on Time
 #' @description
-#'  _A priori_ power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+#'  _A priori_ power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
 #' depending on depending on the time of follow-up or the frequency of measurements.
 #' @param npg Number of mouse per group.
 #' @param time A list in which each element is a vector with the times at which the tumor volume measurements have been performed.

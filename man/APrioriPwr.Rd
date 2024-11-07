@@ -66,7 +66,7 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
 }
 \description{
-\emph{A priori} power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+\emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
 with varying drug combination effect and/or experimental variability.
 }
 \details{

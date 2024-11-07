@@ -54,7 +54,7 @@ If saved to a variable, the fuction returns the data frame with the power for th
 specified in \code{npg}.
 }
 \description{
-\emph{A priori} power calculation for a hypothetical study of synergy evaluation using linear-mixed models
+\emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
 depending on the sample size per group.
 }
 \details{

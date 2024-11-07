@@ -27,23 +27,37 @@
 #' **Bliss Indepence Model**
 #' 
 #' For Bliss model, `lmmSynergy` test the following null hypothesis:
-#' \deqn{H_0: \beta_{AB} = \beta_A + \beta_B - \beta_C}
+#' 
+#' _Two-drugs combination experiment_:
+#' \deqn{H_0: \beta_{combination} = \beta_A + \beta_B - \beta_{control}}
+#' 
+#'  _Three-drugs combination experiment_:
+#' \deqn{H_0: \beta_{combination} = \beta_A + \beta_B + \beta_C - 2\beta_{control}}
 #' 
 #' **Highes Single Agent (HSA)**
 #' 
+#' _Two-drugs combination experiment_:
 #' For the HSA model, `lmmSynergy` test the following null hypothesis:
-#' \deqn{H_0: \beta_{AB} = \min(\beta_A, \beta_B)}
+#' \deqn{H_0: \beta_{combination} = \min(\beta_A, \beta_B)}
+#' 
+#' _Three-drugs combination experiment_:
+#' For the HSA model, `lmmSynergy` test the following null hypothesis:
+#' \deqn{H_0: \beta_{combination} = \min(\beta_A, \beta_B, \beta_C)}
 #' 
 #' **Response Additivity (RA)**
 #' 
 #' For the RA model, `lmmSynergy` test the following null hypothesis:
 #' 
-#' \deqn{H_0: e^{\beta_{AB}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_Ct}}
+#' _Two-drugs combination experiment_:
+#' \deqn{H_0: e^{\beta_{combination}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_{control}t}}
+#' 
+#' _Three-drugs combination experiment_:
+#' \deqn{H_0: e^{\beta_{combination}t} = e^{\beta_At}+e^{\beta_Bt}+e^{\beta_Ct}-2e^{\beta_{control}t}}
 #' 
 #' For **Bliss** and **HSA** models, `lmmSynergy` uses [marginaleffects::hypotheses()] to conduct hypothesis tests on the estimated coefficients of the model.
 #' 
 #' In the case of the **RA** model, the null hypothesis is tested comparing the area under the curve (i.e. cumulative effect from the beginning of a treatment to 
-#' a time point of interest) obtained from each side of the equation \eqn{e^{\beta_{AB}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_Ct}}, based on `ra_sim` random samplings from the
+#' a time point of interest) obtained from each side of the equation for the null hypothesis, based on `ra_sim` random samplings from the
 #' distribution of the coefficients.
 #' 
 #' **Combination Index and Synergy Score**

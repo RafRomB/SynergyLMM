@@ -18,7 +18,7 @@ data(grwth_data)
 }
 \description{
 A long format data frame with example tumor growth data, generated with \code{\link[=simulateTumorGrowth]{simulateTumorGrowth()}},
-representing a simulated \emph{in vivo} drug combination experiment, involving 8 subjects per group, with 30 days of follow-up, taking measurement
+representing a simulated \emph{in vivo} two-drugs combination experiment, involving 8 subjects per group, with 30 days of follow-up, taking measurement
 every 3 days.
 }
 \keyword{datasets}
