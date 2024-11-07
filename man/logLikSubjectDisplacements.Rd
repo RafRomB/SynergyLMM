@@ -63,7 +63,7 @@ lmm <- lmmModel(
 # Obtain log-likelihood displacement for each subject
 logLikSubjectDisplacements(model = lmm)
 # Modifying the threshold for log-likelihood displacement
-logLikSubjectDisplacements(model = lmm, disp_thrh = 1.5)
+logLikSubjectDisplacements(model = lmm, disp_thrh = 1)
 
 # Calculating the log-likelihood contribution in a model with a variance structure specified
 lmm_var <- lmmModel(

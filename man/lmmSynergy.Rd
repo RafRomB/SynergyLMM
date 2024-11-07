@@ -59,23 +59,37 @@ which represent the estimated specific growth rates for the Control, Drug A, Dru
 \strong{Bliss Indepence Model}
 
 For Bliss model, \code{lmmSynergy} test the following null hypothesis:
-\deqn{H_0: \beta_{AB} = \beta_A + \beta_B - \beta_C}
+
+\emph{Two-drugs combination experiment}:
+\deqn{H_0: \beta_{combination} = \beta_A + \beta_B - \beta_{control}}
+
+\emph{Three-drugs combination experiment}:
+\deqn{H_0: \beta_{combination} = \beta_A + \beta_B + \beta_C - 2\beta_{control}}
 
 \strong{Highes Single Agent (HSA)}
 
+\emph{Two-drugs combination experiment}:
 For the HSA model, \code{lmmSynergy} test the following null hypothesis:
-\deqn{H_0: \beta_{AB} = \min(\beta_A, \beta_B)}
+\deqn{H_0: \beta_{combination} = \min(\beta_A, \beta_B)}
+
+\emph{Three-drugs combination experiment}:
+For the HSA model, \code{lmmSynergy} test the following null hypothesis:
+\deqn{H_0: \beta_{combination} = \min(\beta_A, \beta_B, \beta_C)}
 
 \strong{Response Additivity (RA)}
 
 For the RA model, \code{lmmSynergy} test the following null hypothesis:
 
-\deqn{H_0: e^{\beta_{AB}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_Ct}}
+\emph{Two-drugs combination experiment}:
+\deqn{H_0: e^{\beta_{combination}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_{control}t}}
+
+\emph{Three-drugs combination experiment}:
+\deqn{H_0: e^{\beta_{combination}t} = e^{\beta_At}+e^{\beta_Bt}+e^{\beta_Ct}-2e^{\beta_{control}t}}
 
 For \strong{Bliss} and \strong{HSA} models, \code{lmmSynergy} uses \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} to conduct hypothesis tests on the estimated coefficients of the model.
 
 In the case of the \strong{RA} model, the null hypothesis is tested comparing the area under the curve (i.e. cumulative effect from the beginning of a treatment to
-a time point of interest) obtained from each side of the equation \eqn{e^{\beta_{AB}t} = e^{\beta_At}+e^{\beta_Bt}-e^{\beta_Ct}}, based on \code{ra_sim} random samplings from the
+a time point of interest) obtained from each side of the equation for the null hypothesis, based on \code{ra_sim} random samplings from the
 distribution of the coefficients.
 
 \strong{Combination Index and Synergy Score}

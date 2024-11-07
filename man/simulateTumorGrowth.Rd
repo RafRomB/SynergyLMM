@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{simulateTumorGrowth}
 \alias{simulateTumorGrowth}
-\title{Helper function to simulate tumor growth data}
+\title{Helper function to simulate tumor growth data for a two-drug combination experiment.}
 \usage{
 simulateTumorGrowth(
   npg = 5,
@@ -36,7 +36,7 @@ simulateTumorGrowth(
 A data frame with tumor growth data in long format.
 }
 \description{
-Helper function to simulate tumor growth data
+Helper function to simulate tumor growth data for a two-drug combination experiment.
 }
 \details{
 The function simulates the tumor growth following exponential kinetics,
