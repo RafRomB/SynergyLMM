@@ -13,7 +13,8 @@ NULL
 #' @param trt_control String indicating the name assigned to the 'Control' group.
 #' @param drug_a String indicating the name assigned to the 'Drug A' group.
 #' @param drug_b String indicating the name assigned to the 'Drug B' group.
-#' @param drug_ab String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
+#' @param drug_c String indicating the name assigned to the 'Drug C' group (if present).
+#' @param combination String indicating the name assigned to the Combination ('Drug A' + 'Drug B', or 'Drug A' + 'Drug B' + 'Drug C') group.
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) showing the tumor growth data represented as log(relative tumor volume) versus time since treatment initiation. 
 #' The regression lines corresponding to the fixed effects for each treatment group are also plotted.
 #' @examples
@@ -28,7 +29,7 @@ NULL
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination",
+#'   combination = "Combination",
 #'   show_plot = FALSE
 #'   )
 #' # Default plot
@@ -36,27 +37,52 @@ NULL
 #' trt_control = "Control",
 #' drug_a = "DrugA",
 #' drug_b = "DrugB",
-#' drug_ab = "Combination"
+#' combination = "Combination"
 #' )
 #' # Adding ggplot2 elements
 #' plot_lmmModel(lmm,
 #' trt_control = "Control",
 #' drug_a = "DrugA",
 #' drug_b = "DrugB",
-#' drug_ab = "Combination"
+#' combination = "Combination"
 #' ) + ggplot2::labs(title = "Example Plot") + ggplot2::theme(legend.position = "top")
 #' 
 #' @export
-plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", drug_b = "Drug_B", drug_ab= "Drug_AB"){
-  segment_data <- data.frame(x = rep(0,4), 
-                             xend = model$dt1 %>% dplyr::group_by(.data$Treatment) %>% dplyr::summarise(Max = max(.data$Time)) %>% dplyr::select(.data$Max),
-                             y = rep(0, 4), 
-                             yend = nlme::fixef(model))
+plot_lmmModel <- function(model,
+                          trt_control = "Control",
+                          drug_a = "Drug_A",
+                          drug_b = "Drug_B",
+                          drug_c = NA,
+                          combination = "Combination") {
+  
+  if (!is.na(drug_c)) {
+    segment_data <- data.frame(x = rep(0,5), 
+                               xend = model$dt1 %>% dplyr::group_by(.data$Treatment) %>% dplyr::summarise(Max = max(.data$Time)) %>% dplyr::select(.data$Max),
+                               y = rep(0, 5), 
+                               yend = nlme::fixef(model))
+  } else {
+    segment_data <- data.frame(x = rep(0,4), 
+                               xend = model$dt1 %>% dplyr::group_by(.data$Treatment) %>% dplyr::summarise(Max = max(.data$Time)) %>% dplyr::select(.data$Max),
+                               y = rep(0, 4), 
+                               yend = nlme::fixef(model))
+    }
+  
+  
   
   segment_data$yend <- segment_data$Max*segment_data$yend
   colnames(segment_data) <- c("x", "xend", "y", "yend")
-  segment_data$Treatment <- factor(x = c(trt_control, drug_a, drug_b, drug_ab), levels = c(trt_control, drug_a, drug_b, drug_ab))
+  if (!is.na(drug_c)){
+    segment_data$Treatment <- factor(x = c(trt_control, drug_a, drug_b, drug_c, combination), levels = c(trt_control, drug_a, drug_b, drug_c, combination))
+  } else {
+    segment_data$Treatment <- factor(x = c(trt_control, drug_a, drug_b, combination), levels = c(trt_control, drug_a, drug_b, combination))
+  }
   hline <- data.frame(yintercept = 0)
+  trt_col <- c("#3c3c3b", "#d50c52", "#00a49c", "#ff7f55","#601580")
+  
+  if (is.na(drug_c)) {
+    trt_col <- trt_col[c(1:3,5)]
+  }
+  
   p <- model$dt1 %>% 
           ggplot(aes(.data$Time, .data$logRTV, color = .data$Treatment)) +
           geom_line(aes(group = .data$SampleID), alpha = 0.33) + geom_point(aes(group = .data$SampleID)) +
@@ -68,7 +94,7 @@ plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", dru
                        aes(x = .data$x, xend = .data$xend, y = .data$y, yend = .data$yend), 
                        lwd = 1.25, alpha = 0.75) + 
           geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed") +
-          scale_color_manual(values = c("#3c3c3b", "#d50c52", "#00a49c", "#601580"))
+          scale_color_manual(values = trt_col)
   return(p)
 }
 
@@ -95,7 +121,7 @@ plot_lmmModel <- function(model, trt_control = "Control", drug_a = "Drug_A", dru
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination",
+#'   combination = "Combination",
 #'   show_plot = FALSE
 #'   )
 #' # Generate plots 
@@ -146,7 +172,7 @@ plot_ranefDiagnostics <- function(model){
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination",
+#'   combination = "Combination",
 #'   show_plot = FALSE
 #'   )
 #' # Generate plots 
@@ -195,7 +221,7 @@ plot_residDiagnostics <- function(model){
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination",
+#'   combination = "Combination",
 #'   show_plot = FALSE
 #'   )
 #' # Obtain the plots
@@ -237,7 +263,7 @@ plot_ObsvsPred <- function(model, nrow = 4, ncol = 5){
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   )
 #' # Obtain synergy results
 #' lmmSyn <- lmmSynergy(lmm)

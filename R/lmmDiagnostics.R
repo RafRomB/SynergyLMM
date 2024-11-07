@@ -46,7 +46,7 @@
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   )
 #' # Run random effects diagnostics
 #' ranef_diag <- ranefDiagnostics(lmm)
@@ -205,7 +205,7 @@ ranefDiagnostics <- function(model){
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   )
 #' # Residuals diagnostics
 #' resid_diag <- residDiagnostics(model = lmm, pvalue = 0.05)
@@ -309,7 +309,7 @@ residDiagnostics <- function(model, pvalue=0.05){
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   )
 #'# Obtain Observed vs Predicted plots, and model performance metrics
 #' ObsvsPred(model = lmm, nrow = 4, ncol = 8)
@@ -584,7 +584,7 @@ logLikSubjectContributions <- function(model,
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   ) 
 #' # Obtain log-likelihood displacement for each subject
 #' logLikSubjectDisplacements(model = lmm)
@@ -601,7 +601,7 @@ logLikSubjectContributions <- function(model,
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination",
+#'   combination = "Combination",
 #'   weights = nlme::varIdent(form = ~ 1|SampleID)
 #'   ) 
 #' # Calculate the log-likelihood contribution
@@ -747,7 +747,7 @@ logLikSubjectDisplacements <- function(model,
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   ) 
 #' # Calulate Cook's distances for each subject
 #' CookDistance(model = lmm)

@@ -58,7 +58,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   ) 
 # Obtain log-likelihood displacement for each subject
 logLikSubjectDisplacements(model = lmm)
@@ -75,7 +75,7 @@ lmm_var <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination",
+  combination = "Combination",
   weights = nlme::varIdent(form = ~ 1|SampleID)
   ) 
 # Calculate the log-likelihood contribution

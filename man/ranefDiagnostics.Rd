@@ -51,7 +51,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   )
 # Run random effects diagnostics
 ranef_diag <- ranefDiagnostics(lmm)

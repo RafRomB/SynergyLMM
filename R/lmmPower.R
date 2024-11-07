@@ -42,7 +42,7 @@
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   )
 #'  PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
 #'  # Using a seed to obtain reproducible results
@@ -64,15 +64,31 @@ PostHocPwr <- function(model,
     stop("Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
   }
   
+  fixef_betas <- nlme::fixef(model)
+  
   if (method == "Bliss") {
-    contrast <- "b4 = b2 + b3 - b1"
+    if (length(fixef_betas) == 5) {
+      contrast <- "b5 = b2 + b3 + b4 - 2*b1"
+    } else {
+      contrast <- "b4 = b2 + b3 - b1"
+    }
   }
+  
   if (method == "HSA") {
-    fixef_betas <- nlme::fixef(model)[2:3]
-    if (which.min(fixef_betas) == 1) {
-      contrast <- "b4 = b2"
-    } else{
-      contrast <- "b4 = b3"
+    if (length(fixef_betas) == 5) {
+      if (which.min(fixef_betas[2:4]) == 1) {
+        contrast <- "b5 = b2"
+      } else if (which.min(fixef_betas[2:4]) == 2){
+        contrast <- "b5 = b3"
+      } else {
+        contrast <- "b5 = b4"
+      }
+    } else {
+      if (which.min(fixef_betas[2:3]) == 1) {
+        contrast <- "b4 = b2"
+      } else{
+        contrast <- "b4 = b3"
+      } 
     }
   }
   

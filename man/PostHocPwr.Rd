@@ -56,7 +56,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   )
  PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
  # Using a seed to obtain reproducible results

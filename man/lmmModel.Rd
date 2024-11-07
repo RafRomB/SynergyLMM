@@ -13,7 +13,8 @@ lmmModel(
   trt_control = "Control",
   drug_a = "Drug_A",
   drug_b = "Drug_B",
-  drug_ab = "Drug_AB",
+  drug_c = NA,
+  combination = "Combination",
   time_start = NULL,
   time_end = NULL,
   min_observations = 1,
@@ -39,7 +40,9 @@ It must contain at least the following columns: mice IDs, time of follow-up (num
 
 \item{drug_b}{String indicating the name assigned to the 'Drug B' group.}
 
-\item{drug_ab}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
+\item{drug_c}{String indicating the name assigned to the 'Drug C' group (if present).}
+
+\item{combination}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B', or 'Drug A' + 'Drug B' + 'Drug C') group.}
 
 \item{time_start}{Numeric value indicating the time point at which the treatment started. If not
 specified, the minimum value in the \code{time} column is used as the starting time point.}
@@ -91,7 +94,7 @@ lmmModel(
  trt_control = "Control",
  drug_a = "DrugA",
  drug_b = "DrugB",
- drug_ab = "Combination"
+ combination = "Combination"
  )
 # Changing the last time point of follow-up
 lmmModel(
@@ -103,7 +106,7 @@ lmmModel(
  trt_control = "Control",
  drug_a = "DrugA",
  drug_b = "DrugB",
- drug_ab = "Combination",
+ combination = "Combination",
  time_end = 21
  )
 # Adding additional parameters for model fitting
@@ -116,7 +119,7 @@ lmmModel(
  trt_control = "Control",
  drug_a = "DrugA",
  drug_b = "DrugB",
- drug_ab = "Combination",
+ combination = "Combination",
  # Adding variance function to represent a different variance per subject
  weights = nlme::varIdent(form = ~1|SampleID),
  # Specifiying control values for lme Fit (useful when convergence problems appear)
@@ -133,7 +136,7 @@ lmmModel(
  trt_control = "Control",
  drug_a = "DrugA",
  drug_b = "DrugB",
- drug_ab = "Combination",
+ combination = "Combination",
  # Adding variance function to represent a different variance per Time
  weights = nlme::varIdent(form = ~1|Time)
  )

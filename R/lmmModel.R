@@ -84,7 +84,8 @@ NULL
 #' @param trt_control String indicating the name assigned to the 'Control' group.
 #' @param drug_a String indicating the name assigned to the 'Drug A' group.
 #' @param drug_b String indicating the name assigned to the 'Drug B' group.
-#' @param drug_ab String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.
+#' @param drug_c String indicating the name assigned to the 'Drug C' group (if present).
+#' @param combination String indicating the name assigned to the Combination ('Drug A' + 'Drug B', or 'Drug A' + 'Drug B' + 'Drug C') group.
 #' @param time_start Numeric value indicating the time point at which the treatment started. If not
 #' specified, the minimum value in the `time` column is used as the starting time point.
 #' @param time_end Numeric value indicating the last time point to be included in the analysis. If not
@@ -133,7 +134,7 @@ NULL
 #'  trt_control = "Control",
 #'  drug_a = "DrugA",
 #'  drug_b = "DrugB",
-#'  drug_ab = "Combination"
+#'  combination = "Combination"
 #'  )
 
 #'# Changing the last time point of follow-up
@@ -146,7 +147,7 @@ NULL
 #'  trt_control = "Control",
 #'  drug_a = "DrugA",
 #'  drug_b = "DrugB",
-#'  drug_ab = "Combination",
+#'  combination = "Combination",
 #'  time_end = 21
 #'  )
 
@@ -160,7 +161,7 @@ NULL
 #'  trt_control = "Control",
 #'  drug_a = "DrugA",
 #'  drug_b = "DrugB",
-#'  drug_ab = "Combination",
+#'  combination = "Combination",
 #'  # Adding variance function to represent a different variance per subject
 #'  weights = nlme::varIdent(form = ~1|SampleID),
 #'  # Specifiying control values for lme Fit (useful when convergence problems appear)
@@ -177,7 +178,7 @@ NULL
 #'  trt_control = "Control",
 #'  drug_a = "DrugA",
 #'  drug_b = "DrugB",
-#'  drug_ab = "Combination",
+#'  combination = "Combination",
 #'  # Adding variance function to represent a different variance per Time
 #'  weights = nlme::varIdent(form = ~1|Time)
 #'  )
@@ -193,7 +194,8 @@ lmmModel <- function(data,
                      trt_control = "Control",
                      drug_a = "Drug_A",
                      drug_b = "Drug_B",
-                     drug_ab = "Drug_AB",
+                     drug_c = NA,
+                     combination = "Combination",
                      time_start = NULL,
                      time_end = NULL,
                      min_observations = 1,
@@ -215,11 +217,16 @@ lmmModel <- function(data,
     stop("Error in column checking: ", e$message)
   })
   
-  # Check if there are exactly 4 treatments in the treatment column
+  # Check if there are exactly 4 or 5 treatments in the treatment column
   
   tryCatch({
-    expected_treatments <- c(trt_control, drug_a, drug_b, drug_ab)
-    actual_treatments <- unique(data[[treatment]])
+    if (is.na(drug_c)) {
+      expected_treatments <- c(trt_control, drug_a, drug_b, combination)
+      actual_treatments <- unique(data[[treatment]])
+    } else {
+      expected_treatments <- c(trt_control, drug_a, drug_b, drug_c, combination)
+      actual_treatments <- unique(data[[treatment]])
+    }
     
     missing_treatments <- setdiff(expected_treatments, actual_treatments)
     
@@ -255,8 +262,14 @@ lmmModel <- function(data,
   TV.df <- data %>% dplyr::select(dplyr::all_of(col.names))
   colnames(TV.df) <- c("SampleID", "Time", "Treatment", "TV")
   
-  TV.df$Treatment <- factor(TV.df$Treatment,
-                            levels = c(trt_control, drug_a, drug_b, drug_ab))
+  if (!is.na(drug_c)){
+    TV.df$Treatment <- factor(TV.df$Treatment,
+                              levels = c(trt_control, drug_a, drug_b, drug_c, combination))
+  } else {
+    TV.df$Treatment <- factor(TV.df$Treatment,
+                              levels = c(trt_control, drug_a, drug_b, combination))
+  }
+  
   
   TV.df$Time <- as.numeric(TV.df$Time)
   
@@ -345,7 +358,8 @@ lmmModel <- function(data,
         trt_control = trt_control,
         drug_a = drug_a,
         drug_b = drug_b,
-        drug_ab = drug_ab
+        drug_c = drug_c,
+        combination = combination
       )
     )
   }
@@ -382,7 +396,7 @@ lmmModel <- function(data,
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   ) 
 #' # Get the estimates
 #' lmmModel_estimates(lmm)
@@ -390,7 +404,11 @@ lmmModel <- function(data,
 
 lmmModel_estimates <- function(model){
   dt <- data.frame(t(model$coefficients$fixed), sqrt(model$modelStruct$reStruct[[1]][1]), model$sigma)
-  colnames(dt) <- c("control", "drug_a", "drug_b", "combination", "sd_ranef", "sd_resid")
+  if (ncol(dt) == 7) {
+    colnames(dt) <- c("control", "drug_a", "drug_b", "drug_c","combination", "sd_ranef", "sd_resid")
+  } else {
+    colnames(dt) <- c("control", "drug_a", "drug_b", "combination", "sd_ranef", "sd_resid")
+  }
   rownames(dt) <- "estimate"
   return(dt)
 }

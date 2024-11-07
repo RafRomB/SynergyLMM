@@ -46,7 +46,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   )
 # Obtain Observed vs Predicted plots, and model performance metrics
 ObsvsPred(model = lmm, nrow = 4, ncol = 8)

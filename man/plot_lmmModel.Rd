@@ -9,7 +9,8 @@ plot_lmmModel(
   trt_control = "Control",
   drug_a = "Drug_A",
   drug_b = "Drug_B",
-  drug_ab = "Drug_AB"
+  drug_c = NA,
+  combination = "Combination"
 )
 }
 \arguments{
@@ -21,7 +22,9 @@ plot_lmmModel(
 
 \item{drug_b}{String indicating the name assigned to the 'Drug B' group.}
 
-\item{drug_ab}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B') group.}
+\item{drug_c}{String indicating the name assigned to the 'Drug C' group (if present).}
+
+\item{combination}{String indicating the name assigned to the Combination ('Drug A' + 'Drug B', or 'Drug A' + 'Drug B' + 'Drug C') group.}
 }
 \value{
 A ggplot2 plot (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more details) showing the tumor growth data represented as log(relative tumor volume) versus time since treatment initiation.
@@ -43,7 +46,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination",
+  combination = "Combination",
   show_plot = FALSE
   )
 # Default plot
@@ -51,14 +54,14 @@ plot_lmmModel(lmm,
 trt_control = "Control",
 drug_a = "DrugA",
 drug_b = "DrugB",
-drug_ab = "Combination"
+combination = "Combination"
 )
 # Adding ggplot2 elements
 plot_lmmModel(lmm,
 trt_control = "Control",
 drug_a = "DrugA",
 drug_b = "DrugB",
-drug_ab = "Combination"
+combination = "Combination"
 ) + ggplot2::labs(title = "Example Plot") + ggplot2::theme(legend.position = "top")
 
 }

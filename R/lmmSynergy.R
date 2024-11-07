@@ -96,7 +96,7 @@
 #'   trt_control = "Control",
 #'   drug_a = "DrugA",
 #'   drug_b = "DrugB",
-#'   drug_ab = "Combination"
+#'   combination = "Combination"
 #'   ) 
 #' # Most simple use with default values
 #' syn <- lmmSynergy(lmm)
@@ -149,6 +149,13 @@ lmmSynergy <- function(model,
     }
     
     # Function to compute RHS AUC
+    # 3 drugs
+    rhs_auc3 <- function(beta_A, beta_B, beta_Z, beta_C) {
+      integrate(function(t) {
+        (exp(beta_A * t) + exp(beta_B * t) + exp(beta_Z * t) - 2*exp(beta_C * t))
+      }, t1, t2)$value
+    }
+    # 2 drugs
     rhs_auc <- function(beta_A, beta_B, beta_C) {
       integrate(function(t) {
         (exp(beta_A * t) + exp(beta_B * t) - exp(beta_C * t))
@@ -182,11 +189,18 @@ lmmSynergy <- function(model,
         b1 <- betas_mvnorm[,1]
         b2 <- betas_mvnorm[,2]
         b3 <- betas_mvnorm[,3]
-        b4 <- betas_mvnorm[,4]
-        
-        # Compute AUC for each simulation sample
-        lhs_aucs <- sapply(b4, lhs_auc)
-        rhs_aucs <- mapply(rhs_auc, beta_A = b2, beta_B = b3, beta_C = b1)
+        if (length(fixef_betas) == 5){
+          b4 <- betas_mvnorm[,4]
+          b5 <- betas_mvnorm[,5]
+          # Compute AUC for each simulation sample
+          lhs_aucs <- sapply(b5, lhs_auc)
+          rhs_aucs <- mapply(rhs_auc3, beta_A = b2, beta_B = b3, beta_Z = b4, beta_C = b1)
+        } else {
+          b4 <- betas_mvnorm[,4]
+          # Compute AUC for each simulation sample
+          lhs_aucs <- sapply(b4, lhs_auc)
+          rhs_aucs <- mapply(rhs_auc, beta_A = b2, beta_B = b3, beta_C = b1)
+        }
         
         # Compute the difference in AUCs
         delta_aucs <- lhs_aucs - rhs_aucs
@@ -221,11 +235,18 @@ lmmSynergy <- function(model,
         b1 <- betas_mvnorm[,1]
         b2 <- betas_mvnorm[,2]
         b3 <- betas_mvnorm[,3]
-        b4 <- betas_mvnorm[,4]
-        
-        # Compute AUC for each simulation sample
-        lhs_aucs <- sapply(b4, lhs_auc)
-        rhs_aucs <- mapply(rhs_auc, beta_A = b2, beta_B = b3, beta_C = b1)
+        if (length(fixef_betas) == 5){
+          b4 <- betas_mvnorm[,4]
+          b5 <- betas_mvnorm[,5]
+          # Compute AUC for each simulation sample
+          lhs_aucs <- sapply(b5, lhs_auc)
+          rhs_aucs <- mapply(rhs_auc3, beta_A = b2, beta_B = b3, beta_Z = b4, beta_C = b1)
+        } else {
+          b4 <- betas_mvnorm[,4]
+          # Compute AUC for each simulation sample
+          lhs_aucs <- sapply(b4, lhs_auc)
+          rhs_aucs <- mapply(rhs_auc, beta_A = b2, beta_B = b3, beta_C = b1)
+        }
         
         # Compute the difference in AUCs
         delta_aucs <- lhs_aucs - rhs_aucs
@@ -278,13 +299,27 @@ lmmSynergy <- function(model,
   } else {
     
     if (method == "Bliss") {
-      contrast <- "b4 = b2 + b3 - b1"
+      if (length (fixef_betas) == 5) {
+        contrast <- "b5 = b2 + b3 + b4 - 2*b1"
+      } else {
+        contrast <- "b4 = b2 + b3 - b1"
+      }
     }
     if (method == "HSA") {
-      if (which.min(fixef_betas[2:3]) == 1) {
-        contrast <- "b4 = b2"
-      } else{
-        contrast <- "b4 = b3"
+      if (length(fixef_betas) == 5) {
+        if (which.min(fixef_betas[2:4]) == 1) {
+          contrast <- "b5 = b2"
+        } else if (which.min(fixef_betas[2:4]) == 2){
+          contrast <- "b5 = b3"
+        } else {
+          contrast <- "b5 = b4"
+        }
+      } else {
+        if (which.min(fixef_betas[2:3]) == 1) {
+          contrast <- "b4 = b2"
+        } else{
+          contrast <- "b4 = b3"
+        } 
       }
     }
     

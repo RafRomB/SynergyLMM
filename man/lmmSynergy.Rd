@@ -114,7 +114,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   ) 
 # Most simple use with default values
 syn <- lmmSynergy(lmm)

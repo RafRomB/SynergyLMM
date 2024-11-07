@@ -51,7 +51,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   )
 # Residuals diagnostics
 resid_diag <- residDiagnostics(model = lmm, pvalue = 0.05)

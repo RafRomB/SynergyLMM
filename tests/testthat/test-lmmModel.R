@@ -105,7 +105,7 @@ test_that("lmmModel runs without error on valid input", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     time_end = NULL,
     min_observations = 1,
@@ -130,7 +130,7 @@ test_that("lmmModel throws an error when required columns are missing", {
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
-      drug_ab = "Drug_AB",
+      combination = "Drug_AB",
       time_start = 0,
       min_observations = 1,
       show_plot = FALSE
@@ -154,7 +154,7 @@ test_that("lmmModel throws an error when treatment column contains unrecognized 
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
-      drug_ab = "Drug_AB",
+      combination = "Drug_AB",
       time_start = 0,
       min_observations = 1,
       show_plot = FALSE
@@ -176,7 +176,7 @@ test_that("lmmModel throws an error when an expected treatment is missing", {
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
-      drug_ab = "Drug_X",
+      combination = "Drug_X",
       time_start = 0,
       min_observations = 1,
       show_plot = FALSE
@@ -196,7 +196,7 @@ test_that("lmmModel throws an error when 'min_observations' is a negative value"
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     min_observations = -1,
     show_plot = FALSE
@@ -215,7 +215,7 @@ test_that("lmmModel correctly filters data based on time_start", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 5,  # Change time_start to 5
     min_observations = 1,
     show_plot = FALSE
@@ -235,7 +235,7 @@ test_that("lmmModel correctly filters data based on time_end", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     time_end = 5, # Change time_end to 5
     min_observations = 1,
@@ -272,7 +272,7 @@ test_that("lmmModel excludes samples with TV0 == 0", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     min_observations = 1,
     show_plot = FALSE
@@ -298,7 +298,7 @@ test_that("lmmModel excludes samples with TV0 == 0", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     min_observations = 1,
     show_plot = FALSE
@@ -331,7 +331,7 @@ test_that("lmmModel handle samples with TV == 0", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     min_observations = 1,
     show_plot = FALSE
@@ -359,7 +359,7 @@ test_that("lmmModel respects the min_observations parameter", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     min_observations = 10,  # Require at least 10 observations per mouse
     show_plot = FALSE
@@ -382,7 +382,7 @@ test_that("lmmModel produces plot when show_plot is TRUE", {
       trt_control = "Control",
       drug_a = "Drug_A",
       drug_b = "Drug_B",
-      drug_ab = "Drug_AB",
+      combination = "Drug_AB",
       time_start = 0,
       min_observations = 1,
       show_plot = TRUE
@@ -402,7 +402,7 @@ test_that("lmmModel passes additional arguments correctly to nlme::lme", {
     trt_control = "Control",
     drug_a = "Drug_A",
     drug_b = "Drug_B",
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     min_observations = 1,
     show_plot = FALSE,
@@ -410,6 +410,37 @@ test_that("lmmModel passes additional arguments correctly to nlme::lme", {
   )
   
   expect_equal(result$call$control$opt, "optim")  # Check if the control argument was passed correctly
+})
+
+# Test if lmmModel function runs with 3-drug combination
+
+set.seed(123)
+test_data <- data.frame(
+  SampleID = rep(1:10, each = 10),
+  Time = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_Z", "Drug_ABZ"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+test_that("lmmModel runs with 3-drug combination", {
+  result <- lmmModel(
+    data = test_data,
+    sample_id = "SampleID",
+    time = "Time",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    drug_c = "Drug_Z",
+    combination = "Drug_ABZ",
+    time_start = 0,
+    time_end = NULL,
+    min_observations = 1,
+    show_plot = FALSE
+  )
+  
+  expect_s3_class(result, "lme")
 })
 
 # Test for lmmModel_estimates function ----
@@ -424,7 +455,7 @@ test_data <- data.frame(
 
 
 test_that("lmmModel_estimates returns a data frame with correct structure", {
-  model <- lmmModel(test_data)
+  model <- lmmModel(test_data, combination = "Drug_AB")
   result <- lmmModel_estimates(model)
   
   expect_s3_class(result, "data.frame")
@@ -434,7 +465,7 @@ test_that("lmmModel_estimates returns a data frame with correct structure", {
 })
 
 test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
-  model <- lmmModel(test_data)
+  model <- lmmModel(test_data, combination = "Drug_AB")
   result <- lmmModel_estimates(model)
   
   # Check that the coefficients match the model's fixed effects
@@ -442,6 +473,49 @@ test_that("lmmModel_estimates returns correct values for coefficients and standa
   expect_equal(result$drug_a, model$coefficients$fixed[[2]])
   expect_equal(result$drug_b, model$coefficients$fixed[[3]])
   expect_equal(result$combination, model$coefficients$fixed[[4]])
+  
+  # Check that the standard deviations match the model's random effects and residuals
+  expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))
+  expect_equal(result$sd_resid, model$sigma)
+})
+
+set.seed(123)
+test_data <- data.frame(
+  SampleID = rep(1:10, each = 10),
+  Time = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_Z","Drug_ABZ"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+
+test_that("lmmModel_estimates returns a data frame with correct structure with 3 drugs", {
+  model <- lmmModel(test_data, trt_control = "Control",
+                    drug_a = "Drug_A",
+                    drug_b = "Drug_B",
+                    drug_c = "Drug_Z",
+                    combination = "Drug_ABZ")
+  result <- lmmModel_estimates(model)
+  
+  expect_s3_class(result, "data.frame")
+  expect_equal(ncol(result), 7)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
+  expect_equal(rownames(result), "estimate")
+  expect_equal(colnames(result), c("control", "drug_a", "drug_b", "drug_c","combination", "sd_ranef", "sd_resid"))
+})
+
+test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
+  model <- lmmModel(test_data, trt_control = "Control",
+                    drug_a = "Drug_A",
+                    drug_b = "Drug_B",
+                    drug_c = "Drug_Z",
+                    combination = "Drug_ABZ")
+  result <- lmmModel_estimates(model)
+  
+  # Check that the coefficients match the model's fixed effects
+  expect_equal(result$control, model$coefficients$fixed[[1]])
+  expect_equal(result$drug_a, model$coefficients$fixed[[2]])
+  expect_equal(result$drug_b, model$coefficients$fixed[[3]])
+  expect_equal(result$drug_c, model$coefficients$fixed[[4]])
+  expect_equal(result$combination, model$coefficients$fixed[[5]])
   
   # Check that the standard deviations match the model's random effects and residuals
   expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))

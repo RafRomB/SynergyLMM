@@ -18,7 +18,7 @@ model <- lmmModel(
   trt_control = "Control",
   drug_a = "Drug_A",
   drug_b = "Drug_B",
-  drug_ab = "Drug_AB",
+  combination = "Drug_AB",
   time_start = 0,
   min_observations = 1,
   show_plot = FALSE
@@ -57,7 +57,7 @@ test_that("Test PostHocPwr with HSA method independently of the order of treatme
     trt_control = "Control",
     drug_a = "Drug_B", # Change order of treatments
     drug_b = "Drug_A", # Change order of treatments
-    drug_ab = "Drug_AB",
+    combination = "Drug_AB",
     time_start = 0,
     min_observations = 1,
     show_plot = FALSE
@@ -130,6 +130,53 @@ test_that("Test PostHocPwr passess arguments to simulateY function", {
   result2.seed <- PostHocPwr(model, pvalue = 0.5, nsim = 50, seed = 123)
   expect_true(result.seed == result2.seed)
   
+})
+
+# Example data and model for testing
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Time = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_Z","Drug_ABZ"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+model <- lmmModel(
+  data = test_data,
+  sample_id = "Mouse",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_c = "Drug_Z",
+  combination = "Drug_ABZ",
+  time_start = 0,
+  min_observations = 1,
+  show_plot = FALSE
+)
+
+test_that("Test PostHocPwr with 3 drugs (Bliss method)", {
+  # Call the function with default method ("Bliss")
+  result <- PostHocPwr(model, nsim = 10) # Use small nsim for quicker testing
+  
+  # Check that the result is numeric
+  expect_type(result, "double")
+  
+  # Check that the result is between 0 and 1
+  expect_true(result >= 0 && result <= 1)
+})
+
+test_that("Test PostHocPwr with HSA method", {
+  # Call the function with method = "HSA"
+  result <- PostHocPwr(model, nsim = 10, method = "HSA") # Use small nsim for quicker testing
+  
+  # Check that the result is numeric
+  expect_type(result, "double")
+  
+  # Check that the result is between 0 and 1
+  expect_true(result >= 0 && result <= 1)
 })
 
 # Tests for APrioriPwr ----

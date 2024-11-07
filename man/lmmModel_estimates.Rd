@@ -40,7 +40,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   ) 
 # Get the estimates
 lmmModel_estimates(lmm)

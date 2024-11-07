@@ -45,7 +45,7 @@ lmm <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  drug_ab = "Combination"
+  combination = "Combination"
   ) 
 # Calulate Cook's distances for each subject
 CookDistance(model = lmm)

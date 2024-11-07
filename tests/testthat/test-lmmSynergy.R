@@ -18,7 +18,7 @@ model <- lmmModel(
   trt_control = "Control",
   drug_a = "Drug_A",
   drug_b = "Drug_B",
-  drug_ab = "Drug_AB",
+  combination = "Drug_AB",
   time_start = 0,
   min_observations = 1,
   show_plot = FALSE
@@ -136,3 +136,103 @@ test_that("Test lmmSynergy with incorrect method input", {
                "Invalid 'method' provided. Choose from 'Bliss', 'HSA', or 'RA'.")
 })
 
+# Example data and model for testing
+set.seed(123)
+test_data <- data.frame(
+  Mouse = rep(1:10, each = 10),
+  Day = rep(0:9, times = 10),
+  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_Z","Drug_ABZ"), each = 10, length.out = 100),
+  TV = rnorm(100, mean = 100, sd = 20)
+)
+
+model <- lmmModel(
+  data = test_data,
+  sample_id = "Mouse",
+  time = "Day",
+  treatment = "Treatment",
+  tumor_vol = "TV",
+  trt_control = "Control",
+  drug_a = "Drug_A",
+  drug_b = "Drug_B",
+  drug_c = "Drug_Z",
+  combination = "Drug_ABZ",
+  time_start = 0,
+  min_observations = 1,
+  show_plot = FALSE
+)
+
+test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
+  # Call the function with default method ("Bliss")
+  result <- lmmSynergy(model, show_plot = FALSE)
+  
+  # Check that the result is a list with two elements
+  expect_type(result, "list")
+  expect_equal(length(result), 2)
+  expect_named(result, c("Contrasts", "Synergy"))
+  
+  # Check that "Contrasts" is a list and "Synergy" is a data frame
+  expect_type(result$Contrasts, "list")
+  expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
+})
+
+test_that("Test lmmSynergy with HSA method", {
+  # Call the function with method = "HSA"
+  result <- lmmSynergy(model, method = "HSA", show_plot = FALSE)
+  
+  # Check that the contrast used is one of the HSA contrasts
+  expect_true(any(grepl("b5 = b2", result$Contrasts[[1]]$term)) || 
+                any(grepl("b5 = b3", result$Contrasts[[1]]$term)) ||
+                any(grepl("b5 = b4", result$Contrasts[[1]]$term)))
+  
+  # Check that the result is structured as expected
+  expect_type(result, "list")
+  expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
+})
+
+test_that("Test lmmSynergy with RA method", {
+  
+  # Call the function with method = "RA"
+  result <- lmmSynergy(model, method = "RA", show_plot = FALSE)
+  
+  # Check that the result is a list with two elements
+  expect_type(result, "list")
+  expect_equal(length(result), 2)
+  expect_named(result, c("Contrasts", "Synergy"))
+  
+  # Check that "Contrasts" is a NULL and "Synergy" is a data frame
+  expect_null(result$Contrasts)
+  expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
+  
+})
+
+test_that("Test lmmSynergy with RA method and 'robust' = TRUE works correctly", {
+  
+  # Call the function with method = "RA"
+  result <- lmmSynergy(model, method = "RA", robust = TRUE, show_plot = FALSE)
+  
+  # Check that the result is a list with two elements
+  expect_type(result, "list")
+  expect_equal(length(result), 2)
+  expect_named(result, c("Contrasts", "Synergy"))
+  
+  # Check that "Contrasts" is a NULL and "Synergy" is a data frame
+  expect_null(result$Contrasts)
+  expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
+  
+})
