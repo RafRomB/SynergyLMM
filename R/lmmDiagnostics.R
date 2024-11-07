@@ -321,136 +321,7 @@ ObsvsPred <- function(model, nrow = 4, ncol = 5, ...) {
 
 # Influential Diagnostics ----
 
-#' @title Modified [nlmeU::logLik1] helper function to deal with varIdent structure
-#' @param modfit An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
-#' with a variance structure defined by [nlme::varIdent], and fitted using maximum likelihood.
-#' @param dt1 A data frame with data for one subject, for whom the log-likelihood function is to be evaluated
-#' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
-#' @returns Numeric scalar value representing contribution of a given subject to the overall 
-#' log-likelihood returned by `logLik()` function applied to the "lme" object defined by `modfit` argument.
-#' @keywords internal
-#' @noRd
 
-.logLik1.varIdent <- function(modfit, dt1, var_name){
-  var_name <- as.character(unique(dt1[,var_name]))
-  m <- modfit$modelStruct # Model structure
-  sigma <- modfit$sigma # sigma
-  D <- as.matrix(m$reStruct[[1]]) # "subject"
-  D <- D  * sigma^2 # Matrix D 
-  
-  vecR <- sigma/(nlme::varWeights(modfit$modelStruct$varStruct)) # AugDiagonal of R_i
-  if(length(var_name) == 1){
-    vecR <- vecR[names(vecR) == var_name]
-  } else{
-    vecR <- vecR[var_name]
-  }
-  vecR2 <- vecR^2
-  R <- diag(vecR2, nrow=length(vecR)) # R_i matrix     
-  Z <- model.matrix(m$reStruc, data=dt1) # Z_i matrix
-  V <- Z %*% D %*% t(Z) + R # V_i matrix
-  predY <- predict(modfit, dt1, level=0) # Predict fixed
-  
-  dvName <- as.character(formula(modfit)[[2]])
-  
-  r <- dt1[[dvName]] - predY # Residuals
-  n <- nrow(dt1) # No. of obs for subject
-  lLik <- n*log(2*pi) + log(det(V)) + 
-    t(r) %*% solve(V) %*% r
-  return(-0.5 * as.numeric(lLik))
-}
-
-## Individual contributions to logLik 
-
-#' @title Contributions of the individual subjects to the log-likelihood for the model.
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @param lLik_thrh Threshold of log-likelihood contribution per-observation per-subject.
-#' @param label_angle Angle for the label of subjects with a log-likelihood contribution smaller than `lLik_thrh`.
-#' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
-#' @returns Returns a plot of the per-observation individual-subject log-likelihood contibutions to the model, indicating those subjects
-#' whose contribution is smaller than `lLik_thrh`. 
-#' @export
-logLikSubjectContributions <- function(model,
-                        lLik_thrh = 0,
-                        label_angle = 0,
-                        var_name = NULL) {
-  
-  # Update model to use maximum-likelihood estimation
-  
-  model <- update(model, method = "ML")
-  
-  # Fixed-effect estimates and their variance-covariance matrix
-  
-  beta0 <- nlme::fixef(model) # estimated betas
-  
-  vcovb <- vcov(model) # Variance-covariance matrix for betas
-  
-  # Contribution of Individual Subjects to the Log-Likelihood
-  
-  if(is.null(model$modelStruct$varStruct)) {
-    lLik.i <- by(
-      model$data,
-      model$data$SampleID,
-      FUN = function(dfi) # Function to calculate log likelihood for subject i
-        nlmeU::logLik1(model, dfi)
-    ) 
-  } else {
-    if (is.null(var_name)) {
-      stop("`var_name` cannot be NULL if a variance estructure has been specified in the model")
-    }
-    lLik.i <- by(
-      model$data,
-      model$data$SampleID,
-      FUN = function(dfi) # Function to calculate log likelihood for subject i with a variance structure.
-        .logLik1.varIdent(model, dfi, var_name = var_name)
-    ) 
-  }
-  
-  lLik.i <- as.vector(lLik.i) # Coerce array to a vector
-  
-  # Plot of individual contributions to the log-likelihood (traditional graphics)
-  
-  nx <- by(model$data, model$data$SampleID, nrow) # ni
-  lLik.n <- lLik.i / as.vector(nx) # logLiki/ni
-  outL <- lLik.n < lLik_thrh # TRUE for value < lLik_thrh
-  lLik.n[outL] # logLiki/ni < lLik_thrh
-  
-  if (sum(outL) == 0) {
-    writeLines(paste("No subject with a log-likelihood contribution below", lLik_thrh))
-  }
-  
-  subject.c <- levels(model$data$SampleID)
-  subject.x <- 1:length(subject.c)
-  plot(
-    lLik.n ~ subject.x,
-    type = "h",
-    ylab = "Contribution to log Likelihood",
-    xlab = "Subject",
-    main = "Per-observation subject\nlog-likelihood contributions"
-  )
-  points(subject.x[outL], lLik.n[outL], type = "p", pch = 20)
-  text(
-    x = subject.x[outL],
-    y = lLik.n[outL],
-    labels = subject.c[outL],
-    cex = 0.8,
-    adj = c(0.5, 1),
-    srt = label_angle,
-    xpd = TRUE
-  )
-  abline(h = lLik_thrh, lty = 2)
-  legend(
-    "topright",
-    inset = c(-0.02, -0.1),
-    legend = c(as.character(lLik_thrh)),
-    lty = 2,
-    title = "logLik contribution\nthreshold",
-    bty = "n",
-    cex = 0.66,
-    xpd = TRUE
-  )
-  names(lLik.n) <- subject.c
-  print(lLik.n)
-}
 
 ## Leave-one-out 
 
@@ -589,7 +460,7 @@ logLikSubjectContributions <- function(model,
 #' # Obtain log-likelihood displacement for each subject
 #' logLikSubjectDisplacements(model = lmm)
 #' # Modifying the threshold for log-likelihood displacement
-#' logLikSubjectDisplacements(model = lmm, disp_thrh = 1.5)
+#' logLikSubjectDisplacements(model = lmm, disp_thrh = 1)
 #' 
 #' # Calculating the log-likelihood contribution in a model with a variance structure specified
 #' lmm_var <- lmmModel(
