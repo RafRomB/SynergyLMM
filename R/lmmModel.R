@@ -408,10 +408,12 @@ lmmModel <- function(data,
 
 lmmModel_estimates <- function(model){
   dt <- data.frame(t(model$coefficients$fixed), sqrt(model$modelStruct$reStruct[[1]][1]), model$sigma)
+  trt_names <- names(model$coefficients$fixed)
+  trt_names <- sub("Time:Treatment", replacement = "", trt_names)
   if (ncol(dt) == 7) {
-    colnames(dt) <- c("control", "drug_a", "drug_b", "drug_c","combination", "sd_ranef", "sd_resid")
+    colnames(dt) <- c(trt_names[1:4],"Combination", "sd_ranef", "sd_resid")
   } else {
-    colnames(dt) <- c("control", "drug_a", "drug_b", "combination", "sd_ranef", "sd_resid")
+    colnames(dt) <- c(trt_names[1:3], "Combination", "sd_ranef", "sd_resid")
   }
   rownames(dt) <- "estimate"
   return(dt)
