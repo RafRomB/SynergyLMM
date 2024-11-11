@@ -277,15 +277,27 @@ plot_ObsvsPred <- function(model, nrow = 4, ncol = 5){
 #' @export
 plot_lmmSynergy <- function(syn_data){
   syn_data <- syn_data$Synergy
-  hline <- data.frame(Metric = c("CI", "SS"), yintercept = c(1,0))
-  syn_data %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
-    geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray70", lwd = 1) + cowplot::theme_cowplot() +
-    geom_point(aes(colour  = -log10(.data$pval)), size = 5, shape = 18) +
-    scale_color_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
-    ylab("Metric Value") + scale_x_continuous(breaks = unique(syn_data$Time)) +
-    facet_wrap(~Metric, scales = "free", labeller = "label_both") + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold")) + 
-    labs(title = paste("Combination Index and Synergy Score for", unique(syn_data$Model), "Synergy")) +
-    geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed")
+  
+  syn_data$Metric[syn_data$Metric == "CI"] <- "Combination Index"
+  syn_data$Metric[syn_data$Metric == "SS"] <- "Synergy Score"
+  
+  
+  CI <- syn_data %>% dplyr::filter(.data$Metric == "Combination Index") %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
+    geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1) + cowplot::theme_cowplot() +
+    geom_point(aes(fill  = -log10(.data$pval)), size = 5, shape = 23, color = "gray60") +
+    scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
+    ylab("Combination Index") + scale_x_continuous(breaks = unique(syn_data$Time)) + 
+    geom_hline(yintercept = 1, lty = "dashed") + facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
+  
+  SS <- syn_data %>% dplyr::filter(.data$Metric == "Synergy Score") %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
+    geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1) + cowplot::theme_cowplot() +
+    geom_point(aes(fill  = -log10(.data$pval)), size = 5, shape = 23, color = "gray60") +
+    scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
+    ylab("Synergy Score") + scale_x_continuous(breaks = unique(syn_data$Time)) + 
+    geom_hline(yintercept = 0, lty = "dashed") + facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
+  
+  
+  cowplot::plot_grid(CI, SS)
 }
 
 #' @title Helper function to plot exemplary data for power calculation
