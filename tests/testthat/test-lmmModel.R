@@ -461,7 +461,7 @@ test_that("lmmModel_estimates returns a data frame with correct structure", {
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 6)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
   expect_equal(rownames(result), "estimate")
-  expect_equal(colnames(result), c("control", "drug_a", "drug_b", "combination", "sd_ranef", "sd_resid"))
+  expect_equal(colnames(result), c("Control", "Drug_A", "Drug_B", "Combination", "sd_ranef", "sd_resid"))
 })
 
 test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
@@ -469,10 +469,10 @@ test_that("lmmModel_estimates returns correct values for coefficients and standa
   result <- lmmModel_estimates(model)
   
   # Check that the coefficients match the model's fixed effects
-  expect_equal(result$control, model$coefficients$fixed[[1]])
-  expect_equal(result$drug_a, model$coefficients$fixed[[2]])
-  expect_equal(result$drug_b, model$coefficients$fixed[[3]])
-  expect_equal(result$combination, model$coefficients$fixed[[4]])
+  expect_equal(result$Control, model$coefficients$fixed[[1]])
+  expect_equal(result$Drug_A, model$coefficients$fixed[[2]])
+  expect_equal(result$Drug_B, model$coefficients$fixed[[3]])
+  expect_equal(result$Combination, model$coefficients$fixed[[4]])
   
   # Check that the standard deviations match the model's random effects and residuals
   expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))
@@ -499,7 +499,7 @@ test_that("lmmModel_estimates returns a data frame with correct structure with 3
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 7)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
   expect_equal(rownames(result), "estimate")
-  expect_equal(colnames(result), c("control", "drug_a", "drug_b", "drug_c","combination", "sd_ranef", "sd_resid"))
+  expect_equal(colnames(result), c("Control", "Drug_A", "Drug_B", "Drug_Z","Combination", "sd_ranef", "sd_resid"))
 })
 
 test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
@@ -511,11 +511,11 @@ test_that("lmmModel_estimates returns correct values for coefficients and standa
   result <- lmmModel_estimates(model)
   
   # Check that the coefficients match the model's fixed effects
-  expect_equal(result$control, model$coefficients$fixed[[1]])
-  expect_equal(result$drug_a, model$coefficients$fixed[[2]])
-  expect_equal(result$drug_b, model$coefficients$fixed[[3]])
-  expect_equal(result$drug_c, model$coefficients$fixed[[4]])
-  expect_equal(result$combination, model$coefficients$fixed[[5]])
+  expect_equal(result$Control, model$coefficients$fixed[[1]])
+  expect_equal(result$Drug_A, model$coefficients$fixed[[2]])
+  expect_equal(result$Drug_B, model$coefficients$fixed[[3]])
+  expect_equal(result$Drug_Z, model$coefficients$fixed[[4]])
+  expect_equal(result$Combination, model$coefficients$fixed[[5]])
   
   # Check that the standard deviations match the model's random effects and residuals
   expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))

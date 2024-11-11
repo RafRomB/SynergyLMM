@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(SynerLMM)
+library(SynergyLMM)
 
-test_check("SynerLMM")
+test_check("SynergyLMM")

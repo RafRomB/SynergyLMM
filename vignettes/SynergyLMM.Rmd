@@ -1,8 +1,8 @@
 ---
-title: "SynerLMM"
+title: "SynergyLMM"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{SynerLMM}
+  %\VignetteIndexEntry{SynergyLMM}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,5 +15,5 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(SynerLMM)
+library(SynergyLMM)
 ```
