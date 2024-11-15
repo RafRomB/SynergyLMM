@@ -308,7 +308,7 @@ lmmModel <- function(data,
   
   # Handling cases in which the tumor volume is 0
   
-  if (sum(TV.df$TV == 0) > 0) {
+  if (sum(TV.df$TV == 0, na.rm = TRUE) > 0) {
     warning("Some tumor measurements are 0. ",
             "Tumor measurements that are 0 will be ignored to avoid obtaining Inf values when taking log.")
     TV.df$TV[TV.df$TV == 0] <- NA
