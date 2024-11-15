@@ -302,7 +302,7 @@ test_that("lmmModel excludes samples with TV0 == 0", {
     time_start = 0,
     min_observations = 1,
     show_plot = FALSE
-  ), "1,4 subjects have measurements with value 0 at time 0. These subjects will be removed from the analysis.")
+  ), "1,4 subjects have measurements with value 0 at the initial time point: 0. These subjects will be removed from the analysis.")
   
 })
 

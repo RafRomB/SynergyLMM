@@ -288,19 +288,7 @@ lmmModel <- function(data,
     time_start <- min(TV.df$Time)
   }
   
-  TV.df <- TV.df %>% dplyr::filter(.data$Time >= time_start & !is.na(.data$TV))
-  
-  # Filter data until the maximum day specified in time_end
-  if(!is.null(time_end)){
-    TV.df <- TV.df %>% dplyr::filter(.data$Time <= time_end)
-  }
-  
-  # Remove samples with less than the minimum of observations spececified
-  
-  samples <- TV.df %>% dplyr::count(.data$SampleID, .by = .data$SampleID) %>%
-    dplyr::filter(.data$n >= min_observations) %>% dplyr::select(.data$SampleID)
-  
-  TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
+  TV.df <- TV.df %>% dplyr::filter(.data$Time >= time_start)
   
   # Remove those samples for which TV0 == 0
   # (and therefore, no RTV can be calculated)
@@ -309,7 +297,7 @@ lmmModel <- function(data,
   
   if (length(samples0$SampleID) > 0) {
     warning(paste(paste(samples0$SampleID, collapse = ","), 
-                  " subjects have measurements with value 0 at time ",time_start,". ",
+                  " subjects have measurements with value 0 at the initial time point: ",time_start,". ",
                   "These subjects will be removed from the analysis.", sep = ""))
   }
   
@@ -317,13 +305,30 @@ lmmModel <- function(data,
   
   TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
   
+  
   # Handling cases in which the tumor volume is 0
   
   if (sum(TV.df$TV == 0) > 0) {
     warning("Some tumor measurements are 0. ",
-    "All measurements will be converted to 'value + 1' to avoid obtaining Inf values when taking log.")
-    TV.df$TV <- TV.df$TV + 1 # Add 1 to all measurements to avoid errors when taking log
+            "Tumor measurements that are 0 will be ignored to avoid obtaining Inf values when taking log.")
+    TV.df$TV[TV.df$TV == 0] <- NA
   }
+  
+  # Remove mesurements in which tumor measurement does not have a value assigned
+  
+  TV.df <- TV.df %>% dplyr::filter(!is.na(.data$TV))
+  
+  # Filter data until the maximum day specified in time_end
+  if(!is.null(time_end)){
+    TV.df <- TV.df %>% dplyr::filter(.data$Time <= time_end)
+  }
+  
+  # Remove samples with less than the minimum of observations specified
+  
+  samples <- TV.df %>% dplyr::count(.data$SampleID, .by = .data$SampleID) %>%
+    dplyr::filter(.data$n >= min_observations) %>% dplyr::select(.data$SampleID)
+  
+  TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
   
   # Calculate the relative tumor volume
   TV.df <- .getRTV(TV.df, time_start)
