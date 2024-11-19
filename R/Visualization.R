@@ -283,14 +283,16 @@ plot_lmmSynergy <- function(syn_data){
   
   
   CI <- syn_data %>% dplyr::filter(.data$Metric == "Combination Index") %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
-    geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1) + cowplot::theme_cowplot() +
+    geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1, 
+                 arrow = arrow(angle = 90, length = unit(0.01, "npc"),ends = "both")) + cowplot::theme_cowplot() +
     geom_point(aes(fill  = -log10(.data$pval)), size = 5, shape = 23, color = "gray60") +
     scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
     ylab("Combination Index") + scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 1, lty = "dashed") + facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
   
   SS <- syn_data %>% dplyr::filter(.data$Metric == "Synergy Score") %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
-    geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1) + cowplot::theme_cowplot() +
+    geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1,
+                 arrow = arrow(angle = 90, length = unit(0.01, "npc"),ends = "both")) + cowplot::theme_cowplot() +
     geom_point(aes(fill  = -log10(.data$pval)), size = 5, shape = 23, color = "gray60") +
     scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
     ylab("Synergy Score") + scale_x_continuous(breaks = unique(syn_data$Time)) + 
