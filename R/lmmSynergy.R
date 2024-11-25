@@ -389,7 +389,7 @@ lmmSynergy <- function(model,
   rownames(df) <- NULL
   result <- list(Contrasts = Contrasts, Synergy = df)
   if(show_plot) {
-    print(plot_lmmSynergy(result))
+    print(plot_lmmSynergy(result)$CI_SS)
   }
   return(result)
 }

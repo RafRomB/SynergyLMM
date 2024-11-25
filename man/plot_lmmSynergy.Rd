@@ -10,7 +10,7 @@ plot_lmmSynergy(syn_data)
 \item{syn_data}{Object obtained by \code{\link[=lmmSynergy]{lmmSynergy()}} with the results of synergy calculation using linear mixed models.}
 }
 \value{
-A ggplot2 plot (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more details) with the combination index (CI) and synergy score (SS)
+A list with ggplot2 plots (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more details) with the combination index (CI) and synergy score (SS)
 estimates, confidence intervals and p-values for the synergy calculation using linear mixed models.
 }
 \description{
@@ -40,8 +40,14 @@ lmm <- lmmModel(
 lmmSyn <- lmmSynergy(lmm)
 # Plot synergy results
 plot_lmmSynergy(lmmSyn)
+# Accessing to the combination index plot
+plot_lmmSynergy(lmmSyn)$CI
+# Accessing to only synergy score plot
+plot_lmmSynergy(lmmSyn)$SS
+# Accessing to the grid of both plots side by side
+plot_lmmSynergy(lmmSyn)$CI_SS
 # Adding ggplot2 elements
-plot_lmmSynergy(lmmSyn) + 
+plot_lmmSynergy(lmmSyn)$CI + 
 ggplot2::labs(title = "Synergy Calculation for Bliss") + 
 ggplot2::theme(legend.position = "top")  
 

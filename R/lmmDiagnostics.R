@@ -358,7 +358,7 @@ ObsvsPred <- function(model, nrow = 4, ncol = 5, ...) {
   var_name <- as.character(unique(dt1[,var_name]))
   m <- modfit$modelStruct # Model structure
   sigma <- modfit$sigma # sigma
-  D <- as.matrix(m$reStruct[[1]]) # "subject"
+  D <- as.matrix(m$reStruct[[1]]) 
   D <- D  * sigma^2 # Matrix D 
   
   vecR <- sigma/(nlme::varWeights(dtInit$modelStruct$varStruct)) # AugDiagonal of R_i
