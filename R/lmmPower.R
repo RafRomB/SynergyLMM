@@ -44,11 +44,11 @@
 #'   drug_b = "DrugB",
 #'   combination = "Combination"
 #'   )
-#'  PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
+#'  PostHocPwr(lmm, nsim = 50) # 50 simulations for shorter computing time
 #'  # Using a seed to obtain reproducible results
-#'  PostHocPwr(lmm, seed = 123, nsim = 100)
+#'  PostHocPwr(lmm, seed = 123, nsim = 50)
 #'  # Calculating the power for an specific day
-#'  PostHocPwr(lmm, nsim = 100, time = 6)
+#'  PostHocPwr(lmm, nsim = 50, time = 6)
 #' 
 #' @export
 
@@ -157,9 +157,11 @@ PostHocPwr <- function(model,
 #' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
 #' assigned to `sd_ranef` and `sgma` are also shown.
 #' - A plot showing the values of the power calculation depending on the values assigned to 
-#' `sd_eval` and `sgma_eval`,
+#' `sd_eval` and `sgma_eval`. The power result corresponding to the values assigned to `sd_ranef` and
+#' `sgma` is shown with a red dot.
 #' - A plot showing the values of the power calculation depending on the values assigned to
-#' `grwrComb_eval`.
+#' `grwrComb_eval`. The vertical dashed line indicates the value of `grwrComb`. The horizontal
+#' line indicates the power of 0.80.
 #' 
 #' If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
 #' @import ggplot2
@@ -392,7 +394,7 @@ APrioriPwr <- function(npg = 5,
       z = .data$Power
     )) + geom_raster(aes(fill = .data$Power)) +
       scale_fill_continuous(type = "viridis") + cowplot::theme_cowplot() + labs(title = paste("Power for", method, sep = " ")) +
-      xlab("SD for random effects") + ylab("Sigma")
+      xlab("SD for random effects") + ylab("Sigma") + geom_point(x = sd_ranef, y = sgma, shape = 18, size = 5, color = "firebrick3")
     print(plot_grid(p1, p2, ncol = 2))
   }
   
@@ -468,12 +470,12 @@ APrioriPwr <- function(npg = 5,
     p3 <- dtF %>% ggplot(aes(
       x = .data$`Time:TreatmentCombination`,
       y = .data$Power
-    )) + geom_line() + cowplot::theme_cowplot() +
+    )) + geom_line() + cowplot::theme_cowplot() + 
       labs(title = paste(
         "Power across growth rate\nvalues for combination treatment for ",
         method
       )) + xlab("Growth rate (logRTV/Times)") +
-      geom_hline(yintercept = 0.8, lty = "dashed")
+      geom_hline(yintercept = 0.8, lty = "dashed") + geom_vline(xintercept = grwrComb, lty=3) 
     print(plot_grid(p1, p3, ncol = 2))
   }
   if (!is.null(sd_eval) &

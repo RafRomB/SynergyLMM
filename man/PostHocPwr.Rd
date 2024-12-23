@@ -58,11 +58,11 @@ lmm <- lmmModel(
   drug_b = "DrugB",
   combination = "Combination"
   )
- PostHocPwr(lmm, nsim = 100) # 100 simulations for shorter computing time
+ PostHocPwr(lmm, nsim = 50) # 50 simulations for shorter computing time
  # Using a seed to obtain reproducible results
- PostHocPwr(lmm, seed = 123, nsim = 100)
+ PostHocPwr(lmm, seed = 123, nsim = 50)
  # Calculating the power for an specific day
- PostHocPwr(lmm, nsim = 100, time = 6)
+ PostHocPwr(lmm, nsim = 50, time = 6)
 
 }
 \references{
