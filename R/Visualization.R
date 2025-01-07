@@ -107,8 +107,10 @@ plot_lmmModel <- function(model,
 #' @returns A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
 #' - A normal Q-Q plot of the random effects of the model.
 #' - A normal Q-Q plot of the residuals by sample.
-#' - Boxplots of the conditional residuals by sample.
-#' - Dotplots of the pearson residuals vs fitted values by sample.
+#' - Boxplots of the "raw" residuals (observed - fitted) by sample.
+#' - Dotplots of the normalized residuals (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see [nlme::residuals.lme])
+#' vs fitted values by sample.
+#' 
 #' @examples
 #' data(grwth_data)
 #' # Fit the model
@@ -142,9 +144,9 @@ plot_ranefDiagnostics <- function(model){
                par.strip.text=list(col="black", cex=0.8), xlab = "Normalized Residuals", abline = c(0,1))
   p3 <- plot(model, SampleID ~ resid(., type = "response"), abline = 0, main = list("Raw Residuals by Subject", cex = 0.8),
              xlab = "Residuals")
-  p4 <- plot(model, residuals(., type = "pearson") ~ fitted(.)|SampleID, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.75,
-             main = list("Pearson Residuals vs Fitted Values by Sample", cex =0.8),par.strip.text=list(col="black", cex=0.8), idLabels = ~Time,
-             abline = 0, ylab = "Pearson residuals")
+  p4 <- plot(model, residuals(., type = "normalized") ~ fitted(.)|SampleID, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.75,
+             main = list("Normalized Residuals vs Fitted Values by Sample", cex =0.8),par.strip.text=list(col="black", cex=0.8), idLabels = ~Time,
+             abline = 0, ylab = "Normalized residuals")
   # Arranged plots
   p5 <- cowplot::plot_grid(p1,p2,p3,p4, ncol = 2)
   return(list(p1,p2,p3,p4,p5))
@@ -154,12 +156,13 @@ plot_ranefDiagnostics <- function(model){
 #' @description
 #' Visualization of residuals diagnostics for a fitted linear mixed model of tumor growth data.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @returns A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
+#' @returns A list with different plots for evaluating the normality and homoscedasticity of the normalized residuals
+#' (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see [nlme::residuals.lme]), including:
 #' - A normal Q-Q plot of the normalized residuals of the model.
 #' - A normal Q-Q plot of the normalized residuals of the model by Time.
 #' - A normal Q-Q plot of the normalized residuals of the model by Treatment.
-#' - A dotplot of pearson residuals vs fitted values.
-#' - A dotplot of the pearson residuals by Time and Treatment.
+#' - A dotplot of normalized residuals vs fitted values.
+#' - A dotplot of the normalized residuals by Time and Treatment.
 #' @examples
 #' data(grwth_data)
 #' # Fit the model
@@ -191,10 +194,11 @@ plot_residDiagnostics <- function(model){
   p3 <- qqnorm(model, ~resid(., type = "normalized")|Treatment, pch = 20, main = "Q-Q Plot of Normalized Residuals by Treatment",
                par.strip.text=list(col="black", cex=1),
                xlab = "Normalized residuals", abline = c(0,1))
-  p4 <- plot(model,main = "Pearson Residuals vs Fitted Values", pch = 20, ylab = "Pearson residuals")
-  p5 <- plot(model, resid(., type = "pearson") ~Time|Treatment, id = 0.05, pch=20,
-             adj = -0.03, cex = 1, main = "Pearson Residuals per Time and Treatment", 
-             par.strip.text=list(col="black", cex=1), ylab = "Pearson residuals", abline = 0)
+  p4 <- plot(model, resid(., type = "normalized") ~ fitted(.), main = "Normalized Residuals vs Fitted Values", 
+             pch = 20, ylab = "Normalized residuals", abline = 0)
+  p5 <- plot(model, resid(., type = "normalized") ~Time|Treatment, id = 0.05, pch=20,
+             adj = -0.03, cex = 1, main = "Normalized Residuals per Time and Treatment", 
+             par.strip.text=list(col="black", cex=1), ylab = "Normalized residuals", abline = 0)
   # Arranged plots
   p6 <- cowplot::plot_grid(p1,p2,p3,p4,p5, nrow = 3, ncol = 2, align = "hv")
   return(list(p1,p2,p3,p4,p5,p6))
@@ -297,8 +301,9 @@ plot_lmmSynergy <- function(syn_data){
     ylab("Combination Index") + xlab("Time since start of treatment") + 
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 1, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
-    labs(title = paste(Model, "Combination Index", sep = " ")) + annotate(geom = "text", x = 0, y = 0.95, angle = 90, hjust = 1, label = "Synergy", fontface = "bold", color = "#1f78b4") +
-    annotate(geom = "text", x = 0, y = 1.05, angle = 90, hjust = 0, label = "Antagonism", fontface = "bold", color = "#c21d2f")
+    labs(title = paste(Model, "Combination Index", sep = " ")) + 
+    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = 0.95, angle = 90, hjust = 1, label = "Synergy", fontface = "bold", color = "#1f78b4") +
+    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = 1.05, angle = 90, hjust = 0, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
   SS <- syn_data %>% dplyr::filter(.data$Metric == "Synergy Score") %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
     geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1,
@@ -308,8 +313,9 @@ plot_lmmSynergy <- function(syn_data){
     ylab("Synergy Score") + xlab("Time since start of treatment") +
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 0, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
-    labs(title = paste(Model, "Synergy Score", sep = " ")) + annotate(geom = "text", x = 0, y = 0.33, angle = 90, hjust = 0, label = "Synergy", fontface = "bold", color = "#1f78b4") +
-    annotate(geom = "text", x = 0, y = -0.33, angle = 90, hjust = 1, label = "Antagonism", fontface = "bold", color = "#c21d2f")
+    labs(title = paste(Model, "Synergy Score", sep = " ")) + 
+    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = 0.33, angle = 90, hjust = 0, label = "Synergy", fontface = "bold", color = "#1f78b4") +
+    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = -0.33, angle = 90, hjust = 1, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
   
   CI_SS <- cowplot::plot_grid(CI, SS)

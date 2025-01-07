@@ -10,13 +10,14 @@ plot_residDiagnostics(model)
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 }
 \value{
-A list with different plots for evaluating the normality and homoscedasticity of the random effects, including:
+A list with different plots for evaluating the normality and homoscedasticity of the normalized residuals
+(standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see \link[nlme:residuals.lme]{nlme::residuals.lme}), including:
 \itemize{
 \item A normal Q-Q plot of the normalized residuals of the model.
 \item A normal Q-Q plot of the normalized residuals of the model by Time.
 \item A normal Q-Q plot of the normalized residuals of the model by Treatment.
-\item A dotplot of pearson residuals vs fitted values.
-\item A dotplot of the pearson residuals by Time and Treatment.
+\item A dotplot of normalized residuals vs fitted values.
+\item A dotplot of the normalized residuals by Time and Treatment.
 }
 }
 \description{

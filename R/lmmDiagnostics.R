@@ -166,17 +166,16 @@ ranefDiagnostics <- function(model){
 #' of the normality of the residuals of the input model.
 #' 
 #' @param model  An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @param pvalue Threshold for the p-value of outlier observations based on their Pearson residuals.
+#' @param pvalue Threshold for the p-value of outlier observations based on their normalized residuals.
 #' 
 #' @details
-#' One of the assumption of the model fit by [`lmmModel()`] is that the residuals are normally distributed:
-#' 
-#' \deqn{\varepsilon_{i} \sim \mathcal{N}(0, \sigma^2)}
-#' 
-#' For the evaluation of this assumption, `residDiagnostics` provides Q-Q plots of the normalized residuals, together with statistical assessment of their 
+#' One of the assumption of the model fit by [`lmmModel()`] is that the residuals are normally distributed.
+#' For the evaluation of this assumption, `residDiagnostics` provides Q-Q plots of the normalized residuals
+#' (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see [nlme::residuals.lme]),
+#' together with statistical assessment of their 
 #' normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and 
 #' treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be 
-#' affecting the adequacy of the model. Additionally, scatter plots of the conditional Pearson residuals versus fitted values and Pearson residuals 
+#' affecting the adequacy of the model. Additionally, scatter plots of the normalized residuals versus fitted values and normalized residuals 
 #' per time and per treatment are provided to give information about variability of the residuals and possible outlier observations. 
 #' Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution 
 #' are identified and reported as potential outlier observations.

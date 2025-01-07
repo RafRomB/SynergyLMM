@@ -14,8 +14,9 @@ A list with different plots for evaluating the normality and homoscedasticity of
 \itemize{
 \item A normal Q-Q plot of the random effects of the model.
 \item A normal Q-Q plot of the residuals by sample.
-\item Boxplots of the conditional residuals by sample.
-\item Dotplots of the pearson residuals vs fitted values by sample.
+\item Boxplots of the "raw" residuals (observed - fitted) by sample.
+\item Dotplots of the normalized residuals (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see \link[nlme:residuals.lme]{nlme::residuals.lme})
+vs fitted values by sample.
 }
 }
 \description{
