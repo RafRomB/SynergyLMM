@@ -58,9 +58,11 @@ The functions returns several plots:
 treatment group according to \code{grwrControl}, \code{grwrA}, \code{grwrB} and \code{grwrComb} values. The values
 assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \item A plot showing the values of the power calculation depending on the values assigned to
-\code{sd_eval} and \code{sgma_eval},
+\code{sd_eval} and \code{sgma_eval}. The power result corresponding to the values assigned to \code{sd_ranef} and
+\code{sgma} is shown with a red dot.
 \item A plot showing the values of the power calculation depending on the values assigned to
-\code{grwrComb_eval}.
+\code{grwrComb_eval}. The vertical dashed line indicates the value of \code{grwrComb}. The horizontal
+line indicates the power of 0.80.
 }
 
 If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
