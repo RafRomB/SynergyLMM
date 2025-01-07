@@ -70,14 +70,10 @@ test_that("Levene and Fligner tests return the correct classes", {
   diagnostics <- ranefDiagnostics(model)
   
   # Check the class of Levene's test results
-  expect_s3_class(diagnostics$Levene.test$conditional_resid, "anova")
-  expect_s3_class(diagnostics$Levene.test$marginal_resid, "anova")
-  expect_s3_class(diagnostics$Levene.test$normalized_resid, "anova")
+  expect_s3_class(diagnostics$Levene.test, "anova")
   
   # Check the class of Fligner-Killeen test results
-  expect_s3_class(diagnostics$Fligner.test$conditional_resid, "htest")
-  expect_s3_class(diagnostics$Fligner.test$marginal_resid, "htest")
-  expect_s3_class(diagnostics$Fligner.test$normalized_resid, "htest")
+  expect_s3_class(diagnostics$Fligner.test, "htest")
 })
 
 test_that("ranefDiagnostics handles small sample sizes for D'Agostino test", {
@@ -178,6 +174,19 @@ test_that("residDiagnostics generates diagnostic plots", {
   expect_true(length(result$plots) >= 1)
   
   expect_s3_class(result$plots[[1]], "trellis")
+})
+
+test_that("Levene and Fligner tests return the correct classes", {
+  diagnostics <- residDiagnostics(model)
+  
+  # Check the class of Levene's test results
+  expect_s3_class(diagnostics$Levene.test$Time, "anova")
+  expect_s3_class(diagnostics$Levene.test$Treatment, "anova")
+  
+  # Check the class of Fligner-Killeen test results
+  expect_s3_class(diagnostics$Fligner.test$Time, "htest")
+  expect_s3_class(diagnostics$Fligner.test$Treatment, "htest")
+  
 })
 
 # Tests for ObsvsPred ----

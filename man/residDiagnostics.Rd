@@ -19,6 +19,8 @@ A list with different elements for the diagnostics of the residuals are produced
 value of the Pearson residuals for each observation.
 \item \code{Normality}: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test,
 D'Agostino normality test and Anderson - Darling normality test.
+\item \code{Levene.test}: List with the Levene homoscedasticity test results of the normalized residuals by Time and Treatment.
+\item \code{Fligner.test}: List with the Fligner-Killeen homoscedasticity test results of the normalized residuals by Time and Treatment.
 }
 }
 \description{
@@ -33,7 +35,8 @@ together with statistical assessment of their
 normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and
 treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be
 affecting the adequacy of the model. Additionally, scatter plots of the normalized residuals versus fitted values and normalized residuals
-per time and per treatment are provided to give information about variability of the residuals and possible outlier observations.
+per time and per treatment are provided to give information about variability of the residuals and possible outlier observations. This plots are accompanied
+by Levene and Fligner-Killend homogeneity of variance test results.
 Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution
 are identified and reported as potential outlier observations.
 }
@@ -63,6 +66,12 @@ resid_diag$plots[2]
 # Access results of normality tests
 resid_diag$Normality
 resid_diag$Normality$Shapiro.test
+
+# Access to homoscedasticity test results
+
+resid_diag$Levene.test
+
+resid_diag$Fligner.test
 
 }
 \references{

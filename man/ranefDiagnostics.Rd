@@ -15,8 +15,8 @@ A list with different elements for the diagnostics of the random effects are pro
 \item \code{plots}: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 \item \code{Normality}: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test,
 D'Agostino normality test and Anderson - Darling normality test.
-\item \code{Levene.test}: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by SampleID (i.e. by subject).
-\item \code{Fligner.test}: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by SampleID (i.e. by subject).
+\item \code{Levene.test}: results from Levene homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
+\item \code{Fligner.test}: results from Fligner homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
 }
 }
 \description{
@@ -29,14 +29,16 @@ the random effects are normally distributed:
 
 \deqn{b_i = N(0,\psi)}
 
-For the evaluation of this assumption, \code{ranefDiagnostics} provides Q-Q plots of the normalized residuals,
+For the evaluation of this assumption, \code{ranefDiagnostics} provides Q-Q plots of random effects,
 together with statistical assessment of their normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests.
-Additionally, Q-Q plots of the normalized residuals by time point and treatment group are provided to be able to detect time
-points or treatment groups which could be notably different from the others and be affecting the adequacy of the model.
-Additionally, scatter plots of the conditional Pearson residuals versus fitted values and Pearson residuals per time and per
-treatment are provided to give information about variability of the residuals and possible outlier observations.
-Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution
-are identified and reported as potential outlier observations.
+Additionally, Q-Q plots of the normalized residuals
+(standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see \link[nlme:residuals.lme]{nlme::residuals.lme})
+by sample are provided to allow for the identification of subjects
+which could be notably different from the others and be affecting the adequacy of the model.
+Additionally, boxplots of the "raw" residuals (observed - fitted) by sample and scatter plots of the normalized residuals versus fitted values by sample
+are provided to give information about variability of the residuals by subject and possible outlier observations. Observations with absolute standardized (normalized)
+residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution
+are identified in the scatter plots labelled with the time point corresponding to the observation.
 }
 \examples{
 # Load the example data
@@ -79,4 +81,7 @@ ranef_diag$Fligner.test
 \item Pinheiro JC, Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. Springer, New York. doi:10.1007/b98882 \url{https://doi.org/10.1007/b98882}.
 \item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
 }
+}
+\seealso{
+\code{\link[=plot_ranefDiagnostics]{plot_ranefDiagnostics()}}
 }

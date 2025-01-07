@@ -13,26 +13,28 @@
 #' 
 #' \deqn{b_i = N(0,\psi)}
 #' 
-#' For the evaluation of this assumption, `ranefDiagnostics` provides Q-Q plots of the normalized residuals, 
+#' For the evaluation of this assumption, `ranefDiagnostics` provides Q-Q plots of random effects, 
 #' together with statistical assessment of their normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. 
-#' Additionally, Q-Q plots of the normalized residuals by time point and treatment group are provided to be able to detect time 
-#' points or treatment groups which could be notably different from the others and be affecting the adequacy of the model. 
-#' Additionally, scatter plots of the conditional Pearson residuals versus fitted values and Pearson residuals per time and per 
-#' treatment are provided to give information about variability of the residuals and possible outlier observations. 
-#' Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution 
-#' are identified and reported as potential outlier observations.
+#' Additionally, Q-Q plots of the normalized residuals
+#' (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see [nlme::residuals.lme])
+#' by sample are provided to allow for the identification of subjects 
+#' which could be notably different from the others and be affecting the adequacy of the model. 
+#' Additionally, boxplots of the "raw" residuals (observed - fitted) by sample and scatter plots of the normalized residuals versus fitted values by sample 
+#' are provided to give information about variability of the residuals by subject and possible outlier observations. Observations with absolute standardized (normalized) 
+#' residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution 
+#' are identified in the scatter plots labelled with the time point corresponding to the observation.
 #' 
 #' @returns A list with different elements for the diagnostics of the random effects are produced:
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 #' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
-#' - `Levene.test`: results from Levene homocedasticity test of the conditional, marginal and normalized residuals by SampleID (i.e. by subject).
-#' - `Fligner.test`: results from Fligner homocedasticity test of the conditional, marginal and normalized residuals by SampleID (i.e. by subject).
+#' - `Levene.test`: results from Levene homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
+#' - `Fligner.test`: results from Fligner homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
 #' 
 #' @references
 #' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 <https://doi.org/10.1007/b98882>.
 #' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
-#' 
+#' @seealso [plot_ranefDiagnostics()]
 #' @examples
 #' # Load the example data
 #' data(grwth_data)
@@ -102,24 +104,6 @@ ranefDiagnostics <- function(model){
   
   # Homocedasticity test
   
-  # Conditional Residuals
-  cond_res <- residuals(model, type = "response")
-  cond_res <- data.frame(
-    conditional_resid = cond_res,
-    SampleID = names(cond_res),
-    stringsAsFactors = T
-  )
-  colnames(cond_res) <- c("conditional_resid", "SampleID")
-  
-  # Marginal Residuals
-  mar_res <- residuals(model, type = "response", level = 0)
-  mar_res <- data.frame(
-    marginal_resid = mar_res,
-    SampleID = names(mar_res),
-    stringsAsFactors = T
-  )
-  colnames(mar_res) <- c("marginal_resid", "SampleID")
-  
   # Normalized Residuals
   
   norm_res <- residuals(model, type = "normalized")
@@ -130,22 +114,11 @@ ranefDiagnostics <- function(model){
   )
   colnames(norm_res) <- c("normalized_resid", "SampleID")
   
-  levene <- list()
-  writeLines("Conditional Residuals")
-  print(levene$conditional_resid <- car::leveneTest(conditional_resid ~ SampleID, data = cond_res))
-  writeLines("Marginal Residuals")
-  print(levene$marginal_resid <- car::leveneTest(marginal_resid ~ SampleID, data = mar_res))
-  writeLines("Normalized Residuals")
-  print(levene$normalized_resid <- car::leveneTest(normalized_resid ~ SampleID, data = norm_res))
+  writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Sample")
+  print(levene <- car::leveneTest(normalized_resid ~ SampleID, data = norm_res))
   
-  fligner <- list()
-  
-  writeLines("Conditional Residuals")
-  print(fligner$conditional_resid <- fligner.test(conditional_resid ~ SampleID, data = cond_res))
-  writeLines("Marginal Residuals")
-  print(fligner$marginal_resid <- fligner.test(marginal_resid ~ SampleID, data = mar_res))
-  writeLines("Normalized Residuals")
-  print(fligner$normalized_resid <- fligner.test(normalized_resid ~ SampleID, data = norm_res))
+  writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Sample")
+  print(fligner <- fligner.test(normalized_resid ~ SampleID, data = norm_res))
   
   return(invisible(
     list(
@@ -176,7 +149,8 @@ ranefDiagnostics <- function(model){
 #' normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and 
 #' treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be 
 #' affecting the adequacy of the model. Additionally, scatter plots of the normalized residuals versus fitted values and normalized residuals 
-#' per time and per treatment are provided to give information about variability of the residuals and possible outlier observations. 
+#' per time and per treatment are provided to give information about variability of the residuals and possible outlier observations. This plots are accompanied
+#' by Levene and Fligner-Killend homogeneity of variance test results.
 #' Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution 
 #' are identified and reported as potential outlier observations.
 #' 
@@ -186,6 +160,8 @@ ranefDiagnostics <- function(model){
 #' value of the Pearson residuals for each observation.
 #' - `Normality`: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
+#' - `Levene.test`: List with the Levene homoscedasticity test results of the normalized residuals by Time and Treatment.
+#' - `Fligner.test`: List with the Fligner-Killeen homoscedasticity test results of the normalized residuals by Time and Treatment.
 #' 
 #' @references
 #' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 <https://doi.org/10.1007/b98882>.
@@ -217,6 +193,12 @@ ranefDiagnostics <- function(model){
 #' # Access results of normality tests
 #' resid_diag$Normality
 #' resid_diag$Normality$Shapiro.test
+#' 
+#' # Access to homoscedasticity test results
+#' 
+#' resid_diag$Levene.test
+#' 
+#' resid_diag$Fligner.test
 #'
 #' @export
 residDiagnostics <- function(model, pvalue=0.05){
@@ -244,22 +226,44 @@ residDiagnostics <- function(model, pvalue=0.05){
     Anderson.Darling.test = res_ad
   )
   
+  # Homocedasticity test
+  
+  # Normalized Residuals by Time
+  
+  model$data$normalized_resid <- norm_res
+  
+  levene <- list()
+  fligner <- list()
+  
+  writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Time")
+  print(levene$Time <- car::leveneTest(normalized_resid ~ as.factor(Time), data = model$data))
+  
+  writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Time")
+  print(fligner$Time <- fligner.test(normalized_resid ~ as.factor(Time), data = model$data))
+  
+  writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Treatment")
+  print(levene$Treatment <- car::leveneTest(normalized_resid ~ Treatment, data = model$data))
+  
+  writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Treatment")
+  print(fligner$Treatment <- fligner.test(normalized_resid ~ Treatment, data = model$data))
   
   # List of outliers
   outliers.idx <- within(model$data, {
-    resid.p <- resid(model, type = "pearson") # Pearson resids.
-    idx <- abs(resid.p) > -qnorm(pvalue / 2) # Indicator vector
+    resid.std <- resid(model, type = "normalized") # Standardized resids.
+    idx <- abs(resid.std) > -qnorm(pvalue / 2) # Indicator vector
   })
   print("Outlier observations")
   outliers <- subset(outliers.idx, idx) # Data with outliers
-  outliers <- outliers[,-8]
+  outliers <- outliers[,-c(8,10:12)]
   print(outliers)
   
   return(invisible(
     list(
       plots = resid_plot,
       outliers = outliers,
-      Normality = Normality
+      Normality = Normality, 
+      Levene.test = levene,
+      Fligner.test = fligner
     )
   ))
 }

@@ -15,8 +15,9 @@ A list with different plots for evaluating the normality and homoscedasticity of
 \item A normal Q-Q plot of the random effects of the model.
 \item A normal Q-Q plot of the residuals by sample.
 \item Boxplots of the "raw" residuals (observed - fitted) by sample.
-\item Dotplots of the normalized residuals (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see \link[nlme:residuals.lme]{nlme::residuals.lme})
-vs fitted values by sample.
+\item Scatter plots of the normalized residuals (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see \link[nlme:residuals.lme]{nlme::residuals.lme})
+vs fitted values by sample. Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution
+are identified in the plots labelled with the time point corresponding to the observation.
 }
 }
 \description{
