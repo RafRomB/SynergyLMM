@@ -108,8 +108,9 @@ plot_lmmModel <- function(model,
 #' - A normal Q-Q plot of the random effects of the model.
 #' - A normal Q-Q plot of the residuals by sample.
 #' - Boxplots of the "raw" residuals (observed - fitted) by sample.
-#' - Dotplots of the normalized residuals (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see [nlme::residuals.lme])
-#' vs fitted values by sample.
+#' - Scatter plots of the normalized residuals (standardized residuals pre-multiplied by the inverse square-root factor of the estimated error correlation matrix, see [nlme::residuals.lme])
+#' vs fitted values by sample. Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution 
+#' are identified in the plots labelled with the time point corresponding to the observation.
 #' 
 #' @examples
 #' data(grwth_data)
@@ -142,7 +143,7 @@ plot_ranefDiagnostics <- function(model){
   p2 <- qqnorm(model, ~resid(., type = "normalized")|SampleID, pch=20, cex = 0.5, col = "gray20",
                main = list("Normal Q-Q Plot of Normalized Residuals by Sample", cex = 0.8), 
                par.strip.text=list(col="black", cex=0.8), xlab = "Normalized Residuals", abline = c(0,1))
-  p3 <- plot(model, SampleID ~ resid(., type = "response"), abline = 0, main = list("Raw Residuals by Subject", cex = 0.8),
+  p3 <- plot(model, SampleID ~ resid(., type = "response"), abline = 0, main = list("Raw Residuals by Sample", cex = 0.8),
              xlab = "Residuals")
   p4 <- plot(model, residuals(., type = "normalized") ~ fitted(.)|SampleID, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.75,
              main = list("Normalized Residuals vs Fitted Values by Sample", cex =0.8),par.strip.text=list(col="black", cex=0.8), idLabels = ~Time,
