@@ -1,4 +1,4 @@
-# Dummy dataset for testing .getRTV ----
+# Dummy dataset for testing getRTV ----
 set.seed(123)
 test_data <- data.frame(
   SampleID = rep(1:5, each = 5),
@@ -10,10 +10,10 @@ test_data <- data.frame(
          70, 75, 85, 90, 100)       # Mouse 5
 )
 
-# Tests for .getRTV function ----
-# Test if .getRTV function correctly calculates RTV and logRTV
-test_that(".getRTV correctly calculates RTV and logRTV", {
-  result <- .getRTV(test_data, time_start = 0)
+# Tests for getRTV function ----
+# Test if getRTV function correctly calculates RTV and logRTV
+test_that("getRTV correctly calculates RTV and logRTV", {
+  result <- getRTV(test_data, time_start = 0)
   
   # Expected RTV for each Mouse at each Time
   expected_RTV <- c(1, 1.2, 1.4, 1.6, 1.8,   # Mouse 1
@@ -29,9 +29,9 @@ test_that(".getRTV correctly calculates RTV and logRTV", {
   expect_equal(result$logRTV, log(expected_RTV), tolerance = 1e-5)
 })
 
-# Test if .getRTV function correctly adds the TV0 column
-test_that(".getRTV correctly adds TV0 column", {
-  result <- .getRTV(test_data, time_start = 0)
+# Test if getRTV function correctly adds the TV0 column
+test_that("getRTV correctly adds TV0 column", {
+  result <- getRTV(test_data, time_start = 0)
   
   # Expected TV0 for each Mouse
   expected_TV0 <- rep(c(100, 80, 90, 110, 70), each = 5)
@@ -40,10 +40,10 @@ test_that(".getRTV correctly adds TV0 column", {
   expect_equal(result$TV0, expected_TV0)
 })
 
-# Test if .getRTV function handles a case where some mice don't have data at time_start
-test_that(".getRTV handles cases with missing TV at time_start", {
+# Test if getRTV function handles a case where some mice don't have data at time_start
+test_that("getRTV handles cases with missing TV at time_start", {
   missing_data <- test_data %>% dplyr::filter(!(SampleID == 2 & Time == 0))
-  result <- .getRTV(missing_data, time_start = 0)
+  result <- getRTV(missing_data, time_start = 0)
   
   # Mouse 2 should have NA for RTV and logRTV because there is no Time 0 record
   expect_true(all(is.na(result$RTV[result$SampleID == 2])))
@@ -54,11 +54,11 @@ test_that(".getRTV handles cases with missing TV at time_start", {
   expect_false(any(is.na(result$logRTV[result$SampleID != 2])))
 })
 
-# Test if .getRTV function handles an empty dataset
-test_that(".getRTV handles empty dataset", {
+# Test if getRTV function handles an empty dataset
+test_that("getRTV handles empty dataset", {
   empty_data <- data.frame(SampleID = integer(0), Time = integer(0), TV = numeric(0))
   
-  result <- .getRTV(empty_data, time_start = 0)
+  result <- getRTV(empty_data, time_start = 0)
   
   # The result should be an empty data frame with the expected columns
   expect_true(is.data.frame(result))
@@ -66,11 +66,11 @@ test_that(".getRTV handles empty dataset", {
   expect_equal(colnames(result), c("SampleID", "Time", "TV", "RTV", "logRTV", "TV0"))
 })
 
-# Test if .getRTV function handles a dataset with a single mouse
-test_that(".getRTV handles a dataset with a single mouse", {
+# Test if getRTV function handles a dataset with a single mouse
+test_that("getRTV handles a dataset with a single mouse", {
   single_mouse_data <- test_data[test_data$SampleID == 1, ]
   
-  result <- .getRTV(single_mouse_data, time_start = 0)
+  result <- getRTV(single_mouse_data, time_start = 0)
   
   # RTV should be correctly calculated for the single mouse
   expected_RTV <- c(1, 1.2, 1.4, 1.6, 1.8)
