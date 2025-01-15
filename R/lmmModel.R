@@ -4,7 +4,7 @@ NULL
 #' @title Helper function to calculate the relative tumor volume from an imput data frame of tumor growth
 #' 
 #' @description
-#' `.getRTV` is a helper function used inside [`lmmModel()`] to obtain a dataframe with a column _RTV_ corresponding
+#' `getRTV` is a helper function used inside [`lmmModel()`] to obtain a dataframe with a column _RTV_ corresponding
 #' to the relative tumor volume to time `time_start`, and a column _logRTV_ with the logarithm of _RTV_. 
 #' 
 #' @param data Data frame with the tumor growth data. The input data frame columns have to have the following names:
@@ -22,11 +22,11 @@ NULL
 #' # Change column names
 #' colnames(grwth_data) <- c("SampleID", "Time", "Treatment", "TV")
 #' # Calculate relative tumor volume
-#' .getRTV(data = grwth_data, time_start = 0)
+#' getRTV(data = grwth_data, time_start = 0)
 
 #' 
 #' @export
-.getRTV <- function(data, time_start) {
+getRTV <- function(data, time_start) {
   TV.df <- data
   
   # df with the initial tumor volume.
@@ -342,7 +342,7 @@ lmmModel <- function(data,
   TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
   
   # Calculate the relative tumor volume
-  TV.df <- .getRTV(TV.df, time_start)
+  TV.df <- getRTV(TV.df, time_start)
   
   # Convert SampleID to factor
   
