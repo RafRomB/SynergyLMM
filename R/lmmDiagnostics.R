@@ -182,13 +182,16 @@ ranefDiagnostics <- function(model){
 #'   drug_b = "DrugB",
 #'   combination = "Combination"
 #'   )
+#'   
 #' # Residuals diagnostics
 #' resid_diag <- residDiagnostics(model = lmm, pvalue = 0.05)
+#' 
 #' # Access outliers data frame
-#' resid_diag$outliers
+#' resid_diag$Outliers
+#' 
 #' # Access individual plots
-#' resid_diag$plots[1]
-#' resid_diag$plots[2]
+#' resid_diag$Plots[1]
+#' resid_diag$Plots[2]
 #' 
 #' # Access results of normality tests
 #' resid_diag$Normality
@@ -259,8 +262,8 @@ residDiagnostics <- function(model, pvalue=0.05){
   
   return(invisible(
     list(
-      plots = resid_plot,
-      outliers = outliers,
+      Plots = resid_plot,
+      Outliers = outliers,
       Normality = Normality, 
       Levene.test = levene,
       Fligner.test = fligner

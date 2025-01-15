@@ -139,12 +139,12 @@ test_that("residDiagnostics correctly identifies outliers", {
   result <- residDiagnostics(model, pvalue = 0.05)
   
   # Check that the result contains an "outliers" data frame
-  expect_true("outliers" %in% names(result))
-  expect_s3_class(result$outliers, "data.frame")
+  expect_true("Outliers" %in% names(result))
+  expect_s3_class(result$Outliers, "data.frame")
   
   # Verify that outliers are correctly identified
   # (You may need to manually verify this based on the mock model)
-  expect_true(nrow(result$outliers) > 0 || nrow(result$outliers) == 0)
+  expect_true(nrow(result$Outliers) > 0 || nrow(result$Outliers) == 0)
 })
 
 test_that("residDiagnostics performs and returns results from normality tests", {
@@ -167,13 +167,13 @@ test_that("residDiagnostics generates diagnostic plots", {
   result <- residDiagnostics(model, pvalue = 0.05)
   
   # Check that the result contains a "plots" object
-  expect_true("plots" %in% names(result))
-  expect_type(result$plots, "list")
+  expect_true("Plots" %in% names(result))
+  expect_type(result$Plots, "list")
   
   # Check that the plot list contains expected plots
-  expect_true(length(result$plots) >= 1)
+  expect_true(length(result$Plots) >= 1)
   
-  expect_s3_class(result$plots[[1]], "trellis")
+  expect_s3_class(result$Plots[[1]], "trellis")
 })
 
 test_that("Levene and Fligner tests return the correct classes", {
