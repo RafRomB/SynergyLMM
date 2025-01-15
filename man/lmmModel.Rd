@@ -19,6 +19,7 @@ lmmModel(
   time_end = NULL,
   min_observations = 1,
   show_plot = TRUE,
+  tum_vol_0 = "ignore",
   ...
 )
 }
@@ -55,6 +56,10 @@ specified, the maximum value in the \code{time} column is used as the final time
 \item{show_plot}{Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Time for each sample,
 and the model calculated marginal slope for each treatment, should be produced.}
 
+\item{tum_vol_0}{Select the behavior of the function regarding measurements in which the tumor measurement is 0, and therefore the logarithmic
+transformation is not possible. Possible options are 'ignore' (default), to ignore these measurements, or 'transform', to add 1 unit to all
+measurements before the log transformation.}
+
 \item{...}{Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.}
 }
 \value{
@@ -70,11 +75,11 @@ column with the time at which each measurement has been done, a column indicatin
 \code{\link[=residDiagnostics]{residDiagnostics()}}, and \code{\link[=ObsvsPred]{ObsvsPred()}}.
 
 The model formula for the fitted model is:
-\deqn{\log RTV_{i}(t) = \beta_{T_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
+\deqn{\log RTV_{i}(t) = \beta_{Trt_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
 
 The term \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. In the fixed-effect part of the model,
-\eqn{\beta_{T_i}} represents the coefficients corresponding to the specific growth rate for each treatment \eqn{T_i}, where \eqn{T_i \in \{control, A, B, combination\}} in the case of
-two-drugs combination experiments, or \eqn{T_i \in \{control, A, B, C, combination\}} in the case of three-drugs combination experiments. That means that \eqn{\beta_{control}} corresponds
+\eqn{\beta_{Trt_i}} represents the coefficients corresponding to the specific growth rate for each treatment \eqn{Trt_i}, where \eqn{Trt_i \in \{control, A, B, combination\}} in the case of
+two-drugs combination experiments, or \eqn{Trt_i \in \{control, A, B, C, combination\}} in the case of three-drugs combination experiments. That means that \eqn{\beta_{control}} corresponds
 to the control group, \eqn{\beta_{A}} to Drug A, \eqn{\beta_{B}} to Drug B, \eqn{\beta_{C}} to Drug C (if present), and \eqn{\beta_{combination}} to the combination of Drug A + Drug B (or
 Drug A + Drug B + Drug C, in the case of a three-drugs experiment).
 

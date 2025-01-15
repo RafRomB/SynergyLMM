@@ -93,6 +93,9 @@ NULL
 #' @param min_observations Minimum number of observation for each sample to be included in the analysis. 
 #' @param show_plot Logical indicating if a plot for the log of the relative tumor volume (RTV) vs Time for each sample, 
 #' and the model calculated marginal slope for each treatment, should be produced.
+#' @param tum_vol_0 Select the behavior of the function regarding measurements in which the tumor measurement is 0, and therefore the logarithmic 
+#' transformation is not possible. Possible options are 'ignore' (default), to ignore these measurements, or 'transform', to add 1 unit to all
+#' measurements before the log transformation.
 #' @param ... Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.
 #' 
 #' @details
@@ -101,11 +104,11 @@ NULL
 #'  [`residDiagnostics()`], and [`ObsvsPred()`].
 #' 
 #' The model formula for the fitted model is:
-#' \deqn{\log RTV_{i}(t) = \beta_{T_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
+#' \deqn{\log RTV_{i}(t) = \beta_{Trt_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
 #' 
 #' The term \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. In the fixed-effect part of the model, 
-#' \eqn{\beta_{T_i}} represents the coefficients corresponding to the specific growth rate for each treatment \eqn{T_i}, where \eqn{T_i \in \{control, A, B, combination\}} in the case of
-#' two-drugs combination experiments, or \eqn{T_i \in \{control, A, B, C, combination\}} in the case of three-drugs combination experiments. That means that \eqn{\beta_{control}} corresponds
+#' \eqn{\beta_{Trt_i}} represents the coefficients corresponding to the specific growth rate for each treatment \eqn{Trt_i}, where \eqn{Trt_i \in \{control, A, B, combination\}} in the case of
+#' two-drugs combination experiments, or \eqn{Trt_i \in \{control, A, B, C, combination\}} in the case of three-drugs combination experiments. That means that \eqn{\beta_{control}} corresponds
 #' to the control group, \eqn{\beta_{A}} to Drug A, \eqn{\beta_{B}} to Drug B, \eqn{\beta_{C}} to Drug C (if present), and \eqn{\beta_{combination}} to the combination of Drug A + Drug B (or
 #' Drug A + Drug B + Drug C, in the case of a three-drugs experiment). 
 #' 
@@ -204,6 +207,7 @@ lmmModel <- function(data,
                      time_end = NULL,
                      min_observations = 1,
                      show_plot = TRUE,
+                     tum_vol_0 = "ignore",
                      ...) {
   
   
@@ -309,9 +313,16 @@ lmmModel <- function(data,
   # Handling cases in which the tumor volume is 0
   
   if (sum(TV.df$TV == 0, na.rm = TRUE) > 0) {
-    warning("Some tumor measurements are 0. ",
-            "Tumor measurements that are 0 will be ignored to avoid obtaining Inf values when taking log.")
-    TV.df$TV[TV.df$TV == 0] <- NA
+    warning("Some tumor measurements are 0.")
+    if (tum_vol_0 == "ignore") {
+      warning("Tumor measurements that are 0 will be ignored to avoid obtaining Inf values when taking log.",
+              "\nSet 'tum_vol_0' argument to 'transform' to change this behavior.")
+      TV.df$TV[TV.df$TV == 0] <- NA
+    } else if (tum_vol_0 == "transform") {
+      warning("All measurements will be transformed adding 1 unit to avoid obtaining Inf values when taking log.",
+              "\nSet 'tum_vol_0' argument to 'ignore' to change this behavior.")
+      TV.df$TV <- TV.df$TV + 1
+    }
   }
   
   # Remove mesurements in which tumor measurement does not have a value assigned
