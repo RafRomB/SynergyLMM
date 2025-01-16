@@ -391,5 +391,6 @@ lmmSynergy <- function(model,
   if(show_plot) {
     print(plot_lmmSynergy(result)$CI_SS)
   }
+  attr(result, "SynergyLMM") <- "lmmSynergy"
   return(result)
 }

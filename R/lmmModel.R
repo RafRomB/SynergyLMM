@@ -383,7 +383,7 @@ lmmModel <- function(data,
       )
     )
   }
-  
+  attr(model, "SynergyLMM") <- "lmmModel"
   return(model)
 }
 
