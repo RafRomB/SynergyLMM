@@ -1,7 +1,10 @@
+#' @importFrom rlang .data
+NULL
 
 ## Synergy Calculation using LMM
 
 #' @importFrom marginaleffects hypotheses
+#' @import stats
 #' 
 #' @title Synergy calculation using linear-mixed models
 #' @description
