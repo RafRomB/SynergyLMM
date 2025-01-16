@@ -35,7 +35,7 @@ Vizualization of tumor growth data and linear mixed model fitted regression line
 further personalization.
 }
 \examples{
-#' data(grwth_data)
+data(grwth_data)
 # Fit the model
 lmm <- lmmModel(
   data = grwth_data,

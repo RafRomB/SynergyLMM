@@ -18,7 +18,7 @@ NULL
 #' @returns A ggplot2 plot (see [ggplot2::ggplot()] for more details) showing the tumor growth data represented as log(relative tumor volume) versus time since treatment initiation. 
 #' The regression lines corresponding to the fixed effects for each treatment group are also plotted.
 #' @examples
-#' #' data(grwth_data)
+#' data(grwth_data)
 #' # Fit the model
 #' lmm <- lmmModel(
 #'   data = grwth_data,
@@ -54,6 +54,11 @@ plot_lmmModel <- function(model,
                           drug_b = "Drug_B",
                           drug_c = NA,
                           combination = "Combination") {
+  
+  if (sum(!na.omit(c(trt_control, drug_a, drug_b, drug_c, combination)) %in% unique(model$dt1$Treatment)) > 0) {
+    stop("Treatment group names provided do not coincide with treatment group names in the model. Please, provide the correct treatment group names ",
+         "in the arguments.")
+  }
   
   if (!is.na(drug_c)) {
     segment_data <- data.frame(x = rep(0,5), 
@@ -134,7 +139,6 @@ plot_lmmModel <- function(model,
 #' plot_ranefDiagnostics(lmm)[[2]]
 #' @export
 plot_ranefDiagnostics <- function(model){
-  # Residuals to draw QQ line
   
   # Individual Plots
   p1 <- ggplot(nlme::ranef(model), aes(sample = nlme::ranef(model)$Time)) + stat_qq(col = "gray20") + stat_qq_line() +
