@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of SynergyLMM is to ...
+A comprehensive statistical framework for designing and analyzing _in vivo_ drug combination experiments. 
 
 ## Installation
 
@@ -29,14 +29,39 @@ You can install the development version of SynergyLMM from [GitHub](https://gith
 pak::pak("RafRomB/SynergyLMM")
 ```
 
-## Example
+## Example Use of SynergyLMM
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows how to use SynergyLMM to analyze synergy in a 2-drug combination _in vivo_ experiment.
 
-```{r example}
+```{r load_SynergyLMM}
 library(SynergyLMM)
-## basic example code
 ```
+
+We start by loading the data (in long format). We will use the example data provided in the package:
+
+```{r load_data}
+data("grwth_data")
+```
+
+### 1. Fit Model
+
+The first step is fitting the model from our data:
+
+```{r fit_model, echo=FALSE}
+# Most simple model
+lmmModel(
+ data = grwth_data,
+ sample_id = "subject",
+ time = "Time",
+ treatment = "Treatment",
+ tumor_vol = "TumorVolume",
+ trt_control = "Control",
+ drug_a = "DrugA",
+ drug_b = "DrugB",
+ combination = "Combination"
+ )
+```
+
 
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
