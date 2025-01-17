@@ -49,32 +49,121 @@ The first step is fitting the model from our data:
 
 ```{r fit_model, echo=FALSE}
 # Most simple model
-lmmModel(
- data = grwth_data,
- sample_id = "subject",
- time = "Time",
- treatment = "Treatment",
- tumor_vol = "TumorVolume",
- trt_control = "Control",
- drug_a = "DrugA",
- drug_b = "DrugB",
- combination = "Combination"
- )
+lmm <- lmmModel(
+  data = grwth_data,
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  combination = "Combination"
+)
+```
+We can obtain the model estimates using:
+
+```{r model_estimates}
+lmmModel_estimates(lmm)
+```
+
+### 2. Synergy Analysis
+
+**Bliss independence model**
+
+```{r bliss_syn}
+lmmSynergy(lmm, method = "Bliss")
+```
+
+**Highest Single Agent model**
+
+```{r hsa_syn}
+lmmSynergy(lmm, method = "HSA")
+```
+
+**Response Additivity**
+
+```{r ra_syn}
+lmmSynergy(lmm, method = "RA", ra_nsim = 1000)
+```
+
+**Using Robust Estimates**
+
+```{r robustSE}
+lmmSynergy(lmm, method = "Bliss", robust = TRUE)
 ```
 
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+### 3. Model Diagnostics
 
-```{r cars}
-summary(cars)
+We can perform the model diagnostics using the following functions:
+
+**Random Effects**
+
+```{r ranef_diag}
+ranefDiagnostics(lmm)
+```
+**Residuals Diagnostics**
+
+```{r resid_diagnostics}
+residDiagnostics(lmm)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+**Observed versus Predicted Values**
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r obs_vs_pred}
+ObsvsPred(lmm)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+**Influential Diagnostics**
+
+_log likelihood displacements_
+
+```{r logLikDisp}
+logLikSubjectDisplacements(lmm)
+```
+
+_Cook's distances_
+
+```{r CooksD}
+CookDistance(lmm)
+```
+
+## 4. Power Analysis
+
+**Post-Hoc Power Analysis**
+
+```{r posthoc_pwr}
+PostHocPwr(lmm, method = "Bliss", time = 30)
+```
+
+**A Priori Power Analysis**
+
+We will estimate the effect of sample size on statistical power based on the estimates from our model:
+
+```{r pwrsamplesize}
+# Vector with different sample sizes per group
+npg <- 3:15
+
+# Obtain model estimates
+lmmestim <- lmmModel_estimates(lmm)
+
+# Obtain time points
+
+(timepoints <- unique(lmm$dt1$Time))
+
+# Calculate power depending on sample size per group
+
+PwrSampleSize(
+  npg = npg,
+  time = timepoints,
+  grwrControl = round(lmmestim$Control,3),
+  grwrA = round(lmmestim$DrugA,3),
+  grwrB = round(lmmestim$DrugB,3),
+  grwrComb = round(lmmestim$Combination,3),
+  sd_ranef = round(lmmestim$sd_ranef,3),
+  sgma = round(lmmestim$sd_resid,3),
+  method = "Bliss"
+)
+```
+
