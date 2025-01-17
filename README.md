@@ -690,7 +690,7 @@ PostHocPwr(lmm, method = "Bliss", time = 30)
 **A Priori Power Analysis**
 
 We will estimate the effect of sample size on statistical power based on
-the estimates from our model:
+the estimates from the model:
 
 ``` r
 # Vector with different sample sizes per group
