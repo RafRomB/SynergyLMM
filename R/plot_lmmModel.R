@@ -90,7 +90,7 @@ plot_lmmModel <- function(model,
   p <- model$dt1 %>% 
     ggplot(aes(.data$Time, .data$logRTV, color = .data$Treatment)) +
     geom_line(aes(group = .data$SampleID), alpha = 0.33) + geom_point(aes(group = .data$SampleID)) +
-    ylab("Log (RTV)") + 
+    ylab("log (RTV)") + 
     xlab("Time since start of treatment") + 
     scale_x_continuous(breaks = unique(model$dt1$Time)) + 
     cowplot::theme_cowplot() + facet_wrap(~Treatment) +

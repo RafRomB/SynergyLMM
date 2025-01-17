@@ -134,6 +134,7 @@ CookDistance(lmm)
 **Post-Hoc Power Analysis**
 
 ```{r posthoc_pwr}
+set.seed(123)
 PostHocPwr(lmm, method = "Bliss", time = 30)
 ```
 

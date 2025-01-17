@@ -28,7 +28,7 @@ NULL
   })
   
   selDt %>% ggplot(aes(x = .data$Time, y = .data$mA)) + geom_line(aes(colour = .data$Treatment), lwd = 2) + 
-    labs(title = "Exemplary Data") + ylab("logRTV") + xlab("Time since treatment start") + cowplot::theme_cowplot() +
+    labs(title = "Exemplary Data") + ylab("log (RTV)") + xlab("Time since start of treatment") + cowplot::theme_cowplot() +
     annotate(geom = "text", x = max(selDt$Time)+3, y = max(selDt$mA), label = paste("GR Control=",grwrControl), hjust = -0.05, size = 4) +
     annotate(geom = "text", x = max(selDt$Time)+3, y = max(selDt$mA)*0.95, label = paste("GR Drug A=",grwrA), hjust = -0.05, size = 4) +
     annotate(geom = "text", x = max(selDt$Time)+3, y = max(selDt$mA)*0.9, label = paste("GR Drug B=",grwrB), hjust = -0.05, size = 4) +
@@ -319,7 +319,7 @@ APrioriPwr <- function(npg = 5,
       z = .data$Power
     )) + ggplot2::geom_raster(aes(fill = .data$Power)) +
       scale_fill_continuous(type = "viridis") + cowplot::theme_cowplot() + labs(title = paste("Power for", method, sep = " ")) +
-      xlab("SD for random effects") + ylab("Sigma") + geom_point(x = sd_ranef, y = sgma, shape = 18, size = 5, color = "firebrick3")
+      xlab("SD for random effects") + ylab("SD for residuals") + geom_point(x = sd_ranef, y = sgma, shape = 18, size = 5, color = "firebrick3")
     print(plot_grid(p1, p2, ncol = 2))
   }
   
