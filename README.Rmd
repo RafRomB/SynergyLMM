@@ -47,7 +47,7 @@ data("grwth_data")
 
 The first step is fitting the model from our data:
 
-```{r fit_model, echo=FALSE}
+```{r fit_model, fig.width=8}
 # Most simple model
 lmm <- lmmModel(
   data = grwth_data,
@@ -84,6 +84,7 @@ lmmSynergy(lmm, method = "HSA")
 **Response Additivity**
 
 ```{r ra_syn, fig.width=10}
+set.seed(123)
 lmmSynergy(lmm, method = "RA", ra_nsim = 1000)
 ```
 
@@ -142,7 +143,7 @@ PostHocPwr(lmm, method = "Bliss", time = 30)
 
 We will estimate the effect of sample size on statistical power based on the estimates from our model:
 
-```{r pwrsamplesize}
+```{r pwrsamplesize, fig.width=8}
 # Vector with different sample sizes per group
 npg <- 3:15
 
