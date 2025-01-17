@@ -71,25 +71,25 @@ lmmModel_estimates(lmm)
 
 **Bliss independence model**
 
-```{r bliss_syn}
+```{r bliss_syn, fig.width=10}
 lmmSynergy(lmm, method = "Bliss")
 ```
 
 **Highest Single Agent model**
 
-```{r hsa_syn}
+```{r hsa_syn, fig.width=10}
 lmmSynergy(lmm, method = "HSA")
 ```
 
 **Response Additivity**
 
-```{r ra_syn}
+```{r ra_syn, fig.width=10}
 lmmSynergy(lmm, method = "RA", ra_nsim = 1000)
 ```
 
 **Using Robust Estimates**
 
-```{r robustSE}
+```{r robustSE, fig.width=10}
 lmmSynergy(lmm, method = "Bliss", robust = TRUE)
 ```
 
@@ -100,18 +100,18 @@ We can perform the model diagnostics using the following functions:
 
 **Random Effects**
 
-```{r ranef_diag}
+```{r ranef_diag, fig.width=8, fig.height=10}
 ranefDiagnostics(lmm)
 ```
 **Residuals Diagnostics**
 
-```{r resid_diagnostics}
+```{r resid_diagnostics, fig.width=8, fig.height=12}
 residDiagnostics(lmm)
 ```
 
 **Observed versus Predicted Values**
 
-```{r obs_vs_pred}
+```{r obs_vs_pred, fig.height=8, fig.width=10}
 ObsvsPred(lmm)
 ```
 
