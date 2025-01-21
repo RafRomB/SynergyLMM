@@ -60,8 +60,10 @@ plot_lmmSynergy <- function(syn_data){
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 1, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
     labs(title = paste(Model, "Combination Index", sep = " ")) + 
-    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = 0.95, angle = 90, hjust = 1, label = "Synergy", fontface = "bold", color = "#1f78b4") +
-    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = 1.05, angle = 90, hjust = 0, label = "Antagonism", fontface = "bold", color = "#c21d2f")
+    annotate(geom = "text", x = (min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
+             y = 0.95, angle = 90, hjust = 1, label = "Synergy", fontface = "bold", color = "#1f78b4") +
+    annotate(geom = "text", x =(min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
+             y = 1.05, angle = 90, hjust = 0, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
   SS <- syn_data %>% dplyr::filter(.data$Metric == "Synergy Score") %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
     geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1,
@@ -72,8 +74,10 @@ plot_lmmSynergy <- function(syn_data){
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 0, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
     labs(title = paste(Model, "Synergy Score", sep = " ")) + 
-    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = 0.33, angle = 90, hjust = 0, label = "Synergy", fontface = "bold", color = "#1f78b4") +
-    annotate(geom = "text", x = (min(syn_data$Time)/max(syn_data$Time)), y = -0.33, angle = 90, hjust = 1, label = "Antagonism", fontface = "bold", color = "#c21d2f")
+    annotate(geom = "text", x = (min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
+             y = 0.33, angle = 90, hjust = 0, label = "Synergy", fontface = "bold", color = "#1f78b4") +
+    annotate(geom = "text", x = (min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
+             y = -0.33, angle = 90, hjust = 1, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
   
   CI_SS <- cowplot::plot_grid(CI, SS)
