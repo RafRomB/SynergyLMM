@@ -1,10 +1,10 @@
 Package: SynergyLMM
-Title: A Comprehensive Statistical Framework for Designing and Analyzing in vivo Drug Combination Experiments
+Title: A Comprehensive Statistical Framework for Designing and Analyzing in Vivo Drug Combination Experiments
 Version: 0.0.0.9000
 Authors@R: 
     person("Rafael", "Romero-Becerra", , "r.r.becerra@medisin.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3935-2647"))
-Description: SynergyLMM is a comprehensive framework for evaluating drug combination effects in preclinical in vivo studies, which enables statistical analysis of synergy and antagonism through longitudinal drug interaction analysis.
+Description: This package offers a comprehensive framework for evaluating drug combination effects in preclinical in vivo studies, which enables statistical analysis of synergy and antagonism through longitudinal drug interaction analysis.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
