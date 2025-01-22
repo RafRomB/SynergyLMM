@@ -390,6 +390,13 @@ lmmSynergy <- function(model,
   colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
   df <- rbind(ci, ss)
   rownames(df) <- NULL
+  if (sum(df$pval == 0) > 0) {
+    ndec <- nchar(strsplit(as.character(min(df$pval[df$pval!=0])), "\\.")[[1]][2])
+    apx_p <- paste("p<",ndec/ndec*10^-(ndec), sep = "")
+    warning(paste("p-values below", apx_p, "are approximated to 0."),
+            " If you used method = 'RA' consider increasing ra_nsim value for",
+            " more precise p-values.")
+  }
   result <- list(Contrasts = Contrasts, Synergy = df)
   if(show_plot) {
     print(plot_lmmSynergy(result)$CI_SS)

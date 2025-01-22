@@ -100,7 +100,7 @@ test_that("Test lmmSynergy with robust sandwich estimators (robust = TRUE)", {
 })
 
 test_that("Test lmmSynergy method = 'RA' robust = TRUE works correctly", {
-  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 100, robust = TRUE, type = "CR2", show_plot = FALSE)
+  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 1000, robust = TRUE, type = "CR2", show_plot = FALSE)
   
   expect_type(result, "list")
   expect_named(result, c("Contrasts", "Synergy"))
@@ -235,4 +235,11 @@ test_that("Test lmmSynergy with RA method and 'robust' = TRUE works correctly", 
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
   
+})
+
+test_that("Test lmmSynergy prints warning message if p-value = 0", {
+  # Check that the warning message is printed
+  set.seed(245)
+  expect_warning(lmmSynergy(model, method = "RA", robust = TRUE, ra_nsim = 10),
+                 "p-values below p<0.1 are approximated to 0. If you used method = 'RA' consider increasing ra_nsim value for more precise p-values.")
 })

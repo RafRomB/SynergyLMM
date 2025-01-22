@@ -55,7 +55,7 @@ plot_lmmSynergy <- function(syn_data){
     geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1, 
                  arrow = arrow(angle = 90, length = unit(0.01, "npc"),ends = "both")) + cowplot::theme_cowplot() +
     geom_point(aes(fill  = -log10(.data$pval)), size = 5, shape = 23, color = "gray60") +
-    scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
+    scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3, na.value = "firebrick3") +
     ylab("Combination Index") + xlab("Time since start of treatment") + 
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 1, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
@@ -69,7 +69,7 @@ plot_lmmSynergy <- function(syn_data){
     geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1,
                  arrow = arrow(angle = 90, length = unit(0.01, "npc"),ends = "both")) + cowplot::theme_cowplot() +
     geom_point(aes(fill  = -log10(.data$pval)), size = 5, shape = 23, color = "gray60") +
-    scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3) +
+    scale_fill_gradient2(name = "-log10\np-value", low = "darkorchid4",mid = "gray90", high = "darkcyan",midpoint = 1.3, na.value = "firebrick3") +
     ylab("Synergy Score") + xlab("Time since start of treatment") +
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 0, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
@@ -79,6 +79,34 @@ plot_lmmSynergy <- function(syn_data){
     annotate(geom = "text", x = (min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
              y = -0.33, angle = 90, hjust = 1, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
+  if (sum(syn_data$pval == 0) > 1) {
+    ndec <- nchar(strsplit(as.character(min(syn_data$pval[syn_data$pval!=0])), "\\.")[[1]][2])
+    apx_p <- paste("p<",ndec/ndec*10^-(ndec), sep = "")
+    CI <- CI +
+      annotate(
+        geom = "point",
+        x = Inf, y = min(syn_data$lwr[syn_data$Metric == "Combination Index"]),  # Position the diamond outside the plot (adjust as needed)
+        shape = 23, size = 4, fill = "firebrick3", color = "gray60"
+      ) +
+      annotate(
+        geom = "text",
+        x = Inf, y = min(syn_data$lwr[syn_data$Metric == "Combination Index"]),  # Place the text slightly below the diamond
+        label = apx_p, hjust = -0.25, vjust = 0.25, 
+      ) +
+      coord_cartesian(clip = "off")
+    SS <- SS +
+      annotate(
+        geom = "point",
+        x = Inf, y = min(syn_data$lwr[syn_data$Metric == "Synergy Score"]),  # Position the diamond outside the plot (adjust as needed)
+        shape = 23, size = 4, fill = "firebrick3", color = "gray60"
+      ) +
+      annotate(
+        geom = "text",
+        x = Inf, y = min(syn_data$lwr[syn_data$Metric == "Synergy Score"]),  # Place the text slightly below the diamond
+        label = apx_p, hjust = -0.25, vjust = 0.25, 
+      ) +
+      coord_cartesian(clip = "off")
+  }
   
   CI_SS <- cowplot::plot_grid(CI, SS)
   return(list(CI = CI, SS = SS, CI_SS = CI_SS))
