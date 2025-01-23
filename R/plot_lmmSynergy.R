@@ -1,4 +1,4 @@
-#' @importFrom ggplot2 aes annotate arrow geom_hline geom_point geom_segment ggplot labs scale_fill_gradient2 scale_x_continuous unit xlab ylab
+#' @importFrom ggplot2 aes annotate arrow geom_hline geom_point geom_segment ggplot guides guide_legend labs scale_fill_gradient2 scale_x_continuous unit xlab ylab
 #' @importFrom rlang .data
 #' @import graphics
 NULL
