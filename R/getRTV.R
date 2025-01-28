@@ -31,37 +31,43 @@ getRTV <- function(data, time_start) {
   
   # df with the initial tumor volume.
   
+  TV.df$ID <- 1:nrow(TV.df) # IDs to join measurements
+  
   TV0 <- as.data.frame(
     TV.df %>%
       dplyr::filter(.data$Time == time_start) %>%
-      dplyr::select(.data$SampleID, .data$TV)
+      dplyr::select(.data$SampleID, .data$TV, .data$ID)
   )
   
   # Create the vectors for the relative tumor volumes
   
   samples <- unique(TV.df$SampleID)
   
-  RTV.df <- data.frame(SampleID = character(0), RTV = numeric(0))
+  RTV.df <- data.frame(SampleID = character(0), RTV = numeric(0), ID = numeric(0))
   
   # Relative Tumor Volume
   
   for (i in samples) {
     if (i %in% TV0$SampleID) {
       rtv <- TV.df %>% dplyr::filter(.data$SampleID == i) %>% 
-        dplyr::select(.data$SampleID, .data$TV)
+        dplyr::select(.data$SampleID, .data$TV, .data$ID)
       rtv$RTV <- rtv$TV / TV0[TV0$SampleID == i, "TV"]
-      RTV.df <- rbind(RTV.df, rtv[, c("SampleID", "RTV")])
+      RTV.df <- rbind(RTV.df, rtv[, c("SampleID", "RTV", "ID")])
     } else {
       rtv <- TV.df %>% dplyr::filter(.data$SampleID == i) %>% 
-        dplyr::select(.data$SampleID, .data$TV)
+        dplyr::select(.data$SampleID, .data$TV, .data$ID)
       rtv$RTV <- NA
-      RTV.df <- rbind(RTV.df, rtv[, c("SampleID", "RTV")])
+      RTV.df <- rbind(RTV.df, rtv[, c("SampleID", "RTV", "ID")])
     }
   }
   
-  TV.df$RTV <- RTV.df$RTV
+  TV.df <- dplyr::left_join(TV.df, RTV.df[,c("RTV", "ID")], by = "ID")
+  
+  TV.df <- TV.df %>% dplyr::select(!.data$ID)
   
   TV.df$logRTV <- log(TV.df$RTV)
+  
+  TV0 <- TV0 %>% dplyr::select(.data$SampleID, .data$TV)
   
   colnames(TV0) <- c("SampleID", "TV0")
   

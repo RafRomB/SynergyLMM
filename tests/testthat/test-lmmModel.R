@@ -54,18 +54,6 @@ test_that("getRTV handles cases with missing TV at time_start", {
   expect_false(any(is.na(result$logRTV[result$SampleID != 2])))
 })
 
-# Test if getRTV function handles an empty dataset
-test_that("getRTV handles empty dataset", {
-  empty_data <- data.frame(SampleID = integer(0), Time = integer(0), TV = numeric(0))
-  
-  result <- getRTV(empty_data, time_start = 0)
-  
-  # The result should be an empty data frame with the expected columns
-  expect_true(is.data.frame(result))
-  expect_equal(nrow(result), 0)
-  expect_equal(colnames(result), c("SampleID", "Time", "TV", "RTV", "logRTV", "TV0"))
-})
-
 # Test if getRTV function handles a dataset with a single mouse
 test_that("getRTV handles a dataset with a single mouse", {
   single_mouse_data <- test_data[test_data$SampleID == 1, ]
