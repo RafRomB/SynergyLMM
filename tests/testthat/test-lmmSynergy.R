@@ -47,8 +47,8 @@ test_that("Test lmmSynergy with HSA method", {
   result <- lmmSynergy(model, method = "HSA", show_plot = FALSE)
   
   # Check that the contrast used is one of the HSA contrasts
-  expect_true(any(grepl("b4 = b2", result$Contrasts[[1]]$term)) || 
-                any(grepl("b4 = b3", result$Contrasts[[1]]$term)))
+  expect_true(any(grepl("b4 = b2", result$Contrasts[[1]]$term) ||
+                    grepl("b4 = b2", result$Contrasts[[1]]$term)))
   
   # Check that the result is structured as expected
   expect_type(result, "list")
@@ -179,14 +179,14 @@ test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
 })
 
-test_that("Test lmmSynergy with HSA method", {
+test_that("Test lmmSynergy with 3 drugs with HSA method", {
   # Call the function with method = "HSA"
   result <- lmmSynergy(model, method = "HSA", show_plot = FALSE)
   
   # Check that the contrast used is one of the HSA contrasts
-  expect_true(any(grepl("b5 = b2", result$Contrasts[[1]]$term)) || 
-                any(grepl("b5 = b3", result$Contrasts[[1]]$term)) ||
-                any(grepl("b5 = b4", result$Contrasts[[1]]$term)))
+  expect_true(any(grepl("b5 = b2", result$Contrasts[[1]]$term) || 
+                grepl("b5 = b3", result$Contrasts[[1]]$term) ||
+                grepl("b5 = b4", result$Contrasts[[1]]$term)))
   
   # Check that the result is structured as expected
   expect_type(result, "list")
