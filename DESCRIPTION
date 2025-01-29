@@ -38,3 +38,5 @@ Depends:
     R (>= 4.0)
 LazyData: true
 VignetteBuilder: knitr
+URL: https://github.com/RafRomB/SynergyLMM
+BugReports: https://github.com/RafRomB/SynergyLMM/issues
