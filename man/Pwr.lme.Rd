@@ -55,7 +55,7 @@ example given in the book. It may require additional testing, especially for
 post-hoc power analysis
 }
 \seealso{
-\code{\link{anova.lme}}
+\link[nlme:anova.lme]{nlme::anova.lme}
 }
 \author{
 Andrzej Galecki and Tomasz Burzykowski

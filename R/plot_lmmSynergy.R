@@ -4,7 +4,7 @@
 NULL
 
 #' @title Plotting synergy results
-#' @description Visualization of synergy results obtained by [lmmSynergy()].  This functions returns a [ggplot2] plot, allowing for
+#' @description Visualization of synergy results obtained by [lmmSynergy()].  This functions returns a [ggplot2](https://ggplot2.tidyverse.org/) plot, allowing for
 #'  further personalization.
 #' @param syn_data Object obtained by [lmmSynergy()] with the results of synergy calculation using linear mixed models.
 #' @details

@@ -6,7 +6,7 @@ NULL
 
 #' @title Plotting of tumor growth data from a fitted model
 #' @description
-#'  Vizualization of tumor growth data and linear mixed model fitted regression line for the fixed effects. This functions returns a [ggplot2] plot, allowing for
+#'  Vizualization of tumor growth data and linear mixed model fitted regression line for the fixed effects. This functions returns a [ggplot2](https://ggplot2.tidyverse.org/) plot, allowing for
 #'  further personalization.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param trt_control String indicating the name assigned to the 'Control' group.

@@ -79,7 +79,7 @@ Pwr <-  function(object, ...) UseMethod("Pwr")
 #' @return a data frame inheriting from class Pwr.lme
 #' @exportS3Method Pwr lme
 #' @author Andrzej Galecki and Tomasz Burzykowski
-#' @seealso \code{\link{anova.lme}}
+#' @seealso [nlme::anova.lme]
 #' 
 Pwr.lme <- function (object, ...,
                      type = c("sequential", "marginal"), 

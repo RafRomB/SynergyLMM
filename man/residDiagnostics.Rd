@@ -79,7 +79,7 @@ resid_diag$Fligner.test
 }
 \references{
 \itemize{
-\item Pinheiro JC, Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. Springer, New York. doi:10.1007/b98882 \url{https://doi.org/10.1007/b98882}.
+\item Pinheiro JC, Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. Springer, New York. \doi{doi:10.1007/b98882}.
 \item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
 }
 }

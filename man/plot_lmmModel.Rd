@@ -31,7 +31,7 @@ A ggplot2 plot (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} for more det
 The regression lines corresponding to the fixed effects for each treatment group are also plotted.
 }
 \description{
-Vizualization of tumor growth data and linear mixed model fitted regression line for the fixed effects. This functions returns a \link{ggplot2} plot, allowing for
+Vizualization of tumor growth data and linear mixed model fitted regression line for the fixed effects. This functions returns a \href{https://ggplot2.tidyverse.org/}{ggplot2} plot, allowing for
 further personalization.
 }
 \examples{

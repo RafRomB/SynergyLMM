@@ -14,7 +14,7 @@ A list with ggplot2 plots (see \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} f
 estimates, confidence intervals and p-values for the synergy calculation using linear mixed models.
 }
 \description{
-Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy()}}.  This functions returns a \link{ggplot2} plot, allowing for
+Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy()}}.  This functions returns a \href{https://ggplot2.tidyverse.org/}{ggplot2} plot, allowing for
 further personalization.
 }
 \details{
