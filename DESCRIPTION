@@ -1,11 +1,13 @@
 Package: SynergyLMM
-Title: A Comprehensive Statistical Framework for Designing and Analyzing in Vivo Drug Combination Experiments
-Version: 0.0.1.0000
+Title: A Comprehensive Statistical Framework for Designing and Analyzing In Vivo Drug Combination Experiments
+Version: 1.0.0
 Authors@R: 
-    person("Rafael", "Romero-Becerra", , "r.r.becerra@medisin.uio.no", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0003-3935-2647"))
-Description: This package offers a comprehensive framework for evaluating drug 
-    combination effects in preclinical in vivo studies, which enables 
+    c(person("Rafael", "Romero-Becerra", , "r.r.becerra@medisin.uio.no", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3935-2647")), 
+           person("Zhi", "Zhao", email = "zhi.zhao@medisin.uio.no", role = c("ctb")), 
+           person("Tero", "Aittokallio", email = "t.a.aittokallio@medisin.uio.no", role = c("ctb")))
+Description: A comprehensive framework for evaluating drug 
+    combination effects in preclinical in vivo studies, enabling 
     statistical analysis of synergy and antagonism through longitudinal 
     drug interaction analysis.
 License: GPL (>= 3)
@@ -33,6 +35,6 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
-    R (>= 2.10)
+    R (>= 4.0)
 LazyData: true
 VignetteBuilder: knitr

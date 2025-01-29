@@ -57,7 +57,7 @@ NULL
 #' @return An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. If `show_plot = TRUE`, the plot
 #' of the tumor growth data obtained with [plot_lmmModel()] is also shown. 
 #' @references
-#' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 <https://doi.org/10.1007/b98882>.
+#' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. doi:10.1007/b98882 \doi{doi:10.1007/b98882}.
 #' - Pinheiro J, Bates D, R Core Team (2024). _nlme: Linear and Nonlinear Mixed Effects Models_. R package version 3.1-166, <https://CRAN.R-project.org/package=nlme>.
 #' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
 #' 
