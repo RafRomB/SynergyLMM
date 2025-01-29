@@ -18,7 +18,7 @@ Visualization of synergy results obtained by \code{\link[=lmmSynergy]{lmmSynergy
 further personalization.
 }
 \details{
-\code{plot_lmmSynergy} produces a \link{ggplot2} plot with the results of the synergy calculation. Each dot represents the estimated combination index
+\code{plot_lmmSynergy} produces a \href{https://ggplot2.tidyverse.org/}{ggplot2} plot with the results of the synergy calculation. Each dot represents the estimated combination index
 or synergy score, and the gray lines represent the 95\% confidence intervals, for each day. Each dot is colored based on the \eqn{- \log_{10} (p-value)}, with
 purple colors indicating a \eqn{-\log_{10} (p-value) < 1.3; (p-value > 0.05)}, and green colors indicating a \eqn{-\log_{10} (p-value) > 1.3; (p-value < 0.05)}.
 }

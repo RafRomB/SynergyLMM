@@ -8,7 +8,7 @@ NULL
 #'  further personalization.
 #' @param syn_data Object obtained by [lmmSynergy()] with the results of synergy calculation using linear mixed models.
 #' @details
-#' `plot_lmmSynergy` produces a [ggplot2] plot with the results of the synergy calculation. Each dot represents the estimated combination index
+#' `plot_lmmSynergy` produces a [ggplot2](https://ggplot2.tidyverse.org/) plot with the results of the synergy calculation. Each dot represents the estimated combination index
 #' or synergy score, and the gray lines represent the 95% confidence intervals, for each day. Each dot is colored based on the \eqn{- \log_{10} (p-value)}, with
 #' purple colors indicating a \eqn{-\log_{10} (p-value) < 1.3; (p-value > 0.05)}, and green colors indicating a \eqn{-\log_{10} (p-value) > 1.3; (p-value < 0.05)}.
 #' @returns A list with ggplot2 plots (see [ggplot2::ggplot()] for more details) with the combination index (CI) and synergy score (SS)
