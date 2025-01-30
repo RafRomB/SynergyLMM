@@ -1,6 +1,6 @@
 Package: SynergyLMM
 Title: A Comprehensive Statistical Framework for Designing and Analyzing In Vivo Drug Combination Experiments
-Version: 1.0.0
+Version: 0.9.0
 Authors@R: 
     c(person("Rafael", "Romero-Becerra", , "r.r.becerra@medisin.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3935-2647")), 
