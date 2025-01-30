@@ -1,5 +1,3 @@
-# SynergyLMM 0.9.0
-
 # SynergyLMM 1.0.0
 
 ## Initial Release
