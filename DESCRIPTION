@@ -1,15 +1,18 @@
 Package: SynergyLMM
-Title: A Comprehensive Statistical Framework for Designing and Analyzing In Vivo Drug Combination Experiments
+Title: Statistical Framework for in Vivo Drug Combination Studies
 Version: 1.0.0
 Authors@R: 
     c(person("Rafael", "Romero-Becerra", , "r.r.becerra@medisin.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3935-2647")), 
            person("Zhi", "Zhao", email = "zhi.zhao@medisin.uio.no", role = c("ctb")), 
            person("Tero", "Aittokallio", email = "t.a.aittokallio@medisin.uio.no", role = c("ctb")))
-Description: A comprehensive framework for evaluating drug 
-    combination effects in preclinical in vivo studies, enabling 
-    statistical analysis of synergy and antagonism through longitudinal 
-    drug interaction analysis.
+Description: A framework for evaluating drug combination effects in preclinical in vivo studies.
+    SynergyLMM provides functions to analyze longitudinal tumor growth experiments using linear mixed-effects models, 
+    perform time-dependent analyses of synergy and antagonism, evaluate model diagnostics and performance, 
+    and assess both post-hoc and a priori statistical power.
+    The calculation of drug combination synergy follows the statistical framework provided by Demidenko and Miller (2019, <doi:10.1371/journal.pone.0224137>).
+    The implementation and analysis of linear mixed-effect models is based on the methods described by Pinheiro and Bates (2000, <doi:10.1007/b98882>),
+    and Gałecki and Burzykowski (2013, <doi:10.1007/978-1-4614-3900-4>).
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
