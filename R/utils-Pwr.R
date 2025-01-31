@@ -46,18 +46,30 @@ sigmaTolme <- function(object, value){
 #' @author Andrzej Galecki and Tomasz Burzykowski
 #' @seealso \code{\link{Pwr.lme}}
 #' @examples
-#'  \dontrun{
-#'   Pwr (fm1)
-#' }
+#' data("grwth_data")
+#' lmm <- lmmModel(data = grwth_data,
+#'                 sample_id = "subject",
+#'                 time = "Time",
+#'                 treatment = "Treatment",
+#'                 tumor_vol = "TumorVolume",
+#'                 trt_control = "Control",
+#'                 drug_a = "DrugA",
+#'                 drug_b = "DrugB",
+#'                 combination = "Combination")
+#' Pwr(lmm,
+#'     L = c("Time:TreatmentControl" = 1,
+#'     "Time:TreatmentDrugA" = -1,
+#'     "Time:TreatmentDrugB" = -1,
+#'     "Time:TreatmentCombination" = 1))
+#'  
 Pwr <-  function(object, ...) UseMethod("Pwr")
 
 
 ## -> Pwr.lme function
 #' Performs power calculations
 #'
-#' This is method for \code{Pwr()} generic function. It works fine for an
-#' example given in the book. It may require additional testing, especially for
-#' post-hoc power analysis
+#' This is method for \code{Pwr()} generic function. It is a modified version from the
+#' one described by Galecki and Burzykowski implemented in `nlmeU` package ([nlmeU::Pwr.lme]).
 #'
 #' @method Pwr lme
 #' @param object an object containing \code{lme} fit, which provides information needed for power calculations
@@ -78,8 +90,9 @@ Pwr <-  function(object, ...) UseMethod("Pwr")
 #' @param tol numeric scalar value.
 #' @return a data frame inheriting from class Pwr.lme
 #' @exportS3Method Pwr lme
-#' @author Andrzej Galecki and Tomasz Burzykowski
-#' @seealso [nlme::anova.lme]
+#' @references 
+#' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+#' @seealso [nlme::anova.lme], [nlmeU::Pwr.lme]
 #' 
 Pwr.lme <- function (object, ...,
                      type = c("sequential", "marginal"), 

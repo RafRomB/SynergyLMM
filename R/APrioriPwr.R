@@ -89,7 +89,9 @@ NULL
 #' `grwrComb_eval`. The vertical dashed line indicates the value of `grwrComb`. The horizontal
 #' line indicates the power of 0.80.
 #' 
-#' If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
+#' The statistical power for the fitted model for the initial data set according to the values given by
+#' `npg`, `time`, `grwrControl`, `grwrA`, `grwrB`, `grwrComb`, `sd_ranef` and `sgma` is also shown in the console.
+#' 
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
 #' @references
@@ -221,7 +223,7 @@ APrioriPwr <- function(npg = 5,
     # Ploting power curve
     
     if (method == "Bliss") {
-      print(Pwr(
+      pwr.result <- Pwr(
         fmA,
         sigma = sgma,
         L = c(
@@ -230,27 +232,32 @@ APrioriPwr <- function(npg = 5,
           "Time:TreatmentDrugB" = -1,
           "Time:TreatmentCombination" = 1
         )
-      ), ...)
+        ,
+        ...
+      )
     }
     if (method == "HSA") {
       if (which.min(c(grwrA, grwrB)) == 1) {
-        print(Pwr(
+        pwr.result <- Pwr(
           fmA,
           sigma = sgma,
           L = c(
             "Time:TreatmentDrugA" = -1,
             "Time:TreatmentCombination" = 1
-          )
-        ), ...)
-      } else{
-        print(Pwr(
+          ),
+          ...
+        )
+      } else {
+        pwr.result <- Pwr(
           fmA,
           sigma = sgma,
           L = c(
             "Time:TreatmentDrugB" = -1,
             "Time:TreatmentCombination" = 1
           )
-        ), ...)
+          ,
+          ...
+        )
       }
     }
     
@@ -331,7 +338,7 @@ APrioriPwr <- function(npg = 5,
     
     colnames(dif) <- "Time:TreatmentCombination"
     if (method == "Bliss") {
-      print(Pwr(
+      pwr.result <- Pwr(
         fmB,
         sigma = sgma,
         L = c(
@@ -340,7 +347,9 @@ APrioriPwr <- function(npg = 5,
           "Time:TreatmentDrugB" = -1,
           "Time:TreatmentCombination" = 1
         )
-      ))
+        ,
+        ...
+      )
       dtF <- Pwr(
         fmB,
         sigma = sgma,
@@ -355,14 +364,16 @@ APrioriPwr <- function(npg = 5,
     }
     if (method == "HSA") {
       if (which.min(c(grwrA, grwrB)) == 1) {
-        print(Pwr(
+        pwr.result <- Pwr(
           fmB,
           sigma = sgma,
           L = c(
             "Time:TreatmentDrugA" = -1,
             "Time:TreatmentCombination" = 1
           )
-        ))
+          ,
+          ...
+        )
         dtF <- Pwr(
           fmB,
           sigma = sgma,
@@ -373,14 +384,16 @@ APrioriPwr <- function(npg = 5,
           altB = dif
         )
       } else{
-        print(Pwr(
+        pwr.result <- Pwr(
           fmB,
           sigma = sgma,
           L = c(
             "Time:TreatmentDrugB" = -1,
             "Time:TreatmentCombination" = 1
           )
-        ))
+          ,
+          ...
+        )
         dtF <- Pwr(
           fmB,
           sigma = sgma,
@@ -407,5 +420,5 @@ APrioriPwr <- function(npg = 5,
       !is.null(sgma_eval) & !is.null(grwrComb_eval)) {
     print(plot_grid(p1, p2, p3, ncol = 3))
   }
-  return(invisible(exmpDt))
+  return(pwr.result)
 }

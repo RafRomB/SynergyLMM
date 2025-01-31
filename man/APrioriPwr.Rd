@@ -65,7 +65,8 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 line indicates the power of 0.80.
 }
 
-If saved to a variable, the function saves the exemplary data frame built for the hypothetical study.
+The statistical power for the fitted model for the initial data set according to the values given by
+\code{npg}, \code{time}, \code{grwrControl}, \code{grwrA}, \code{grwrB}, \code{grwrComb}, \code{sd_ranef} and \code{sgma} is also shown in the console.
 }
 \description{
 \emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models

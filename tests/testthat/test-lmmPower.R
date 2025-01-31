@@ -223,8 +223,7 @@ test_that("APrioriPwr provides correct output structure when sd_eval and sgma_ev
     sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.2, 0.3), sgma_eval = c(0.2, 0.3)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
-  expect_equal(nrow(result), 4 * 5 * 4)  # 4 treatments, 5 subjects per group, 4 times
+  expect_true(all(c("numDF", "denDF", "F-value", "nc", "Power") %in% colnames(result)))
 })
 
 test_that("APrioriPwr provides correct output structure when grwrComb_eval is provided", {
@@ -233,7 +232,7 @@ test_that("APrioriPwr provides correct output structure when grwrComb_eval is pr
     sd_ranef = 0.5, sgma = 0.5, grwrComb_eval = c(0.1, 0.2, 0.3)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
+  expect_true(all(c("numDF", "denDF", "F-value", "nc", "Power") %in% colnames(result)))
 })
 
 test_that("APrioriPwr plots are generated correctly for different methods", {
@@ -251,7 +250,7 @@ test_that("APrioriPwr plots are generated correctly for different methods", {
   )
   
   expect_s3_class(result_bliss, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result_bliss)))
+  expect_true(all(c("numDF", "denDF", "F-value", "nc", "Power") %in% colnames(result_bliss)))
   
   result_hsa <- APrioriPwr(
     grwrControl = 0.1,
@@ -266,25 +265,52 @@ test_that("APrioriPwr plots are generated correctly for different methods", {
   )
   
   expect_s3_class(result_hsa, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result_hsa)))
+  expect_true(all(c("numDF", "denDF", "F-value", "nc", "Power")  %in% colnames(result_hsa)))
   
 })
 
 test_that("APrioriPwr handles correctly HSA method independently of the order of drug definition in the input", {
   
-  expc_output <- "1    56 3.266493 3.266493 0.4272459"
+  expc_output <- data.frame(1, 56, 3.266493, 3.2664928, 0.42724591)
+  colnames(expc_output) <- c("numDF", "denDF", "F-value", "nc", "Power")
   
-  expect_output(APrioriPwr(
-    grwrControl = 0.5, grwrA = 0.4, grwrB = 0.3, grwrComb = 0.01,
-    sd_ranef = 0.5, sgma = 0.5, grwrComb_eval = c(0.1, 0.2, 0.3),
+  result <- APrioriPwr(
+    grwrControl = 0.5,
+    grwrA = 0.4,
+    grwrB = 0.3,
+    grwrComb = 0.01,
+    sd_ranef = 0.5,
+    sgma = 0.5,
+    grwrComb_eval = c(0.1, 0.2, 0.3),
     method = "HSA"
-  ), expc_output)
+  )
   
-  expect_output(APrioriPwr(
-    grwrControl = 0.5, grwrA = 0.3, grwrB = 0.4, grwrComb = 0.01, # Change order of drugs growth rates
-    sd_ranef = 0.5, sgma = 0.5, grwrComb_eval = c(0.1, 0.2, 0.3),
+  expect_equal(result$numDF, expc_output$numDF)
+  expect_equal(result$denDF, expc_output$denDF)
+  expect_equal(round(result$`F-value`,5), round(expc_output$`F-value`, 5))
+  expect_equal(result$nc, expc_output$nc)
+  expect_equal(result$Power, expc_output$Power)
+  
+  
+  
+  result <- APrioriPwr(
+    grwrControl = 0.5,
+    grwrA = 0.3,
+    grwrB = 0.4,
+    grwrComb = 0.01,
+    # Change order of drugs growth rates
+    sd_ranef = 0.5,
+    sgma = 0.5,
+    grwrComb_eval = c(0.1, 0.2, 0.3),
     method = "HSA"
-  ), expc_output)
+  )
+  
+  expect_equal(result$numDF, expc_output$numDF)
+  expect_equal(result$denDF, expc_output$denDF)
+  expect_equal(round(result$`F-value`,5), round(expc_output$`F-value`, 5))
+  expect_equal(result$nc, expc_output$nc)
+  expect_equal(result$Power, expc_output$Power)
+  
 })
 
 
@@ -294,7 +320,7 @@ test_that("APrioriPwr works with edge cases with single values in evaluation vec
     sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.3), sgma_eval = c(0.3)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
+  expect_true(all(c("numDF", "denDF", "F-value", "nc", "Power") %in% colnames(result)))
 })
 
 test_that("APrioriPwr behaves correctly when all evaluation parameters are provided", {
@@ -303,7 +329,7 @@ test_that("APrioriPwr behaves correctly when all evaluation parameters are provi
     sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.2, 0.3), sgma_eval = c(0.2, 0.3), grwrComb_eval = c(0.1, 0.2)
   )
   expect_s3_class(result, "data.frame")
-  expect_true(all(c("subject", "Treatment", "Time", "mA", "m0") %in% colnames(result)))
+  expect_true(all(c("numDF", "denDF", "F-value", "nc", "Power") %in% colnames(result)))
 })
 
 # Tests for PwrSampleSize ----
