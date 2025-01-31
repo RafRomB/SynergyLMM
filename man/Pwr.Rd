@@ -18,9 +18,22 @@ numeric scalar value.
 This function is generic; method functions can be written to handle specific classes of objects.
 }
 \examples{
- \dontrun{
-  Pwr (fm1)
-}
+data("grwth_data")
+lmm <- lmmModel(data = grwth_data,
+                sample_id = "subject",
+                time = "Time",
+                treatment = "Treatment",
+                tumor_vol = "TumorVolume",
+                trt_control = "Control",
+                drug_a = "DrugA",
+                drug_b = "DrugB",
+                combination = "Combination")
+Pwr(lmm,
+    L = c("Time:TreatmentControl" = 1,
+    "Time:TreatmentDrugA" = -1,
+    "Time:TreatmentDrugB" = -1,
+    "Time:TreatmentCombination" = 1))
+ 
 }
 \seealso{
 \code{\link{Pwr.lme}}

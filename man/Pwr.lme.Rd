@@ -50,13 +50,14 @@ of the coefficients in the model that should be tested to be zero. See
 a data frame inheriting from class Pwr.lme
 }
 \description{
-This is method for \code{Pwr()} generic function. It works fine for an
-example given in the book. It may require additional testing, especially for
-post-hoc power analysis
+This is method for \code{Pwr()} generic function. It is a modified version from the
+one described by Galecki and Burzykowski implemented in \code{nlmeU} package (\link[nlmeU:Pwr.lme]{nlmeU::Pwr.lme}).
+}
+\references{
+\itemize{
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
 }
 \seealso{
-\link[nlme:anova.lme]{nlme::anova.lme}
-}
-\author{
-Andrzej Galecki and Tomasz Burzykowski
+\link[nlme:anova.lme]{nlme::anova.lme}, \link[nlmeU:Pwr.lme]{nlmeU::Pwr.lme}
 }
