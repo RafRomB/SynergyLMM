@@ -4,7 +4,7 @@
 \alias{CookDistance}
 \title{Cook's distance for the coefficient estimates}
 \usage{
-CookDistance(model, cook_thr = NA, label_angle = 0)
+CookDistance(model, cook_thr = NA, label_angle = 0, verbose = TRUE)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
@@ -13,10 +13,14 @@ CookDistance(model, cook_thr = NA, label_angle = 0)
 distance values.}
 
 \item{label_angle}{Numeric value indicating the angle for the label of subjects with a Cook's distance greater than \code{cook_thr}.}
+
+\item{verbose}{Logical indicating if the subjects with a Cook's distance greater than \code{cook_thr} should be printed to the console.}
 }
 \value{
-Plot of the Cook's distance value for each subject, indicating those subjects
+A plot of the Cook's distance value for each subject, indicating those subjects
 whose Cook's distance is greater than \code{cook_thr}.
+
+If saved to a variable, the function returns a vector with the Cook's distances for each subject.
 }
 \description{
 \code{CookDistance} allows the user to identify those subjects with a greater influence in the estimation of the

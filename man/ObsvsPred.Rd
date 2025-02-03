@@ -16,7 +16,7 @@ ObsvsPred(model, nrow = 4, ncol = 5, ...)
 \item{...}{Additional arguments to be passed to \code{\link[performance:model_performance]{performance::model_performance()}}.}
 }
 \value{
-A layout of the observed vs predicted values for each SampleID and model performance metrics.
+Performance metrics of the model obtain calculated using \code{\link[performance:model_performance]{performance::model_performance()}} and a layout of plots of the observed vs predicted values for each SampleID.
 }
 \description{
 \code{ObsvsPred} allows the user to have a straight forward idea about how the model is fitting the data, providing

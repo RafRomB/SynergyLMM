@@ -21,6 +21,7 @@
 #' @param cook_thr Numeric value indicating the threshold for the Cook's distance. If not specified, the threshold is set to the 90% percentile of the Cook's
 #' distance values.
 #' @param label_angle Numeric value indicating the angle for the label of subjects with a Cook's distance greater than `cook_thr`.
+#' @param verbose Logical indicating if the subjects with a Cook's distance greater than `cook_thr` should be printed to the console.
 #' @details
 #' The identification of the subjects with a greater influence in each estimated \eqn{\beta} representing the tumor growth is based on the calculation of Cook's distances, as
 #' described in Gałecki and Burzykowsk (2013). To compute the Cook's distance for the \eqn{\beta} estimates (i.e., the contribution to each subject to the coefficient of its treatment group), 
@@ -31,8 +32,10 @@
 #' where \eqn{\hat{\beta}_{(-i)}} is the estimate of the parameter vector \eqn{\beta} obtained by fitting the model to the data with the \eqn{i}-th subject excluded. The denominator of 
 #' the expression is equal to the number of the fixed-effects coefficients, which, under the assumption that the design matrix is of full rank, is equivalent to the rank of the design matrix.
 #' 
-#' @returns Plot of the Cook's distance value for each subject, indicating those subjects
-#' whose Cook's distance is greater than `cook_thr`.
+#' @returns A plot of the Cook's distance value for each subject, indicating those subjects
+#' whose Cook's distance is greater than `cook_thr`. 
+#' 
+#' If saved to a variable, the function returns a vector with the Cook's distances for each subject.
 #' 
 #' @references 
 #' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
@@ -59,7 +62,8 @@
 #' @export
 CookDistance <- function(model,
                          cook_thr = NA,
-                         label_angle = 0) {
+                         label_angle = 0,
+                         verbose = TRUE) {
   subject.c <- levels(model$data$SampleID)
   lmeUall <- lapply(subject.c, .lmeU, model = model)
   names(lmeUall) <- subject.c
@@ -84,11 +88,13 @@ CookDistance <- function(model,
   outD <- CookD > cook_thr # Outlying Di's
   
   if(sum(outD) == 0){
-    writeLines(paste("No subject with a Cook's distance greater than", cook_thr))
+      message(paste("No subject with a Cook's distance greater than:", cook_thr))
+  } else {
+    if (verbose){
+      print(paste("Subjects with Cook's distance greater than:", cook_thr))
+      print(CookD[outD]) 
+    }
   }
-  
-  print(paste("Subjects with Cook's distance greater than:", cook_thr))
-  print(CookD[outD])
   
   subject.x <- 1:length(subject.c)
   plot(

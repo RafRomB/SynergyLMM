@@ -304,7 +304,7 @@ lmmModel <- function(data,
   model$dt1 <- TV.plot
   
   if (show_plot) {
-    print(
+    plot(
       plot_lmmModel(
         model = model,
         trt_control = trt_control,

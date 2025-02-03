@@ -20,7 +20,7 @@
 #' small sample AIC (AICc), and Bayesian Information Criterion, and the Nakagawa's r-squared 
 #' root mean squared error (RMSE) of the residuals, and the standard deviation of the residuals (sigma) are provided.
 #' 
-#' @returns A layout of the observed vs predicted values for each SampleID and model performance metrics.
+#' @returns Performance metrics of the model obtain calculated using [performance::model_performance()] and a layout of plots of the observed vs predicted values for each SampleID.
 #' 
 #' @references
 #' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1
@@ -48,6 +48,7 @@
 #' ObsvsPred(model = lmm, nrow = 4, ncol = 8)
 #' @export
 ObsvsPred <- function(model, nrow = 4, ncol = 5, ...) {
-  print(performance::model_performance(model, metrics = c("AIC", "AICc", "BIC", "R2", "RMSE", "SIGMA")), ...)
-  plot_ObsvsPred(model, nrow, ncol)
+  obsvspred <- performance::model_performance(model, metrics = c("AIC", "AICc", "BIC", "R2", "RMSE", "SIGMA"), ...)
+  plot(plot_ObsvsPred(model, nrow, ncol))
+  return(obsvspred)
 }

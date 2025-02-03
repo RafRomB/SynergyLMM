@@ -22,7 +22,7 @@ PwrTime(
 \item{npg}{Number of mouse per group.}
 
 \item{time}{A list in which each element is a vector with the times at which the tumor volume measurements have been performed.
-If \code{type} is set to "max", each vector in the list should have the measurements taken at the same interval and differ in the final
+If \code{type} is set to "max", each vector in the list should represent measurements taken at the same interval and differ in the final
 time of follow-up. If \code{type} is set to "freq", each vector in the list should have the same final time of follow-up and
 differ in the intervals at which the measurements have been taken.}
 
@@ -58,14 +58,7 @@ If \code{type} is set to "freq", the plot shows how the power varies depending o
 been performed.
 }
 
-If saved to a variable, the function returns the power for the analysis for each value specified in \code{ Time}.
-
-#' @references
-\itemize{
-\item Helms, R. W. (1992). \emph{Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs}. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
-\item Verbeke, G. & Molenberghs, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
-\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
-}
+The function also returns the data frame with the power for the analysis for each value specified in \code{ Time}.
 }
 \description{
 \emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
@@ -109,6 +102,13 @@ PwrTime(time = list(seq(0, 10, 1),
                     seq(0, 10, 5), 
                     seq(0, 10, 10)), 
                     type = "freq")
+}
+\references{
+\itemize{
+\item Helms, R. W. (1992). \emph{Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs}. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
+\item Verbeke, G. & Molenberghs, G. (2000). \emph{Linear Mixed Models for Longitudinal Data}. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
+\item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
+}
 }
 \seealso{
 \link{PostHocPwr}, \code{\link[=APrioriPwr]{APrioriPwr()}}, \code{\link[=PwrSampleSize]{PwrSampleSize()}}.

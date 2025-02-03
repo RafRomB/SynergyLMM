@@ -6,6 +6,7 @@
 #' of the normality of the random effects of the input model.
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
+#' @param verbose Logical indicating if the normality and homoscedasticity tests results should be printed to the console.
 #' @details
 #' One of the assumptions of the model obtained with [`lmmModel()`] (as in any other linear mixed model) is that
 #' the random effects are normally distributed:
@@ -27,8 +28,8 @@
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 #' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
 #' D'Agostino normality test and Anderson - Darling normality test.
-#' - `Levene.test`: results from Levene homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
-#' - `Fligner.test`: results from Fligner homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
+#' - `Levene.test`: results from Levene homoscedasticity test ([car::leveneTest()]) of the normalized residuals by SampleID (i.e., by subject).
+#' - `Fligner.test`: results from Fligner homoscedasticity test ([stats::fligner.test()]) of the normalized residuals by SampleID (i.e., by subject).
 #' 
 #' @references
 #' - Pinheiro JC, Bates DM (2000). _Mixed-Effects Models in S and S-PLUS_. Springer, New York. \doi{doi:10.1007/b98882}.
@@ -71,29 +72,24 @@
 #' 
 #' @export
 
-ranefDiagnostics <- function(model){
+ranefDiagnostics <- function(model,
+                             verbose = TRUE) {
   # Plots
   ranef_plot <- plot_ranefDiagnostics(model)
-  print(ranef_plot[[5]])
+  plot(ranef_plot[[5]])
   
   # Normality test
-  print(
-    ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Time, 
+  
+  ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Time, 
                                           title = "Shapiro - Wilk Normality Test of random effects")
-  )
   
   if (length(nlme::ranef(model)$Time) < 20) {
     ranef_DAgostino <- warning("Sample size must be at least 20 for D'Agostino Normality Test")
   } else {
-    print(
-      ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Time, 
-                                           title = "D'Agostino Normality Test of random effects")
-    )
+    ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Time, title = "D'Agostino Normality Test of random effects")
   }
-  print(
-    ranef_ad <- fBasics::adTest(nlme::ranef(model)$Time, 
-                                title = "Anderson - Darling Normality Test of random effects")
-  )
+  
+  ranef_ad <- fBasics::adTest(nlme::ranef(model)$Time, title = "Anderson - Darling Normality Test of random effects")
   
   Normality <- list(
     Shapiro.test = ranef_shapiro,
@@ -101,7 +97,7 @@ ranefDiagnostics <- function(model){
     Anderson.Darling.test = ranef_ad
   )
   
-  # Homocedasticity test
+  # Homoscedasticity test
   
   # Normalized Residuals
   
@@ -113,11 +109,21 @@ ranefDiagnostics <- function(model){
   )
   colnames(norm_res) <- c("normalized_resid", "SampleID")
   
-  writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Sample")
-  print(levene <- car::leveneTest(normalized_resid ~ SampleID, data = norm_res))
+  levene <- car::leveneTest(normalized_resid ~ SampleID, data = norm_res)
   
-  writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Sample")
-  print(fligner <- fligner.test(normalized_resid ~ SampleID, data = norm_res))
+  fligner <- fligner.test(normalized_resid ~ SampleID, data = norm_res)
+  
+  if (verbose) {
+    print(ranef_shapiro)
+    print(ranef_DAgostino)
+    print(ranef_ad)
+    
+    writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Sample")
+    print(levene)
+    
+    writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Sample")
+    print(fligner)
+  }
   
   return(invisible(
     list(

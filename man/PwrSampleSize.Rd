@@ -50,7 +50,7 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \code{npg}.
 }
 
-If saved to a variable, the fuction returns the data frame with the power for the analysis for each sample size
+The function also returns the data frame with the power for the analysis for each sample size
 specified in \code{npg}.
 }
 \description{

@@ -4,10 +4,12 @@
 \alias{ranefDiagnostics}
 \title{Diagnostics of random effects of the linear mixed model}
 \usage{
-ranefDiagnostics(model)
+ranefDiagnostics(model, verbose = TRUE)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
+
+\item{verbose}{Logical indicating if the normality and homoscedasticity tests results should be printed to the console.}
 }
 \value{
 A list with different elements for the diagnostics of the random effects are produced:
@@ -15,8 +17,8 @@ A list with different elements for the diagnostics of the random effects are pro
 \item \code{plots}: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
 \item \code{Normality}: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test,
 D'Agostino normality test and Anderson - Darling normality test.
-\item \code{Levene.test}: results from Levene homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
-\item \code{Fligner.test}: results from Fligner homocedasticity test of the normalized residuals by SampleID (i.e., by subject).
+\item \code{Levene.test}: results from Levene homoscedasticity test (\code{\link[car:leveneTest]{car::leveneTest()}}) of the normalized residuals by SampleID (i.e., by subject).
+\item \code{Fligner.test}: results from Fligner homoscedasticity test (\code{\link[stats:fligner.test]{stats::fligner.test()}}) of the normalized residuals by SampleID (i.e., by subject).
 }
 }
 \description{

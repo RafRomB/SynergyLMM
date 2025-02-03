@@ -218,17 +218,15 @@ model <- lmmModel(
   show_plot = FALSE
 )
 
-
-test_that("ObsvsPred correctly computes and prints model performance metrics", {
-  expect_output(
-    ObsvsPred(model),
-    "AIC|BIC|R2|RMSE|SIGMA",  # Expect some of these metrics in the output
-    fixed = FALSE
-  )
+test_that("ObsvsPred produce model performance results", {
+  expect_s3_class(ObsvsPred(model), "data.frame")
 })
 
-test_that("ObsvsPred generates observed vs predicted plot", {
-  expect_s3_class(ObsvsPred(model), "trellis")
+test_that("ObsvsPred correctly computes and returns model performance metrics", {
+  expect_equal(
+    colnames(ObsvsPred(model)),
+    c("AIC", "AICc", "BIC", "R2_conditional", "R2_marginal", "RMSE", "Sigma")
+  )
 })
 
 # Tests for .lmeU ----
@@ -522,8 +520,8 @@ test_that("Test logLikSubjectDisplacements with different thresholds", {
   # Test with threshold that is higher than any log-likelihood displacement
   result <- logLikSubjectDisplacements(model, disp_thrh = 1000)
   expect_true(all(result <= 1000))
-  expect_output(logLikSubjectDisplacements(model, disp_thrh = 1000),
-                 "No subject with a log-likelihood displacement greater than 1000")
+  expect_message(logLikSubjectDisplacements(model, disp_thrh = 1000),
+                 "No subject with a log-likelihood displacement greater than: 1000")
   
   # Test with very low threshold (all displacements should be included in plot)
   result <- logLikSubjectDisplacements(model, disp_thrh = -1000)
@@ -640,8 +638,8 @@ test_that("Test CookDistance with valid input without Cook threshold", {
 test_that("Test CookDistance with different thresholds", {
   
   # Test with a threshold that is higher than any Cook's distance
-  expect_output(result <- CookDistance(model, cook_thr = 10), 
-                "No subject with a Cook's distance greater than 10")
+  expect_message(result <- CookDistance(model, cook_thr = 10), 
+                "No subject with a Cook's distance greater than: 10")
   expect_true(all(result <= 10))
   
   # Test with a threshold of zero (all distances should be included in the plot)

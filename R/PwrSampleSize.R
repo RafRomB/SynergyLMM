@@ -43,7 +43,7 @@ NULL
 #' - A plot showing the values of the power calculation depending on the values assigned to 
 #' `npg`.
 #' 
-#' If saved to a variable, the fuction returns the data frame with the power for the analysis for each sample size
+#' The function also returns the data frame with the power for the analysis for each sample size
 #' specified in `npg`.
 #' @references
 #' - Helms, R. W. (1992). _Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs_. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
@@ -203,6 +203,6 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
     labs(title = paste("Power depending on\nnumber of subjects per group for", method)) + scale_x_continuous(breaks = npg) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
-  print(plot_grid(p1, p2, ncol = 2))
-  return(invisible(npg_Pwr))
+  plot(plot_grid(p1, p2, ncol = 2))
+  return(npg_Pwr)
 }

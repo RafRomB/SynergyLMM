@@ -10,7 +10,7 @@ NULL
 #' depending on depending on the time of follow-up or the frequency of measurements.
 #' @param npg Number of mouse per group.
 #' @param time A list in which each element is a vector with the times at which the tumor volume measurements have been performed.
-#' If `type` is set to "max", each vector in the list should have the measurements taken at the same interval and differ in the final
+#' If `type` is set to "max", each vector in the list should represent measurements taken at the same interval and differ in the final
 #' time of follow-up. If `type` is set to "freq", each vector in the list should have the same final time of follow-up and
 #' differ in the intervals at which the measurements have been taken. 
 #' @param type String indicating whether to calculate the power depending on the time of follow-up ("max"), or the frequency
@@ -53,9 +53,9 @@ NULL
 #' If `type` is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
 #' been performed.
 #' 
-#' If saved to a variable, the function returns the power for the analysis for each value specified in ` Time`.
+#' The function also returns the data frame with the power for the analysis for each value specified in ` Time`.
 #' 
-#' #' @references
+#' @references
 #' - Helms, R. W. (1992). _Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs_. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
 #' - Verbeke, G. & Molenberghs, G. (2000). _Linear Mixed Models for Longitudinal Data_. Springer New York. https://doi.org/10.1007/978-1-4419-0300-6
 #' - Andrzej Galecki & Tomasz Burzykowski (2013) _Linear Mixed-Effects Models Using R: A Step-by-Step Approach_ First Edition. Springer, New York. ISBN 978-1-4614-3899-1

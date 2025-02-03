@@ -9,6 +9,7 @@ logLikSubjectDisplacements(
   disp_thrh = NA,
   label_angle = 0,
   var_name = NULL,
+  verbose = TRUE,
   ...
 )
 }
@@ -22,6 +23,8 @@ displacement values.}
 
 \item{var_name}{Name of the variable for the weights of the model in the case that a variance structure has been specified using \code{\link[nlme:varIdent]{nlme::varIdent()}}.
 (See examples in \code{\link[=lmmModel]{lmmModel()}}).}
+
+\item{verbose}{Logical indicating if subjects with a log-likelihood displacement greater than \code{disp_thrh} should be printed to the console.}
 
 \item{...}{Extra arguments, if any, for \link[lattice:panel.xyplot]{lattice::panel.xyplot}.}
 }

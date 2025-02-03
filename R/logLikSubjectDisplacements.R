@@ -104,6 +104,7 @@ NULL
 #' @param label_angle Numeric value indicating the angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
 #' (See examples in [`lmmModel()`]).
+#' @param verbose Logical indicating if subjects with a log-likelihood displacement greater than `disp_thrh` should be printed to the console.
 #' @param ... Extra arguments, if any, for [lattice::panel.xyplot].
 #' @details
 #' The evaluation of the log-likelihood displacement is based in the analysis proposed in Verbeke and Molenberghs (2009) and Gałecki and Burzykowski (2013).
@@ -164,6 +165,7 @@ logLikSubjectDisplacements <- function(model,
                                        disp_thrh = NA,
                                        label_angle = 0,
                                        var_name = NULL,
+                                       verbose = TRUE,
                                        ...) {
   
   model <- update(model, method = "ML")
@@ -195,14 +197,17 @@ logLikSubjectDisplacements <- function(model,
   outL <- dif.2Lik > disp_thrh # Outlying LDi's
   
   if(sum(outL) == 0){
-    writeLines(paste("No subject with a log-likelihood displacement greater than", disp_thrh))
+      message(paste("No subject with a log-likelihood displacement greater than:", disp_thrh))
+  } else {
+    if (verbose) {
+      print(paste(
+        "Outliers with Log Likelihood displacement greater than:",
+        disp_thrh
+      ))
+      print(dif.2Lik[outL]) 
+    }
   }
   
-  print(paste(
-    "Outliers with Log Likelihood displacement greater than:",
-    disp_thrh
-  ))
-  print(dif.2Lik[outL])
   
   subject.f <- factor(subject.c, levels = subject.c)
   myPanel <- function(x, y, ...) {
@@ -233,7 +238,7 @@ logLikSubjectDisplacements <- function(model,
     main = "Log Likelihood-displacement values vs Subjects rank"
   )
   lxlims <- length(dtp$x.limits)
-  print(update(
+  plot(update(
     dtp,
     xlim = rep("", lxlims),
     grid = "h",

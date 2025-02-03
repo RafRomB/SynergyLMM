@@ -8,6 +8,8 @@
 #' 
 #' @param model  An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param pvalue Threshold for the p-value of outlier observations based on their normalized residuals.
+#' @param verbose Logical indicating if the normality and homoscedasticity tests results, and the list of potential
+#' outlier observations should be printed to the console.
 #' 
 #' @details
 #' One of the assumption of the model fit by [`lmmModel()`] is that the residuals are normally distributed.
@@ -72,24 +74,23 @@
 #' resid_diag$Fligner.test
 #'
 #' @export
-residDiagnostics <- function(model, pvalue=0.05){
+residDiagnostics <- function(model, 
+                             pvalue=0.05,
+                             verbose = TRUE) {
   # Plots
   resid_plot <- plot_residDiagnostics(model)
-  print(resid_plot[[6]])
+  plot(resid_plot[[6]])
   
   # Normality test
   
   norm_res <- resid(model, type = "normalized")
   
-  print(
-    res_shapiro <- fBasics::shapiroTest(norm_res, description = "Shapiro - Wilk Normality Test of normalized residuals")
-  )
-  print(
-    res_DAgostino <- fBasics::dagoTest(norm_res, description = "D'Agostino Normality Test of normalized residuals")
-  )
-  print(
-    res_ad <- fBasics::adTest(norm_res, description = "Anderson - Darling Normality Test of normalized residuals")
-  )
+  
+  res_shapiro <- fBasics::shapiroTest(norm_res, description = "Shapiro - Wilk Normality Test of normalized residuals")
+  
+  res_DAgostino <- fBasics::dagoTest(norm_res, description = "D'Agostino Normality Test of normalized residuals")
+  
+  res_ad <- fBasics::adTest(norm_res, description = "Anderson - Darling Normality Test of normalized residuals")
   
   Normality <- list(
     Shapiro.test = res_shapiro,
@@ -106,27 +107,44 @@ residDiagnostics <- function(model, pvalue=0.05){
   levene <- list()
   fligner <- list()
   
-  writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Time")
-  print(levene$Time <- car::leveneTest(normalized_resid ~ as.factor(Time), data = model$data))
+  levene$Time <- car::leveneTest(normalized_resid ~ as.factor(Time), data = model$data)
   
-  writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Time")
-  print(fligner$Time <- fligner.test(normalized_resid ~ as.factor(Time), data = model$data))
+  fligner$Time <- fligner.test(normalized_resid ~ as.factor(Time), data = model$data)
   
-  writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Treatment")
-  print(levene$Treatment <- car::leveneTest(normalized_resid ~ Treatment, data = model$data))
+  levene$Treatment <- car::leveneTest(normalized_resid ~ Treatment, data = model$data)
   
-  writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Treatment")
-  print(fligner$Treatment <- fligner.test(normalized_resid ~ Treatment, data = model$data))
+  fligner$Treatment <- fligner.test(normalized_resid ~ Treatment, data = model$data)
   
   # List of outliers
   outliers.idx <- within(model$data, {
     resid.std <- resid(model, type = "normalized") # Standardized resids.
     idx <- abs(resid.std) > -qnorm(pvalue / 2) # Indicator vector
   })
-  print("Outlier observations")
+  
   outliers <- subset(outliers.idx, idx) # Data with outliers
-  outliers <- outliers[,-c(8,10:12)]
-  print(outliers)
+  outliers <- outliers[,-c(9:10)]
+  
+  if (verbose) {
+    print(res_shapiro)
+    print(res_DAgostino)
+    print(res_ad)
+    
+    writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Time")
+    print(levene$Time)
+    
+    writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Time")
+    print(fligner$Time)
+    
+    writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Treatment")
+    print(levene$Treatment)
+    
+    writeLines("\nNormalized Residuals Fligner-Killeen Homoscedasticity Test by Treatment")
+    print(fligner$Treatment)
+    
+    writeLines("\nOutlier observations")
+    print(outliers)
+  }
+  
   
   return(invisible(
     list(

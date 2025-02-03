@@ -4,12 +4,15 @@
 \alias{residDiagnostics}
 \title{Diagnostics of residuals of the linear mixed model}
 \usage{
-residDiagnostics(model, pvalue = 0.05)
+residDiagnostics(model, pvalue = 0.05, verbose = TRUE)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
 \item{pvalue}{Threshold for the p-value of outlier observations based on their normalized residuals.}
+
+\item{verbose}{Logical indicating if the normality and homoscedasticity tests results, and the list of potential
+outlier observations should be printed to the console.}
 }
 \value{
 A list with different elements for the diagnostics of the residuals are produced:
