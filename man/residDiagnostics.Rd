@@ -28,7 +28,7 @@ D'Agostino normality test and Anderson - Darling normality test.
 }
 \description{
 \code{residDiagnostics} provides several plots as well as statistical test for the examination
-of the normality of the residuals of the input model.
+of the normality and homoscedasticity of the residuals of the input model.
 }
 \details{
 One of the assumption of the model fit by \code{\link[=lmmModel]{lmmModel()}} is that the residuals are normally distributed.
@@ -37,9 +37,12 @@ For the evaluation of this assumption, \code{residDiagnostics} provides Q-Q plot
 together with statistical assessment of their
 normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and
 treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be
-affecting the adequacy of the model. Additionally, scatter plots of the normalized residuals versus fitted values and normalized residuals
-per time and per treatment are provided to give information about variability of the residuals and possible outlier observations. This plots are accompanied
+affecting the adequacy of the model.
+
+Scatter plots of the normalized residuals versus fitted values and normalized residuals
+per time and per treatment are also provided to give information about variability of the residuals and possible outlier observations. These plots are accompanied
 by Levene and Fligner-Killend homogeneity of variance test results.
+
 Observations with absolute standardized (normalized) residuals greater than the \eqn{1-0.05/2} quantile of the standard normal distribution
 are identified and reported as potential outlier observations.
 }

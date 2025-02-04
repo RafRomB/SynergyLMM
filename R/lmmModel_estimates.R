@@ -9,8 +9,8 @@
 #' - Fixed effect coefficients: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}}, 
 #' which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
 #' These are shown in columns `control`, `drug_a`, `drug_b`, and `combination`, respectively.
-#' - Standard error of the random effects (between-subject variance). Column `sd_ranef`.
-#' - Standard error of the residuals (within-subject variance). Column `sd_resid`.
+#' - Standard deviation of the random effects (between-subject variance). Column `sd_ranef`.
+#' - Standard deviation of the residuals (within-subject variance). Column `sd_resid`.
 #' 
 #' @returns A data frame with the estimated values for the coefficients of the tumor growth for each treatment,
 #' the standard deviation of the random effects, and the standard deviation of the residuals of the model.

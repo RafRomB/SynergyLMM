@@ -90,7 +90,7 @@ NULL
 #' - `Constrasts`: List with the outputs of the linear test for the synergy null hypothesis obtained by [marginaleffects::hypotheses()] for each time.
 #' See [marginaleffects::hypotheses()] for more details.
 #' - `Synergy`: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
-#' the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each time.
+#' the value of the metric estimate (with upper and lower confidence interval bounds) and the p-value, for each time.
 #' 
 #' If `show_plot = TRUE`, a plot with the synergy results obtained with [plot_lmmSynergy()] is also shown.
 #' @references 

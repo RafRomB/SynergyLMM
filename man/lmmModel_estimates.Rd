@@ -24,8 +24,8 @@ The model estimates provided by \code{lmmModel_estimates} include:
 \item Fixed effect coefficients: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}},
 which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
 These are shown in columns \code{control}, \code{drug_a}, \code{drug_b}, and \code{combination}, respectively.
-\item Standard error of the random effects (between-subject variance). Column \code{sd_ranef}.
-\item Standard error of the residuals (within-subject variance). Column \code{sd_resid}.
+\item Standard deviation of the random effects (between-subject variance). Column \code{sd_ranef}.
+\item Standard deviation of the residuals (within-subject variance). Column \code{sd_resid}.
 }
 }
 \examples{

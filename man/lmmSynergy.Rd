@@ -41,7 +41,7 @@ The function returns a list with two elements:
 \item \code{Constrasts}: List with the outputs of the linear test for the synergy null hypothesis obtained by \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for each time.
 See \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for more details.
 \item \code{Synergy}: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
-the value of the metric estimate (with upper and lower confidence intervals) and the p-value, for each time.
+the value of the metric estimate (with upper and lower confidence interval bounds) and the p-value, for each time.
 }
 
 If \code{show_plot = TRUE}, a plot with the synergy results obtained with \code{\link[=plot_lmmSynergy]{plot_lmmSynergy()}} is also shown.

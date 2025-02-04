@@ -35,19 +35,16 @@ NULL
 #' `lmmModel()` relies in the assumption that tumor growth follows an exponential kinetics. Any departure from this assumption can be tested using the diagnostics functions [`ranefDiagnostics()`],
 #'  [`residDiagnostics()`], and [`ObsvsPred()`].
 #' 
-#' The model formula for the fitted model is:
-#' \deqn{\log RTV_{i}(t) = \beta_{Trt_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
+#' The model formula for the linear mixed-effect fitted model is:
+#' \deqn{\log RTV_{i}(t) = \beta_{T_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
 #' 
-#' The term \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. In the fixed-effect part of the model, 
-#' \eqn{\beta_{Trt_i}} represents the coefficients corresponding to the specific growth rate for each treatment \eqn{Trt_i}, where \eqn{Trt_i \in \{control, A, B, combination\}} in the case of
-#' two-drugs combination experiments, or \eqn{Trt_i \in \{control, A, B, C, combination\}} in the case of three-drugs combination experiments. That means that \eqn{\beta_{control}} corresponds
-#' to the control group, \eqn{\beta_{A}} to Drug A, \eqn{\beta_{B}} to Drug B, \eqn{\beta_{C}} to Drug C (if present), and \eqn{\beta_{combination}} to the combination of Drug A + Drug B (or
-#' Drug A + Drug B + Drug C, in the case of a three-drugs experiment). 
+#' where \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. The coefficient
+#' \eqn{\beta_{T_i}} represents the fixed effectsat time \eqn{t} for each  treatment \eqn{T_i}, where \eqn{T_i \in \{Control, DrugA, DrugB, Combination\}} in the case of
+#' two-drugs combination experiments, or \eqn{T_i \in \{Control, DrugA, DrugB, DrugC, Combination\}} in the case of three-drugs combination experiments, and indicates the 
+#' tumor-specific growth rate for each treatment group. 
 #' 
-#' \eqn{t} is the time of measurement. 
-#' 
-#' In the random-effects part of the model, \eqn{b_i} is the random slope associated with time representing the subject-specific growth-rate. 
-#' Finally, \eqn{\varepsilon_{i}(t)} is the residual random error.
+#' Term \eqn{b_i \cdot t} corresponds to the subject-specific random slope that takes into account the longitudinal nature of the data, where \eqn{b_i} is the random effect for subject \eqn{i}.
+#' \eqn{\varepsilon_{i}(t)} is the residual random term for subject \eqn{i} at time \eqn{t}.
 #' 
 #' The implementation of the linear mixed model in `lmmModel()` is done using \code{nlme::\link[nlme:lme]{lme}}, which also allows for the 
 #' specification of within-group correlations structures and/or unequal variances. These, and additional parameters,
