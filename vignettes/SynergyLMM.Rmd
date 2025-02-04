@@ -1,19 +1,335 @@
 ---
-title: "SynergyLMM"
-output: rmarkdown::html_vignette
+title: "SynergyLMM - Guided Tutorial"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
-  %\VignetteIndexEntry{SynergyLMM}
+  %\VignetteIndexEntry{SynergyLMM - Guided Tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+```{=html}
+<style>
+body {
+text-align: justify}
+</style>
 ```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", 
+                      fig.align = "center", 
+                      out.width = "100%",
+                      prompt = TRUE)
+
+```
+
+## Introduction
+
+This vignette describes the different functions provided in 'SynergyLMM' package to analyze drug combination effects in preclinical *in vivo* studies.
+
+We will follow the workflow for the analysis of a longitudinal tumor growth experiments for the evaluation of the effect of a drug combination and determine whether synergy (or antagonism) is present.
+
+The following figure represent schematically 'SynergyLMM' workflow:
+
+![**Overview of the 'SynergyLMM' workflow. a,** The first step is uploading the longitudinal tumor burden-related measurements for the different treatment groups. The input consists of a tabular data in long format with at least 4 columns containing information about the samples IDs, the time points for each measurement, the treatment group, and the tumor measurement. **b,** The input data will then be processed to estimate the linear mixed effect model that fits the tumor growth dynamics for each subject, and estimate the growth rates for each treatment group. **c,**  'SynergyLMM' offer various functions to evaluate the model diagnostics and model performance, as well as for the identification of potential outliers and influential individuals for the model fit and the treatment groups. **d,** Once a proper model with satisfactory diagnostics has been obtained, the statistical assessment of combination effects is performed, with a time dependent estimation of the synergy score and combination index, along with their confidence intervals and statistical significance. The method allows for testing synergy using three reference models: Bliss independence, highest single agent (HSA), and response additivity (RA). **e,** 'SynergyLMM' implements versatile functions to calculate the _post hoc_ power of the experiment and the _a priori_ power by modifying the values of key experimental variables, such as sample size,  follow-up time, or frequency of the measurements.](Fig1_LMM_Graphical_Abstract.png){width="100%"}
+
+## 1. Data Upload and Model Fit
+
+We will start by loading 'SynergyLMM' package:
 
 ```{r setup}
 library(SynergyLMM)
 ```
+
+For this tutorial, we will use the example data set that is included in the package:
+
+```{r}
+data("grwth_data")
+```
+
+Let's have a look to these data:
+
+```{r}
+head(grwth_data)
+```
+
+This is a typical example of _long data format_, in which each row is one time point per subject. So each subject (mouse) will have data in multiple rows. Any variables that don’t change across time will have the same value in all the rows.
+
+In this case, column `subject` indicates the sample ID for each mouse, column `Time` indicates the time points (days) for each measurement, column `Treatment` indicates the treatment group to which the mouse belongs, and `TumorVolume` indicates the tumor volume measured for that mouse at that specific time point.
+
+It is important to note that the `TumorVolume` column contains the _raw_ measurements of tumor volume, in the sense that they have not been relativized or transformed.
+
+In this experiment there are 4 groups: the control group, each mono-therapy group, and the combination group. Each group is identified with the following names:
+
+```{r}
+unique(grwth_data$Treatment)
+```
+
+The output shows the different names for each treatment. We can also see that this column is stored as a `factor`. This is convenient, but not necessary. 
+There are the four columns that the dataset has to have to be able to perform the analysis. The input data could have additional columns, but they will be ignored.
+
+### 1.1 Model Estimation
+
+Let's start with the analysis by fitting the model. This is done with `lmmModel()` function:
+
+```{r, fig.width=12, fig.height=8}
+lmm_ex <- lmmModel(data = grwth_data, sample_id = "subject", time = "Time", 
+                   treatment = "Treatment", tumor_vol = "TumorVolume",
+                   trt_control = "Control", drug_a = "DrugA", 
+                   drug_b = "DrugB", combination = "Combination")
+```
+
+This is the most basic use of the function to fit the model. The user needs to specify the names of the columns containing the information for the subject IDs, time points, treatment groups, tumor measurements, and the names used to refer the different groups. 
+
+The function fits the model, which we have stored in the `lmm_ex` object, and which we will use in the next steps. A plot with the tumor growth data for the different groups is also produced. The bold lines in the plots represent the fitted regression lines for the fixed effects of each treatment estimated by the linear mixed-effects model. The x-axis identifies the time since the start of treatment, being 0 the time of treatment initiation. The y-axis represent the $\log$ of the relative tumor volume ($RTV$). 
+
+There are several additional arguments in `lmmModel()` function:
+
+- `time_start`: can be used to change the day that should be considered as the initial time point, which, by defaul, is the minimum value in `time` column.
+- `time_end`: can be used to indicate the last time point to be included in the analysis, which, by default, is the maximum value in `time` column.
+- `min_observations`: can be used to define the minimum number of observations (data points) that a subject should have to be considered in the analysis.
+- `tum_vol_0`: this arguments allows to control the behavior regarding measurements in which the tumor measurement is 0, and therefore the logarithmic transformation is not possible. The user can choose to to ignore these measurements, or transform them, by adding 1 unit to all measurements before the $\log$ transformation.
+
+We can obtain the values of the **model estimates** using the function `lmmModel_estimates()`. This fucntion retrieves the information about the estimated coefficients (tumor growth rates) for the different experimental groups, as well as the standard deviation of the random effects (between-subject variance) and residuals (within-subject variance).
+
+```{r}
+lmmModel_estimates(lmm_ex)
+```
+
+
+## 2. Model Diagnostics
+
+Before performing the synergy analysis, it is important to evaluate the **model diagnostics** to check the main assumptions of the model: the normality of the random effects and the residuals.
+
+It is important to verify that the model is appropriate for the data. Reliable results from statistical tests require that model assumptions—such as normality and homoscedasticity of random effects and residuals—are met. Therefore, users are recommended to thoroughly evaluate the estimated model, as certain experimental datasets may result in highly imprecise estimates. 
+
+### 2.1 Random Effects Diagnostics
+
+To perform the diagnostics of the random effects we can use `ranefDiagnostics()`. This function provides plots and results from statistical tests to address the normality of the random effects. The random effects in our model correspond to a random slope for each subject, which takes into account the longitudinal nature of the data. Additional plots and tests related to the normality and homoscedasticity of the residuals for the subjects are also provided, which can help to identify subjects with extreme behaviors, and which could potentially being responsible for departure of the normality of random effects.
+
+```{r, fig.width=10, fig.height=10}
+ranefDiagnostics(lmm_ex)
+```
+The most important plot is the Q-Q plot at the top left, which shows the normal Q-Q plot of the random effects. The console output shows the results of Shapiro - Wilk, D'Agostino, and Anderson - Darling normality tests for the random effects. The normality of the random effects cannot be rejected if the p-value of the normality tests is not significant, and/or the Q-Q plot shows that the data points approximately lie in the diagonal line. If some points lie significantly outside the line, they could be potential outliers that could be identify based on the residuals or in the **Influential Diagnostics**.
+
+The other plots address the normalized residuals by subject. The top-right plot shows Q-Q plots of the normalized residuals by sample, the bottom-left boxplot show the distribution of the normalized residuals, to analyze if they are homoscedastic, and the bottom-right plot shows the normalized residuals versus fitted values by subject, to help to identify potential outlier observations, which are identified in the scatter plots labelled with the time point corresponding to the observation.
+
+The console output also shows the results of Levene and Fligner-Killeen homoscedasticity test of the normalized residuals by sample. The homoscedasticity of the residuals among subjects cannot be rejected if the p-value of these tests is not significant.
+
+In this example, it can be observed how the normality of the random effects cannot be rejected, although there are some outlier observations, that may deserver further examination.
+
+### 2.2 Residual Diagnostics
+
+To perform the diagnostics of the random effects we can use `residDiagnostics()` function. `residDiagnostics` provides several plots as well as statistical test for the examination of the normality and homoscedasticity of the normalized residuals of the input model.
+
+One of the assumption of the model fit by `lmmModel()` is that the residuals are normally distributed. For the evaluation of this assumption, residDiagnostics provides Q-Q plots of the normalized residuals together with statistical assessment of their normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be affecting the adequacy of the model.
+
+Scatter plots of the normalized residuals versus fitted values and normalized residuals per time and per treatment are also provided to give information about variability of the residuals and possible outlier observations. These plots are accompanied by Levene and Fligner-Killend homogeneity of variance test results. 
+
+Finally, potential outlier observations are also returned.
+
+```{r, fig.width=10, fig.height=14}
+residDiagnostics(lmm_ex)
+```
+As we can see, there is some departure from the normality of the residuals, as indicated by the normality tests and the top-left Q-Q plot. Additionally, there are several potential outlier observations according to their normalized residuals.
+
+
+### 2.3 Solutions for Violations of Model Diagnostics
+
+When diagnostic plots and tests show evident violations of the model assumptions, there are several solutions that may help improving the model:
+
+- Define the model using unequal variances for the errors.
+- Transform the time units to improve the model fit and ensure that its assumptions are satisfied. For example, a square root or logarithmic transformation of the time units could help improving the model.
+- Carefully address potential outliers. Individuals or measurements highlited as potential outliers may warrant further investigation to reveal the reasons behind unusual growth behaviors, and potentially exclude these before reanalysis, after careful reporting and justification.
+
+
+We will try to improved the model by defining unequal variances for the errors. We can do this providing an additional argument, `weights`, when fitting the model, which will be passed to `nlme::lme()` function. For example, we can define the model adding a variance function to represent a different variance per subject using `nlme::varIdent()` function:
+
+```{r, fig.width=12, fig.height=8}
+lmm_ex_var <- lmmModel(data = grwth_data, sample_id = "subject", time = "Time", 
+                   treatment = "Treatment", tumor_vol = "TumorVolume",
+                   trt_control = "Control", drug_a = "DrugA", 
+                   drug_b = "DrugB", combination = "Combination",
+                   weights = nlme::varIdent(form = ~1|SampleID))
+```
+
+If we obtain the model estimates from this new model:
+
+```{r}
+lmmModel_estimates(lmm_ex_var)
+```
+We can observe that the values are slightly different from the previous `lmm_ex` model.
+
+You can also try defining a different variance per time using `nlme::varIdent(form = ~1|Time)`, a different variance per treatment group, using `nlme::varIdent(form = ~1|Treatment)`,
+or combinations of them using `nlme::varComb()` function.
+
+We can now evaluate the diagnostics of the new model. We will use the option `verbose = FALSE` to avoid printing all the results in the console:
+
+**Random Effects**
+```{r, fig.width=10, fig.height=10}
+ranefD <- ranefDiagnostics(lmm_ex_var, verbose = FALSE)
+
+# We can access to individual results of the diagnostics:
+ranefD$Normality
+```
+**Residuals**
+
+```{r, fig.width=10, fig.height=14}
+residD <- residDiagnostics(lmm_ex_var, verbose = FALSE)
+residD$Normality
+```
+
+It can be observed there is no evidence of violation of the assumptions in the new model.
+
+### 2.4 Model Performance
+
+Another useful function to evaluate the model is `ObsvsPred()`. `ObsvsPred` allows the user to have a straight forward idea about how the model is fitting the data, providing plots of the predicted regression lines versus the actual data points.
+
+```{r, fig.width=10, fig.height=10}
+ObsvsPred(lmm_ex_var, nrow = 8, ncol = 4)
+```
+
+This function provides visual and quantitative information about the performance of the model:
+
+- A layout of the observed and predicted values of $\log$(relative tumor volume) vs Time for each SampleID (i.e. subject). The actual measurements are shown as blue dots, the dashed orange line indicates the regression line for each subject, while the continuous blue line indicates the marginal, treatment-specific, regression line for each treatment group.
+
+- Performance metrics of the model calculated using `performance::model_performance()`. The maximum likelihood-based Akaike's Information Criterion (AIC), small sample AIC (AICc), and Bayesian Information Criterion, and the Nakagawa's r-squared root mean squared error (RMSE) of the residuals, and the standard deviation of the residuals (sigma) are provided. 
+
+Smaller values of AIC, AICc, BIC, RMSE, and sigma of the residuals indicate a better-fitting model. $R^2$ values range from 0 to 1. An $R^2$ value closer to 1 suggests that the model explains a larger proportion of the variance in the data, indicating a better fit.
+
+As we can see in the plots and the metrics, the model fits quite well the data, obtaining a high $R^2$ value.
+
+### 2.5 Influential Diagnostics
+
+Influential diagnostics allow the user to identify highly influential subjects (animals) in the experiment. These options include detecting those subjects with a significant influence on the estimation of control and treatment group coefficients for growth rates, as evaluated using Cook’s distances using `CookDistances()` function, as well as identifying subjects with a substantial impact on the overall model, as assessed with log-likelihood displacements using `logLikSubjectDisplacements()` function.
+
+In our data we don't have subjects that seem to be outliers with a high influence in the model, but we can easily check the results of the influential diagnostics with these two functions:
+
+```{r, fig.width=10, fig.height=8}
+CookDistance(lmm_ex_var)
+```
+It seems that there are 4 subjects with a higher influence in the group coefficients, being subject 8 the one with the most remarkable influence.
+
+We can check the log-likelihood displacements. Since we have defined a variance structure in the model, we need to specify an additional argument in the function, `var_name`:
+
+```{r, fig.width=10, fig.height=8}
+logLikSubjectDisplacements(lmm_ex_var, var_name = "SampleID")
+```
+Again, subject 8 seems to be having a higher influence in the model. 
+
+In a real data analysis, this results suggest that maybe the researcher should review the data regarding subject 8, to try to identify any reasons for the different behaviour of  this subject.
+
+## 3. Synergy Analysis
+
+After the careful examination of the model diagnostics and being sure that our model is correctly especified, we can proceed to the synergy analysis, using `lmmSynergy()` function. 
+
+`lmmSynergy()` allows for the calculation of synergy using 3 different references models: Bliss independence, highest single agent and response additivity. The calculation of synergy is based on hypothesis testing on the coefficient estimates from the model fitted by `lmmModel()`.
+
+We will perform the analysis for the **Bliss independence model**
+
+```{r, fig.width=12, fig.height=10}
+bliss <- lmmSynergy(lmm_ex_var, method = "Bliss")
+```
+We can see that some p-values are extremely low, indicating synergy for all time points. 
+
+When a variance structure has been specified, it is recomended set the argument `robust = TRUE`, to use cluster-robust variance estimation using `clubSandwich::vcovCR.lme()`. 
+
+```{r, error=TRUE}
+bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE)
+```
+
+However, as it can be seen, sometimes this can result in some errors, due to the impossibility fit the model at the earlier time points (due to insuficient data). In these cases, and easy solution is to simply increase the value of the `min_time` argument, to increase the minimum time for which to start calculating the synergy:
+
+```{r, fig.width=12, fig.height=10}
+bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE, min_time = 6)
+```
+
+Now we can observe the results, which indicate that the drug combination effect is synergystic through all the time points.
+
+The synergy analysis results can be obtained from the object as:
+
+```{r}
+bliss$Synergy
+```
+
+This data frame contains the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score), the value of the metric estimate (with upper and lower confidence interval bounds) and the p-value, for each time.
+
+
+
+We can repeat the process for the **highest single agent (HSA)** model:
+
+```{r, fig.width=12, fig.height=10}
+hsa <- lmmSynergy(lmm_ex_var, method = "HSA", robust = TRUE, min_time = 6)
+```
+
+As expected the results are similar, indicating synergy, but with smaller p-values compared to the Bliss model.
+
+Finally, we can test the **response additivity (RA)** model. The assessment of drug combination effect using this model is based on simulations. We can choose the number of simulations to perform with the `ra_nsim` parameter. For this example, we will set it to 1000:
+
+```{r, fig.width=12, fig.height=10}
+ra <- lmmSynergy(lmm_ex_var, method = "RA", robust = TRUE, min_time = 6, ra_nsim = 1000)
+```
+Since we performed 1000 simulations, the minimum p-value is 0.001. If we would like to obtain more precise p-values, we should run the analysis increasing the number of simulations.
+
+## 4. Power Analysis
+
+'SynergyLMM' implements statistical power analysis to improve experimental designs.
+
+### 4.1 _Post Hoc_ Power Analysis
+
+The _post hoc_ (retrospective) power analysis allows to evaluate the statistical power for the provided data set and fitted model. Traditionally, a threshold of 0.8 (80%) is used as an acceptable level of power ([Serdar CC et al., 2021](https://www.biochemia-medica.com/en/journal/31/1/10.11613/BM.2021.010502)).
+
+'SynerLMM' allows for the _post hoc_ power analysis of the synergy hypothesis testing for Bliss and HSA reference models for a given tumor growth data with `PostHocPwr()` function.
+
+Since the drug combination effect is time-dependent, the statistical power vary depending on the time point being analyzed. We can choose which time point to analyse using the `time` argument.
+
+The post hoc power analysis is based on simulations. We can specify the number of simulations to run using the `nsim` argument. For this example, we will run only 100 simulations:
+
+If we don't specify any day, the last time point is used by default (in this case, day 30):
+
+```{r}
+PostHocPwr(lmm_ex_var, nsim = 100, method = "Bliss")
+```
+
+We can see that the analysis provides a good statistical power.
+
+### 4.2 _A Priori_ Power Analysis
+
+Prospective, _a priori_, statistical power analysis allows to assess how the statistical power of the analysis varies with variations of some parameters such as the sample size, or drug combination effect size, while keeping the other parameters constant.
+
+#### Sample Size Power Analysis
+
+`PwrSampleSize()` allows to calculate the _a priori_ statistical power with different sample sizes. We can modify any of the parameters, such as the time points of the experiment, the growth rate of the different groups, or the variance in the model (given by the standard deviation of the random effects and residuals).
+
+However, usually the researcher will be interested in analyzing the _a priori_ power for an experiment, to check, for example, which sample size should be used in order to reach an appropriate statistical power. We can do this using the `lmmModel_estimates()` function, to retrieve the model estimates from the experiment, and then play with the different parameters:
+
+First, lets extract the information from our experiment:
+
+```{r}
+# Vector with the time points
+days <- unique(grwth_data$Time)
+
+# Model estimates
+estimates <- lmmModel_estimates(lmm_ex_var)
+```
+
+Now, we can evaluate the _a priori_ power for this experiment, variying the sample size per group. For example, let's evaluate how the sample size varies from 1 to 10 subjects per group:
+
+```{r, fig.width=10, fig.height=8}
+PwrSampleSize(npg = 1:10,
+              time = days,
+              grwrControl = round(estimates$Control,3),
+              grwrA = round(estimates$DrugA,3),
+              grwrB = round(estimates$DrugB, 3),
+              grwrComb = round(estimates$Combination, 3),
+              sd_ranef = round(estimates$sd_ranef, 3),
+              sgma = round(estimates$sd_resid, 3),
+              method = "Bliss")
+```
+
+The plot on the left represents the hypothetical data that we have provided, with the regression lines for each treatment group according to `grwrControl`, `grwrA`, `grwrB`, and `grwrComb` values. The values assigned to `sd_ranef` and `sgma` are also shown.
+
+The plot on the left shows the values of the power calculation depending on the values assigned to `npg`. We can observed that, for this experiment, a sample size of 5 would be enough to reach 0.8 statistical power.
+
+
