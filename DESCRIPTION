@@ -7,7 +7,7 @@ Authors@R:
            person("Zhi", "Zhao", email = "zhi.zhao@medisin.uio.no", role = c("ctb")), 
            person("Tero", "Aittokallio", email = "t.a.aittokallio@medisin.uio.no", role = c("ctb")))
 Description: A framework for evaluating drug combination effects in preclinical in vivo studies.
-    SynergyLMM provides functions to analyze longitudinal tumor growth experiments using linear mixed-effects models, 
+    'SynergyLMM' provides functions to analyze longitudinal tumor growth experiments using linear mixed-effects models, 
     perform time-dependent analyses of synergy and antagonism, evaluate model diagnostics and performance, 
     and assess both post-hoc and a priori statistical power.
     The calculation of drug combination synergy follows the statistical framework provided by Demidenko and Miller (2019, <doi:10.1371/journal.pone.0224137>).
