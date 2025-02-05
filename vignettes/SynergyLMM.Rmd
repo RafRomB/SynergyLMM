@@ -239,7 +239,7 @@ When a variance structure has been specified, it is recomended set the argument 
 bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE)
 ```
 
-However, as it can be seen, sometimes this can result in some errors, due to the impossibility fit the model at the earlier time points (due to insuficient data). In these cases, and easy solution is to simply increase the value of the `min_time` argument, to increase the minimum time for which to start calculating the synergy:
+However, as it can be seen, sometimes this can result in some errors, due to the impossibility to fit the model at the earlier time points (due to insuficient data). In these cases, an easy solution is to simply increase the value of the `min_time` argument, to increase the minimum time for which to start calculating the synergy:
 
 ```{r, fig.width=12, fig.height=10}
 bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE, min_time = 6)
@@ -296,7 +296,8 @@ We can see that the analysis provides a good statistical power.
 
 ### 4.2 _A Priori_ Power Analysis
 
-Prospective, _a priori_, statistical power analysis allows to assess how the statistical power of the analysis varies with variations of some parameters such as the sample size, or drug combination effect size, while keeping the other parameters constant.
+Prospective, _a priori_, statistical power analysis allows to assess how the statistical power of the analysis varies with variations of some parameters such as the sample size, or drug combination effect size, while keeping the other parameters constant. The _a priori_ power analysis can help to implement improved experimental designs for _in vivo_ experiments with minimal number of animals and measurements, yet still having enough statistical power to detect true synergistic effects. 
+
 
 #### Sample Size Power Analysis
 
@@ -331,5 +332,116 @@ PwrSampleSize(npg = 1:10,
 The plot on the left represents the hypothetical data that we have provided, with the regression lines for each treatment group according to `grwrControl`, `grwrA`, `grwrB`, and `grwrComb` values. The values assigned to `sd_ranef` and `sgma` are also shown.
 
 The plot on the left shows the values of the power calculation depending on the values assigned to `npg`. We can observed that, for this experiment, a sample size of 5 would be enough to reach 0.8 statistical power.
+
+#### Time Power Analysis
+
+The number of measurement points per subject is another experimental factor that can influence the experimental design and statistical power. This depends on the duration of tumor growth follow-up and the frequency of the measurements during that period. `PwrTime()` function allows for the _a priori_ power calculation of a a hypothetical two-drugs combination study of synergy depending on the time of follow-up or the frequency of measurements.
+
+For example, the researcher may be interested in studying the statistical power of the experiment depending on the time of follow-up, to decide the appropriate end point. If we set the argument `type = "max"` in `PwrTime()` function, we can evaluate how the power varies at different end times. For this, we need to provide the function with a list of vectors with the times at which the tumor measurements are performed. As we are interested in addressing how the power varies for different study durations, the measurement should be taken at the same intervals.
+
+Let's see an example. Using the estimates from the model we have fitted previously, we can explore how the power varies if the study ends in a range from 9 to 30 days, with measurements performed every 3 days.
+
+The first step is to define the list of vectors tumor measurements time points:
+
+```{r}
+max_time <- list(seq(0,9,3), seq(0,12,3), seq(0,15,3), 
+                 seq(0,18,3), seq(0,21,3), seq(0,24,3), 
+                 seq(0,27,3), seq(0,30,3))
+```
+
+Another argument for the function is `npg`, which indicates the sample size per group. As we are interested in calculate teh _a priori_ power for different study duration in our experiment and model, we will use the mean sample size per group in the experiment:
+
+```{r}
+# We can calculate the average sample size deviding the number of subjects
+# by the number of groups, in this case, 4 groups
+(npg <- round(length(unique(grwth_data$subject))/4,0))
+```
+
+
+Now, the _a priori_ power for the Bliss independence model at different end points of the study is:
+
+```{r, fig.width=10, fig.height=8}
+PwrTime(npg = npg,
+        time = max_time,
+        type = "max",
+        grwrControl = round(estimates$Control,3),
+              grwrA = round(estimates$DrugA,3),
+              grwrB = round(estimates$DrugB, 3),
+              grwrComb = round(estimates$Combination, 3),
+              sd_ranef = round(estimates$sd_ranef, 3),
+              sgma = round(estimates$sd_resid, 3),
+              method = "Bliss")
+```
+
+
+
+We can observe that a study with a follow-up time of 18 days would be enough to achieve a statistical power > 0.8, if all the other variables do not vary.
+
+Now, we may also wonder how frequently the measurements should be taken. Is it necessary to take measurements every 3 days, or can we reduce the measurements to every 6 days? 
+
+We can do this by setting the `type = "freq"` argument in `PwrTime()` function. In this case, we need to provide a list of vectors with the tumor measurements with the same maximum time of follow-up, but chaning the intervals at which the measurements have been taken. Let's first define this list. We will evaluate how many measurements are needed in an experiment with a follow-up period of 18 days.
+
+```{r}
+freq_time <- list(seq(0,18,1), seq(0,18,3), seq(0,18,6), seq(0,18,9),seq(0,18,18))
+```
+
+Now, let's analyze the _a priori_ power:
+
+```{r, fig.width=10, fig.height=8}
+PwrTime(npg = npg,
+        time = freq_time,
+        type = "freq",
+        grwrControl = round(estimates$Control,3),
+        grwrA = round(estimates$DrugA,3),
+        grwrB = round(estimates$DrugB, 3),
+        grwrComb = round(estimates$Combination, 3),
+        sd_ranef = round(estimates$sd_ranef, 3),
+        sgma = round(estimates$sd_resid, 3),
+        method = "Bliss")
+```
+The plot at the right shows the power for different number of (evenly) distributed measurements. 2 measurements correspond to an experiment in which the tumor measurements were taken just at the initial time point (day 0), and at the final time point (day 18), while 19 measurements correspond to an experiment in which the measurements were taken every single day, including day 0.
+
+The results show that with 4 measurements, which corresponds to take measurements every 6 days, the statistical power is close to 0.8.
+
+#### Variability Power Analysis
+
+A key determinant of statistical power is the effect size of the drug combination effect, given by the magnitude of the estimated coefficient for the growth rate after combination treatment, relative to that observed in the monotherapy and control groups. Treatments with larger effect sizes are easier to detect, even with smaller sample sizes, resulting in higher statistical power. Another critical factor is the variance components of the model, including residual variance (within-subject variance) and random effects variance (between-subject variance). High estimated coefficients for these variances reduce precision, thereby diminishing statistical power.
+
+`APrioriPwr()` function allows  for total customization of an hypothetical drug combination study and allows the user to define several experimental parameters, such as the sample size, time of measurements, or drug effect, for the power evaluation of synergy for Bliss and HSA reference models.
+
+Usually, we will define a experiment with the estimated parameters from the input data and fitted model, and then play with different values of the effect size of the drug combination effect, and/or values of residual and random effects variance.
+
+From our model, the estimated parameters are:
+
+```{r}
+estimates
+```
+
+
+Then, we can for example, evaluate how the statistical power varies if the drug combination group estimate ranges from -0.03 to 0.06, or if the standard deviation of the random effects ranges from 0.01 to 0.1 and the standard deviation of the residuals ranges from 0.01 to 1, using the Bliss independence model:
+
+```{r, fig.width=14, fig.height=8}
+APrioriPwr(npg = npg, # Sample size per group, calculated above
+           time = days, # Time points of measurements, calculated above
+           # Model estimates:
+           grwrControl = round(estimates$Control,3),
+           grwrA = round(estimates$DrugA,3),
+           grwrB = round(estimates$DrugB, 3),
+           grwrComb = round(estimates$Combination, 3),
+           sd_ranef = round(estimates$sd_ranef, 3),
+           sgma = round(estimates$sd_resid, 3),
+           sd_eval = seq(0.01, 0.1, 0.01),
+           sgma_eval = seq(0.01, 1, 0.01),
+           grwrComb_eval = seq(-0.05, 0.1, 0.001)
+           )
+           
+```
+
+The red dot and the vertical line in the two plots on the right indicate the power result corresponding to the values assigned to `sd_ranef`,  `sgma`, and `grwrComb`, respectively.
+
+The results demonstrate that the power increases as the residual and random effects variances decrease. Furthermore, the plot on the right reveals a U-shaped power profile as a function of the combination group growth rate. This indicates that with lower growth rates (i.e.,  higher effect size), the power is increased for detecting synergy, but it decreases as growth rates approach the expected additive effect under the Bliss independence model until it reaches its minimum. As growth rates exceed the expected additive effect, the power starts to increase again, reflecting the model’s ability to detect negative deviations from additivity (indicating antagonism).
+
+
+All these functions constitute an interesting toolbox for the researcher. One may perform a first pilot experiment, and then optimize the study design based on the data from that experiment.
 
 
