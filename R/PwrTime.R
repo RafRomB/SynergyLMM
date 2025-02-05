@@ -6,8 +6,8 @@ NULL
 
 #' @title _A Priori_ Synergy Power Analysis Based on Time
 #' @description
-#'  _A priori_ power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
-#' depending on depending on the time of follow-up or the frequency of measurements.
+#'  _A priori_ power calculation for a hypothetical two-drugs combination study of synergy
+#' depending on the time of follow-up or the frequency of measurements.
 #' @param npg Number of mouse per group.
 #' @param time A list in which each element is a vector with the times at which the tumor volume measurements have been performed.
 #' If `type` is set to "max", each vector in the list should represent measurements taken at the same interval and differ in the final
@@ -215,8 +215,8 @@ PwrTime <- function(npg = 5,
     labs(title = paste(title, method)) + scale_x_continuous(breaks = time_vector) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
-  print(plot_grid(p1,p2, ncol = 2))
-  return(invisible(npg_Pwr))
+  plot(plot_grid(p1,p2, ncol = 2))
+  return(npg_Pwr)
 }
 
 

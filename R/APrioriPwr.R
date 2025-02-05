@@ -43,7 +43,7 @@ NULL
 
 #' @title _A Priori_ Synergy Power Analysis Based on Variability and Drug Effect 
 #' @description
-#' _A priori_ power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
+#' _A priori_ power calculation for a hypothetical two-drugs combination study of synergy using linear-mixed models
 #' with varying drug combination effect and/or experimental variability. 
 #' @param npg Number of subjects per group.
 #' @param time Vector with the times at which the tumor volume measurements have been performed.
@@ -327,7 +327,9 @@ APrioriPwr <- function(npg = 5,
     )) + ggplot2::geom_raster(aes(fill = .data$Power)) +
       scale_fill_continuous(type = "viridis") + cowplot::theme_cowplot() + labs(title = paste("Power for", method, sep = " ")) +
       xlab("SD for random effects") + ylab("SD for residuals") + geom_point(x = sd_ranef, y = sgma, shape = 18, size = 5, color = "firebrick3")
-    plot(plot_grid(p1, p2, ncol = 2))
+    if (is.null(grwrComb_eval)) {
+      plot(plot_grid(p1, p2, ncol = 2))
+    }
   }
   
   if (!is.null(grwrComb_eval)) {
@@ -413,8 +415,10 @@ APrioriPwr <- function(npg = 5,
         "Power across growth rate\nvalues for combination treatment for ",
         method
       )) + xlab("Growth rate (logRTV/Times)") +
-      ggplot2::geom_hline(yintercept = 0.8, lty = "dashed") + ggplot2::geom_vline(xintercept = grwrComb, lty=3) 
-    plot(plot_grid(p1, p3, ncol = 2))
+      ggplot2::geom_hline(yintercept = 0.8, lty = "dashed") + ggplot2::geom_vline(xintercept = grwrComb, lty=3)
+    if (is.null(sd_eval) & is.null(sgma_eval)) {
+      plot(plot_grid(p1, p3, ncol = 2))
+    }
   }
   if (!is.null(sd_eval) &
       !is.null(sgma_eval) & !is.null(grwrComb_eval)) {

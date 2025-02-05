@@ -69,7 +69,7 @@ The statistical power for the fitted model for the initial data set according to
 \code{npg}, \code{time}, \code{grwrControl}, \code{grwrA}, \code{grwrB}, \code{grwrComb}, \code{sd_ranef} and \code{sgma} is also shown in the console.
 }
 \description{
-\emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy evaluation using linear-mixed models
+\emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy using linear-mixed models
 with varying drug combination effect and/or experimental variability.
 }
 \details{
