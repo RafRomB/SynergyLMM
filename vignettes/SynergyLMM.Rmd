@@ -67,7 +67,7 @@ unique(grwth_data$Treatment)
 ```
 
 The output shows the different names for each treatment. We can also see that this column is stored as a `factor`. This is convenient, but not necessary. 
-There are the four columns that the dataset has to have to be able to perform the analysis. The input data could have additional columns, but they will be ignored.
+There are the four columns that the data set has to have to be able to perform the analysis. The input data could have additional columns, but they will be ignored.
 
 ### 1.1 Model Estimation
 
@@ -86,12 +86,12 @@ The function fits the model, which we have stored in the `lmm_ex` object, and wh
 
 There are several additional arguments in `lmmModel()` function:
 
-- `time_start`: can be used to change the day that should be considered as the initial time point, which, by defaul, is the minimum value in `time` column.
+- `time_start`: can be used to change the day that should be considered as the initial time point, which, by default, is the minimum value in `time` column.
 - `time_end`: can be used to indicate the last time point to be included in the analysis, which, by default, is the maximum value in `time` column.
 - `min_observations`: can be used to define the minimum number of observations (data points) that a subject should have to be considered in the analysis.
 - `tum_vol_0`: this arguments allows to control the behavior regarding measurements in which the tumor measurement is 0, and therefore the logarithmic transformation is not possible. The user can choose to to ignore these measurements, or transform them, by adding 1 unit to all measurements before the $\log$ transformation.
 
-We can obtain the values of the **model estimates** using the function `lmmModel_estimates()`. This fucntion retrieves the information about the estimated coefficients (tumor growth rates) for the different experimental groups, as well as the standard deviation of the random effects (between-subject variance) and residuals (within-subject variance).
+We can obtain the values of the **model estimates** using the function `lmmModel_estimates()`. This function retrieves the information about the estimated coefficients (tumor growth rates) for the different experimental groups, as well as the standard deviation of the random effects (between-subject variance) and residuals (within-subject variance).
 
 ```{r}
 lmmModel_estimates(lmm_ex)
@@ -102,7 +102,7 @@ lmmModel_estimates(lmm_ex)
 
 Before performing the synergy analysis, it is important to evaluate the **model diagnostics** to check the main assumptions of the model: the normality of the random effects and the residuals.
 
-It is important to verify that the model is appropriate for the data. Reliable results from statistical tests require that model assumptions—such as normality and homoscedasticity of random effects and residuals—are met. Therefore, users are recommended to thoroughly evaluate the estimated model, as certain experimental datasets may result in highly imprecise estimates. 
+It is important to verify that the model is appropriate for the data. Reliable results from statistical tests require that model assumptions—such as normality and homoscedasticity of random effects and residuals—are met. Therefore, users are recommended to thoroughly evaluate the estimated model, as certain experimental data sets may result in highly imprecise estimates. 
 
 ### 2.1 Random Effects Diagnostics
 
@@ -117,13 +117,13 @@ The other plots address the normalized residuals by subject. The top-right plot 
 
 The console output also shows the results of Levene and Fligner-Killeen homoscedasticity test of the normalized residuals by sample. The homoscedasticity of the residuals among subjects cannot be rejected if the p-value of these tests is not significant.
 
-In this example, it can be observed how the normality of the random effects cannot be rejected, although there are some outlier observations, that may deserver further examination.
+In this example, it can be observed how the normality of the random effects cannot be rejected, although there are some outlier observations, that may deserve further examination.
 
 ### 2.2 Residual Diagnostics
 
 To perform the diagnostics of the random effects we can use `residDiagnostics()` function. `residDiagnostics` provides several plots as well as statistical test for the examination of the normality and homoscedasticity of the normalized residuals of the input model.
 
-One of the assumption of the model fit by `lmmModel()` is that the residuals are normally distributed. For the evaluation of this assumption, residDiagnostics provides Q-Q plots of the normalized residuals together with statistical assessment of their normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be affecting the adequacy of the model.
+One of the assumption of the model fit by `lmmModel()` is that the residuals are normally distributed. For the evaluation of this assumption, `residDiagnostics()` provides Q-Q plots of the normalized residuals together with statistical assessment of their normality using Shapiro-Wilk, D'Agostini and Anderson-Darling normality tests. Additionally, Q-Q plots of the normalized residuals by time point and treatment group are provided to be able to detect time points or treatment groups which could be notably different from the others and be affecting the adequacy of the model.
 
 Scatter plots of the normalized residuals versus fitted values and normalized residuals per time and per treatment are also provided to give information about variability of the residuals and possible outlier observations. These plots are accompanied by Levene and Fligner-Killend homogeneity of variance test results. 
 
@@ -141,7 +141,7 @@ When diagnostic plots and tests show evident violations of the model assumptions
 
 - Define the model using unequal variances for the errors.
 - Transform the time units to improve the model fit and ensure that its assumptions are satisfied. For example, a square root or logarithmic transformation of the time units could help improving the model.
-- Carefully address potential outliers. Individuals or measurements highlited as potential outliers may warrant further investigation to reveal the reasons behind unusual growth behaviors, and potentially exclude these before reanalysis, after careful reporting and justification.
+- Carefully address potential outliers. Individuals or measurements highlighted as potential outliers may warrant further investigation to reveal the reasons behind unusual growth behaviors, and potentially exclude these before reanalysis, after careful reporting and justification.
 
 
 We will try to improved the model by defining unequal variances for the errors. We can do this providing an additional argument, `weights`, when fitting the model, which will be passed to `nlme::lme()` function. For example, we can define the model adding a variance function to represent a different variance per subject using `nlme::varIdent()` function:
@@ -218,11 +218,11 @@ logLikSubjectDisplacements(lmm_ex_var, var_name = "SampleID")
 ```
 Again, subject 8 seems to be having a higher influence in the model. 
 
-In a real data analysis, this results suggest that maybe the researcher should review the data regarding subject 8, to try to identify any reasons for the different behaviour of  this subject.
+In a real data analysis, this results suggest that maybe the researcher should review the data regarding subject 8, to try to identify any reasons for the different behavior of  this subject.
 
 ## 3. Synergy Analysis
 
-After the careful examination of the model diagnostics and being sure that our model is correctly especified, we can proceed to the synergy analysis, using `lmmSynergy()` function. 
+After the careful examination of the model diagnostics and being sure that our model is correctly specified, we can proceed to the synergy analysis, using `lmmSynergy()` function. 
 
 `lmmSynergy()` allows for the calculation of synergy using 3 different references models: Bliss independence, highest single agent and response additivity. The calculation of synergy is based on hypothesis testing on the coefficient estimates from the model fitted by `lmmModel()`.
 
@@ -233,19 +233,19 @@ bliss <- lmmSynergy(lmm_ex_var, method = "Bliss")
 ```
 We can see that some p-values are extremely low, indicating synergy for all time points. 
 
-When a variance structure has been specified, it is recomended set the argument `robust = TRUE`, to use cluster-robust variance estimation using `clubSandwich::vcovCR.lme()`. 
+When a variance structure has been specified, it is recommended to set the argument `robust = TRUE`, to use cluster-robust variance estimation using `clubSandwich::vcovCR.lme()`. 
 
 ```{r, error=TRUE}
 bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE)
 ```
 
-However, as it can be seen, sometimes this can result in some errors, due to the impossibility to fit the model at the earlier time points (due to insuficient data). In these cases, an easy solution is to simply increase the value of the `min_time` argument, to increase the minimum time for which to start calculating the synergy:
+However, as it can be seen, sometimes this can result in some errors, due to the impossibility to fit the model at the earlier time points (due to insufficient data). In these cases, an easy solution is to simply increase the value of the `min_time` argument, to increase the minimum time for which to start calculating the synergy:
 
 ```{r, fig.width=12, fig.height=10}
 bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE, min_time = 6)
 ```
 
-Now we can observe the results, which indicate that the drug combination effect is synergystic through all the time points.
+Now we can observe the results, which indicate that the drug combination effect is synergistic through all the time points.
 
 The synergy analysis results can be obtained from the object as:
 
@@ -280,7 +280,7 @@ Since we performed 1000 simulations, the minimum p-value is 0.001. If we would l
 
 The _post hoc_ (retrospective) power analysis allows to evaluate the statistical power for the provided data set and fitted model. Traditionally, a threshold of 0.8 (80%) is used as an acceptable level of power ([Serdar CC et al., 2021](https://www.biochemia-medica.com/en/journal/31/1/10.11613/BM.2021.010502)).
 
-'SynerLMM' allows for the _post hoc_ power analysis of the synergy hypothesis testing for Bliss and HSA reference models for a given tumor growth data with `PostHocPwr()` function.
+'SynergyLMM' allows for the _post hoc_ power analysis of the synergy hypothesis testing for Bliss and HSA reference models for a given tumor growth data with `PostHocPwr()` function.
 
 Since the drug combination effect is time-dependent, the statistical power vary depending on the time point being analyzed. We can choose which time point to analyse using the `time` argument.
 
@@ -315,7 +315,7 @@ days <- unique(grwth_data$Time)
 estimates <- lmmModel_estimates(lmm_ex_var)
 ```
 
-Now, we can evaluate the _a priori_ power for this experiment, variying the sample size per group. For example, let's evaluate how the sample size varies from 1 to 10 subjects per group:
+Now, we can evaluate the _a priori_ power for this experiment, varying the sample size per group. For example, let's evaluate how the sample size varies from 1 to 10 subjects per group:
 
 ```{r, fig.width=10, fig.height=8}
 PwrSampleSize(npg = 1:10,
@@ -337,7 +337,7 @@ The plot on the left shows the values of the power calculation depending on the 
 
 The number of measurement points per subject is another experimental factor that can influence the experimental design and statistical power. This depends on the duration of tumor growth follow-up and the frequency of the measurements during that period. `PwrTime()` function allows for the _a priori_ power calculation of a a hypothetical two-drugs combination study of synergy depending on the time of follow-up or the frequency of measurements.
 
-For example, the researcher may be interested in studying the statistical power of the experiment depending on the time of follow-up, to decide the appropriate end point. If we set the argument `type = "max"` in `PwrTime()` function, we can evaluate how the power varies at different end times. For this, we need to provide the function with a list of vectors with the times at which the tumor measurements are performed. As we are interested in addressing how the power varies for different study durations, the measurement should be taken at the same intervals.
+For example, the researcher may be interested in studying the statistical power of the experiment depending on the time of follow-up, to decide the appropriate end point. If we set the argument `type = "max"` in `PwrTime()` function, we can evaluate how the power varies at different end times. For this, we need to provide the function with a list of vectors with the times at which the tumor measurements are performed. As we are interested in addressing how the power varies for different study duration, the measurement should be taken at the same intervals.
 
 Let's see an example. Using the estimates from the model we have fitted previously, we can explore how the power varies if the study ends in a range from 9 to 30 days, with measurements performed every 3 days.
 
@@ -349,10 +349,10 @@ max_time <- list(seq(0,9,3), seq(0,12,3), seq(0,15,3),
                  seq(0,27,3), seq(0,30,3))
 ```
 
-Another argument for the function is `npg`, which indicates the sample size per group. As we are interested in calculate teh _a priori_ power for different study duration in our experiment and model, we will use the mean sample size per group in the experiment:
+Another argument for the function is `npg`, which indicates the sample size per group. As we are interested in calculate the _a priori_ power for different study duration in our experiment and model, we will use the mean sample size per group in the experiment:
 
 ```{r}
-# We can calculate the average sample size deviding the number of subjects
+# We can calculate the average sample size dividing the number of subjects
 # by the number of groups, in this case, 4 groups
 (npg <- round(length(unique(grwth_data$subject))/4,0))
 ```
@@ -379,7 +379,7 @@ We can observe that a study with a follow-up time of 18 days would be enough to 
 
 Now, we may also wonder how frequently the measurements should be taken. Is it necessary to take measurements every 3 days, or can we reduce the measurements to every 6 days? 
 
-We can do this by setting the `type = "freq"` argument in `PwrTime()` function. In this case, we need to provide a list of vectors with the tumor measurements with the same maximum time of follow-up, but chaning the intervals at which the measurements have been taken. Let's first define this list. We will evaluate how many measurements are needed in an experiment with a follow-up period of 18 days.
+We can do this by setting the `type = "freq"` argument in `PwrTime()` function. In this case, we need to provide a list of vectors with the tumor measurements with the same maximum time of follow-up, but changing the intervals at which the measurements have been taken. Let's first define this list. We will evaluate how many measurements are needed in an experiment with a follow-up period of 18 days.
 
 ```{r}
 freq_time <- list(seq(0,18,1), seq(0,18,3), seq(0,18,6), seq(0,18,9),seq(0,18,18))
