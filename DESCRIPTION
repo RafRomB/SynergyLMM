@@ -1,6 +1,6 @@
 Package: SynergyLMM
 Title: Statistical Framework for in Vivo Drug Combination Studies
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: 
     c(person("Rafael", "Romero-Becerra", , "r.r.becerra@medisin.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3935-2647")), 
