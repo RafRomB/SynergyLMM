@@ -228,18 +228,13 @@ After the careful examination of the model diagnostics and being sure that our m
 
 We will perform the analysis for the **Bliss independence model**
 
-```{r, fig.width=12, fig.height=10}
-bliss <- lmmSynergy(lmm_ex_var, method = "Bliss")
-```
-We can see that some p-values are extremely low, indicating synergy for all time points. 
-
 When a variance structure has been specified, it is recommended to set the argument `robust = TRUE`, to use cluster-robust variance estimation using `clubSandwich::vcovCR.lme()`. 
 
 ```{r, error=TRUE}
 bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE)
 ```
 
-However, as it can be seen, sometimes this can result in some errors, due to the impossibility to fit the model at the earlier time points (due to insufficient data). In these cases, an easy solution is to simply increase the value of the `min_time` argument, to increase the minimum time for which to start calculating the synergy:
+However, as it can be seen, sometimes this can result in some errors, due to the impossibility to fit the model at the earlier time points (due to convergence problems caused by insufficient data compared to the number of parameters to estimate). In these cases, an easy solution is to simply increase the value of the `min_time` argument, to increase the minimum time for which to start calculating the synergy:
 
 ```{r, fig.width=12, fig.height=10}
 bliss <- lmmSynergy(lmm_ex_var, method = "Bliss", robust = TRUE, min_time = 6)
