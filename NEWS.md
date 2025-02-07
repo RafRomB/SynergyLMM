@@ -1,5 +1,7 @@
 # SynergyLMM 1.0.1
 
+Correcting minor errors in vignette.
+
 # SynergyLMM 1.0.0
 
 ## Initial Release
