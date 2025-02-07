@@ -148,7 +148,7 @@ We will estimate the effect of sample size on statistical power based on the est
 npg <- 3:15
 
 # Obtain model estimates
-lmmestim <- lmmModel_estimates(lmm)
+(lmmestim <- lmmModel_estimates(lmm))
 
 # Obtain time points
 

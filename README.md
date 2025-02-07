@@ -76,92 +76,72 @@ lmmSynergy(lmm, method = "Bliss")
     #> $Contrasts
     #> $Contrasts$Time3
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S  2.5 % 97.5 %
-    #>   -0.0649     0.0574 -1.13    0.258 2.0 -0.177 0.0476
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S  2.5 % 97.5 %
+    #>  b4=b2+b3-b1  -0.0649     0.0574 -1.13    0.258 2.0 -0.177 0.0476
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time6
     #> 
-    #>  Estimate Std. Error      z Pr(>|z|)   S   2.5 % 97.5 %
-    #>   -0.0326     0.0327 -0.996    0.319 1.6 -0.0968 0.0316
+    #>   Hypothesis Estimate Std. Error      z Pr(>|z|)   S   2.5 % 97.5 %
+    #>  b4=b2+b3-b1  -0.0326     0.0327 -0.996    0.319 1.6 -0.0968 0.0316
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time9
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S   2.5 %  97.5 %
-    #>    -0.053     0.0207 -2.56   0.0103 6.6 -0.0935 -0.0125
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1   -0.053     0.0207 -2.56   0.0103 6.6 -0.0935 -0.0125
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time12
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S  2.5 %   97.5 %
-    #>    -0.039     0.0153 -2.55   0.0108 6.5 -0.069 -0.00901
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S  2.5 %   97.5 %
+    #>  b4=b2+b3-b1   -0.039     0.0153 -2.55   0.0108 6.5 -0.069 -0.00901
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time15
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S  2.5 %  97.5 %
-    #>   -0.0401     0.0127 -3.15  0.00161 9.3 -0.065 -0.0152
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S  2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0401     0.0127 -3.15  0.00161 9.3 -0.065 -0.0152
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time18
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0366     0.0101 -3.62   <0.001 11.7 -0.0564 -0.0168
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0366     0.0101 -3.62   <0.001 11.7 -0.0564 -0.0168
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time21
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0299    0.00846 -3.54   <0.001 11.3 -0.0465 -0.0134
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0299    0.00846 -3.54   <0.001 11.3 -0.0465 -0.0134
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time24
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0278    0.00766 -3.63   <0.001 11.8 -0.0428 -0.0128
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0278    0.00766 -3.63   <0.001 11.8 -0.0428 -0.0128
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time27
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 % 97.5 %
-    #>   -0.0275     0.0069 -3.99   <0.001 13.9 -0.0411 -0.014
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 % 97.5 %
+    #>  b4=b2+b3-b1  -0.0275     0.0069 -3.99   <0.001 13.9 -0.0411 -0.014
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time30
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0246    0.00645 -3.81   <0.001 12.8 -0.0372 -0.0119
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0246    0.00645 -3.81   <0.001 12.8 -0.0372 -0.0119
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> 
@@ -202,92 +182,72 @@ lmmSynergy(lmm, method = "HSA")
     #> $Contrasts
     #> $Contrasts$Time3
     #> 
-    #>  Estimate Std. Error      z Pr(>|z|)   S   2.5 % 97.5 %
-    #>   -0.0197     0.0406 -0.486    0.627 0.7 -0.0993 0.0598
+    #>  Hypothesis Estimate Std. Error      z Pr(>|z|)   S   2.5 % 97.5 %
+    #>       b4=b3  -0.0197     0.0406 -0.486    0.627 0.7 -0.0993 0.0598
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time6
     #> 
-    #>  Estimate Std. Error    z Pr(>|z|)   S   2.5 % 97.5 %
-    #>   -0.0347     0.0232 -1.5    0.134 2.9 -0.0801 0.0107
+    #>  Hypothesis Estimate Std. Error    z Pr(>|z|)   S   2.5 % 97.5 %
+    #>       b4=b3  -0.0347     0.0232 -1.5    0.134 2.9 -0.0801 0.0107
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time9
     #> 
-    #>  Estimate Std. Error    z Pr(>|z|)   S   2.5 %  97.5 %
-    #>   -0.0468     0.0146 -3.2  0.00135 9.5 -0.0754 -0.0182
+    #>  Hypothesis Estimate Std. Error    z Pr(>|z|)   S   2.5 %  97.5 %
+    #>       b4=b3  -0.0468     0.0146 -3.2  0.00135 9.5 -0.0754 -0.0182
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time12
     #> 
-    #>  Estimate Std. Error    z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0389     0.0108 -3.6   <0.001 11.6 -0.0601 -0.0177
+    #>  Hypothesis Estimate Std. Error    z Pr(>|z|)    S   2.5 %  97.5 %
+    #>       b4=b3  -0.0389     0.0108 -3.6   <0.001 11.6 -0.0601 -0.0177
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time15
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0388    0.00899 -4.32   <0.001 16.0 -0.0565 -0.0212
+    #>  Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>       b4=b3  -0.0388    0.00899 -4.32   <0.001 16.0 -0.0565 -0.0212
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time18
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S  2.5 %  97.5 %
-    #>    -0.034    0.00715 -4.75   <0.001 18.9 -0.048 -0.0199
+    #>  Hypothesis Estimate Std. Error     z Pr(>|z|)    S  2.5 %  97.5 %
+    #>       b4=b3   -0.034    0.00715 -4.75   <0.001 18.9 -0.048 -0.0199
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time21
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0309    0.00598 -5.17   <0.001 22.0 -0.0426 -0.0192
+    #>  Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>       b4=b3  -0.0309    0.00598 -5.17   <0.001 22.0 -0.0426 -0.0192
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time24
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0288    0.00541 -5.31   <0.001 23.1 -0.0394 -0.0181
+    #>  Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>       b4=b3  -0.0288    0.00541 -5.31   <0.001 23.1 -0.0394 -0.0181
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time27
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S  2.5 %  97.5 %
-    #>   -0.0285    0.00488 -5.84   <0.001 27.5 -0.038 -0.0189
+    #>  Hypothesis Estimate Std. Error     z Pr(>|z|)    S  2.5 %  97.5 %
+    #>       b4=b3  -0.0285    0.00488 -5.84   <0.001 27.5 -0.038 -0.0189
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time30
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0282    0.00456 -6.18   <0.001 30.5 -0.0371 -0.0192
+    #>  Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>       b4=b3  -0.0282    0.00456 -6.18   <0.001 30.5 -0.0371 -0.0192
     #> 
-    #> Term: b4 = b3
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> 
@@ -369,92 +329,72 @@ lmmSynergy(lmm, method = "Bliss", robust = TRUE)
     #> $Contrasts
     #> $Contrasts$Time3
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S  2.5 % 97.5 %
-    #>   -0.0649     0.0574 -1.13    0.258 2.0 -0.177 0.0476
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S  2.5 % 97.5 %
+    #>  b4=b2+b3-b1  -0.0649     0.0574 -1.13    0.258 2.0 -0.177 0.0476
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time6
     #> 
-    #>  Estimate Std. Error      z Pr(>|z|)   S   2.5 % 97.5 %
-    #>   -0.0326     0.0327 -0.996    0.319 1.6 -0.0968 0.0316
+    #>   Hypothesis Estimate Std. Error      z Pr(>|z|)   S   2.5 % 97.5 %
+    #>  b4=b2+b3-b1  -0.0326     0.0327 -0.996    0.319 1.6 -0.0968 0.0316
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time9
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S   2.5 %  97.5 %
-    #>    -0.053     0.0207 -2.56   0.0103 6.6 -0.0935 -0.0125
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1   -0.053     0.0207 -2.56   0.0103 6.6 -0.0935 -0.0125
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time12
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S  2.5 %   97.5 %
-    #>    -0.039     0.0153 -2.55   0.0108 6.5 -0.069 -0.00901
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S  2.5 %   97.5 %
+    #>  b4=b2+b3-b1   -0.039     0.0153 -2.55   0.0108 6.5 -0.069 -0.00901
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time15
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)   S  2.5 %  97.5 %
-    #>   -0.0401     0.0127 -3.15  0.00161 9.3 -0.065 -0.0152
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)   S  2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0401     0.0127 -3.15  0.00161 9.3 -0.065 -0.0152
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time18
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0366     0.0101 -3.62   <0.001 11.7 -0.0564 -0.0168
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0366     0.0101 -3.62   <0.001 11.7 -0.0564 -0.0168
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time21
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0299    0.00846 -3.54   <0.001 11.3 -0.0465 -0.0134
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0299    0.00846 -3.54   <0.001 11.3 -0.0465 -0.0134
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time24
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0278    0.00766 -3.63   <0.001 11.8 -0.0428 -0.0128
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0278    0.00766 -3.63   <0.001 11.8 -0.0428 -0.0128
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time27
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 % 97.5 %
-    #>   -0.0275     0.0069 -3.99   <0.001 13.9 -0.0411 -0.014
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 % 97.5 %
+    #>  b4=b2+b3-b1  -0.0275     0.0069 -3.99   <0.001 13.9 -0.0411 -0.014
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> $Contrasts$Time30
     #> 
-    #>  Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
-    #>   -0.0246    0.00645 -3.81   <0.001 12.8 -0.0372 -0.0119
+    #>   Hypothesis Estimate Std. Error     z Pr(>|z|)    S   2.5 %  97.5 %
+    #>  b4=b2+b3-b1  -0.0246    0.00645 -3.81   <0.001 12.8 -0.0372 -0.0119
     #> 
-    #> Term: b4 = b2 + b3 - b1
-    #> Columns: term, estimate, std.error, statistic, p.value, s.value, conf.low, conf.high 
     #> 
     #> 
     #> 
@@ -620,38 +560,58 @@ residDiagnostics(lmm)
     #> data:  normalized_resid by Treatment
     #> Fligner-Killeen:med chi-squared = 1.5405, df = 3, p-value = 0.673
     #> 
-    #> [1] "Outlier observations"
-    #>     SampleID Time   Treatment        TV        RTV     logRTV      TV0  idx
-    #> 16         2   18     Control  512.1195  2.3886998  0.8707492 214.3926 TRUE
-    #> 41         5    3     Control  197.1398  0.7938990 -0.2307990 248.3185 TRUE
-    #> 51         6    3     Control  175.4958  0.6732778 -0.3955972 260.6588 TRUE
-    #> 65         7   15     Control  357.3550  1.6397816  0.4945630 217.9284 TRUE
-    #> 113       12    9       DrugA  514.0043  3.1708889  1.1540120 162.1010 TRUE
-    #> 122       13    6       DrugA  179.3938  0.8896325 -0.1169469 201.6493 TRUE
-    #> 135       14   15       DrugA  811.5854  5.8214346  1.7615467 139.4133 TRUE
-    #> 149       15   27       DrugA 2182.0193 11.1771236  2.4138692 195.2219 TRUE
-    #> 182       19    6       DrugB  425.3002  2.4226262  0.8848522 175.5534 TRUE
-    #> 221       23    3       DrugB  187.7751  0.7226499 -0.3248305 259.8424 TRUE
-    #> 243       25    9 Combination  185.9586  0.6374488 -0.4502813 291.7232 TRUE
-    #> 272       28    6 Combination  317.8079  2.1773052  0.7780880 145.9639 TRUE
-    #> 284       29   12 Combination  211.5939  0.8481839 -0.1646578 249.4670 TRUE
-    #> 293       30    9 Combination  209.9097  0.8877339 -0.1190832 236.4557 TRUE
-    #> 301       31    3 Combination  171.9011  0.7141648 -0.3366415 240.7023 TRUE
-    #> 305       31   15 Combination  214.8480  0.8925879 -0.1136302 240.7023 TRUE
-    #> 314       32   12 Combination  209.8804  0.8805177 -0.1272452 238.3602 TRUE
+    #> 
+    #> Outlier observations
+    #>     SampleID Time   Treatment        TV        RTV     logRTV      TV0
+    #> 16         2   18     Control  512.1195  2.3886998  0.8707492 214.3926
+    #> 41         5    3     Control  197.1398  0.7938990 -0.2307990 248.3185
+    #> 51         6    3     Control  175.4958  0.6732778 -0.3955972 260.6588
+    #> 65         7   15     Control  357.3550  1.6397816  0.4945630 217.9284
+    #> 113       12    9       DrugA  514.0043  3.1708889  1.1540120 162.1010
+    #> 122       13    6       DrugA  179.3938  0.8896325 -0.1169469 201.6493
+    #> 135       14   15       DrugA  811.5854  5.8214346  1.7615467 139.4133
+    #> 149       15   27       DrugA 2182.0193 11.1771236  2.4138692 195.2219
+    #> 182       19    6       DrugB  425.3002  2.4226262  0.8848522 175.5534
+    #> 221       23    3       DrugB  187.7751  0.7226499 -0.3248305 259.8424
+    #> 243       25    9 Combination  185.9586  0.6374488 -0.4502813 291.7232
+    #> 272       28    6 Combination  317.8079  2.1773052  0.7780880 145.9639
+    #> 284       29   12 Combination  211.5939  0.8481839 -0.1646578 249.4670
+    #> 293       30    9 Combination  209.9097  0.8877339 -0.1190832 236.4557
+    #> 301       31    3 Combination  171.9011  0.7141648 -0.3366415 240.7023
+    #> 305       31   15 Combination  214.8480  0.8925879 -0.1136302 240.7023
+    #> 314       32   12 Combination  209.8804  0.8805177 -0.1272452 238.3602
+    #>     normalized_resid
+    #> 16         -2.175456
+    #> 41         -2.107815
+    #> 51         -2.796859
+    #> 65         -2.948355
+    #> 113         2.013734
+    #> 122        -2.439570
+    #> 135         2.306236
+    #> 149         2.147614
+    #> 182         2.178362
+    #> 221        -2.256830
+    #> 243        -3.153712
+    #> 272         2.352650
+    #> 284        -2.467379
+    #> 293        -2.037821
+    #> 301        -2.012043
+    #> 305        -2.670916
+    #> 314        -2.113725
 
 **Observed versus Predicted Values**
 
 ``` r
 ObsvsPred(lmm)
-#> # Indices of model performance
-#> 
-#> AIC    |   AICc |    BIC | R2 (cond.) | R2 (marg.) |  RMSE | Sigma
-#> ------------------------------------------------------------------
-#> 22.542 | 22.810 | 45.151 |      0.898 |      0.898 | 0.203 | 0.212
 ```
 
 <img src="man/figures/README-obs_vs_pred-1.png" width="100%" />
+
+    #> # Indices of model performance
+    #> 
+    #> AIC    |   AICc |    BIC | R2 (cond.) | R2 (marg.) |  RMSE | Sigma
+    #> ------------------------------------------------------------------
+    #> 22.542 | 22.810 | 45.151 |      0.898 |      0.898 | 0.203 | 0.212
 
 **Influential Diagnostics**
 
@@ -697,7 +657,9 @@ the estimates from the model:
 npg <- 3:15
 
 # Obtain model estimates
-lmmestim <- lmmModel_estimates(lmm)
+(lmmestim <- lmmModel_estimates(lmm))
+#>             Control      DrugA      DrugB Combination   sd_ranef  sd_resid
+#> estimate 0.07855242 0.07491984 0.06306986  0.03487933 0.03946667 0.2124122
 
 # Obtain time points
 
@@ -720,3 +682,18 @@ PwrSampleSize(
 ```
 
 <img src="man/figures/README-pwrsamplesize-1.png" width="100%" />
+
+    #>     N     Power
+    #> 1   3 0.6276569
+    #> 2   4 0.7532860
+    #> 3   5 0.8415346
+    #> 4   6 0.9007933
+    #> 5   7 0.9392189
+    #> 6   8 0.9634444
+    #> 7   9 0.9783655
+    #> 8  10 0.9873764
+    #> 9  11 0.9927265
+    #> 10 12 0.9958562
+    #> 11 13 0.9976632
+    #> 12 14 0.9986944
+    #> 13 15 0.9992767
