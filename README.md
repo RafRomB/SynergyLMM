@@ -19,6 +19,12 @@ You can install the development version of SynergyLMM from
 pak::pak("RafRomB/SynergyLMM")
 ```
 
+Or you can install the CRAN-released version with:
+
+``` r
+install.packages("SynergyLMM")
+```
+
 ## Example Use of SynergyLMM
 
 This is a basic example which shows how to use SynergyLMM to analyze
