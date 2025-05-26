@@ -30,8 +30,8 @@ test_that("Test lmmSynergy with valid input and default parameters (Bliss method
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
-  expect_equal(length(result), 2)
-  expect_named(result, c("Contrasts", "Synergy"))
+  expect_equal(length(result), 3)
+  expect_named(result, c("Contrasts", "Synergy", "Estimates"))
   
   # Check that "Contrasts" is a list and "Synergy" is a data frame
   expect_type(result$Contrasts, "list")
@@ -62,8 +62,8 @@ test_that("Test lmmSynergy with RA method", {
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
-  expect_equal(length(result), 2)
-  expect_named(result, c("Contrasts", "Synergy"))
+  expect_equal(length(result), 3)
+  expect_named(result, c("Contrasts", "Synergy", "Estimates"))
   
   # Check that "Contrasts" is a NULL and "Synergy" is a data frame
   expect_null(result$Contrasts)
@@ -99,7 +99,7 @@ test_that("Test lmmSynergy method = 'RA' robust = TRUE works correctly", {
   result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 1000, robust = TRUE, type = "CR2", show_plot = FALSE)
   
   expect_type(result, "list")
-  expect_named(result, c("Contrasts", "Synergy"))
+  expect_named(result, c("Contrasts", "Synergy", "Estimates"))
   
   # Check that "Contrasts" is a NULL and "Synergy" is a data frame
   expect_null(result$Contrasts)
@@ -163,8 +163,8 @@ test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
-  expect_equal(length(result), 2)
-  expect_named(result, c("Contrasts", "Synergy"))
+  expect_equal(length(result), 3)
+  expect_named(result, c("Contrasts", "Synergy", "Estimates"))
   
   # Check that "Contrasts" is a list and "Synergy" is a data frame
   expect_type(result$Contrasts, "list")
@@ -195,8 +195,8 @@ test_that("Test lmmSynergy with RA method", {
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
-  expect_equal(length(result), 2)
-  expect_named(result, c("Contrasts", "Synergy"))
+  expect_equal(length(result), 3)
+  expect_named(result, c("Contrasts", "Synergy", "Estimates"))
   
   # Check that "Contrasts" is a NULL and "Synergy" is a data frame
   expect_null(result$Contrasts)
@@ -215,8 +215,8 @@ test_that("Test lmmSynergy with RA method and 'robust' = TRUE works correctly", 
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
-  expect_equal(length(result), 2)
-  expect_named(result, c("Contrasts", "Synergy"))
+  expect_equal(length(result), 3)
+  expect_named(result, c("Contrasts", "Synergy", "Estimates"))
   
   # Check that "Contrasts" is a NULL and "Synergy" is a data frame
   expect_null(result$Contrasts)
@@ -234,3 +234,4 @@ test_that("Test lmmSynergy prints warning message if p-value = 0", {
   expect_warning(lmmSynergy(model, method = "RA", robust = TRUE, ra_nsim = 10),
                  "p-values below p<0.1 are approximated to 0. If you used method = 'RA' consider increasing ra_nsim value for more precise p-values.")
 })
+

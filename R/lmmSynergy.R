@@ -73,8 +73,8 @@ NULL
 #' 
 #' - According to the common definition of the CI, a \eqn{CI<1}, \eqn{CI=1}, and \eqn{CI>1} represent synergistic, additive and antagonistic effects, respectively (Yadav et al. (2015), Demidenko and Miller (2019), 
 #' Mao and Guo (2023)), and provides information about the observed drug combination effect versus the expected additive effect provided by the reference synergy model. 
-#' A drug combination effect larger than the expected (\eqn{CI > 1}) would indicate synergism, a drug combination effect equal to the expected (\eqn{CI = 1}) would indicate additivity, 
-#' and a lower drug combination effect than the expected (\eqn{CI < 1}) would indicate antagonism.
+#' A drug combination effect larger than the expected (\eqn{CI < 1}) would indicate synergism, a drug combination effect equal to the expected (\eqn{CI = 1}) would indicate additivity, 
+#' and a lower drug combination effect than the expected (\eqn{CI > 1}) would indicate antagonism.
 #' 
 #' As mentioned above, the results include the synergy results for **each day**. This means that `lmmSynergy` refits the model using the data from `time_start` defined in [lmmModel()] until 
 #' each time point, providing the synergy results for each of these models and for that specific time point. 
@@ -91,6 +91,8 @@ NULL
 #' See [marginaleffects::hypotheses()] for more details.
 #' - `Synergy`: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
 #' the value of the metric estimate (with upper and lower confidence interval bounds) and the p-value, for each time.
+#' - `Estimates`: Data frame with the estimates from each model at each time point, obtained with [`lmmModel_estimates()`] function.
+#' If `robust=TRUE`, sandwich-based robust estimators for the standard errors of the estimated coefficients are reported.
 #' 
 #' If `show_plot = TRUE`, a plot with the synergy results obtained with [plot_lmmSynergy()] is also shown.
 #' @references 
@@ -151,6 +153,7 @@ lmmSynergy <- function(model,
     stop("Invalid 'method' provided. Choose from 'Bliss', 'HSA', or 'RA'.")
   }
   
+  estimates <- data.frame()
   ss <- data.frame()
   ci <- data.frame()
   Contrasts <- list()
@@ -193,6 +196,10 @@ lmmSynergy <- function(model,
     for (d in times) {
       data <- model$data %>% dplyr::filter(.data$Time <= d)
       model_time <- update(model, data = data)
+      model_time_estimates <- lmmModel_estimates(model_time, robust = robust, type = type)
+      model_time_estimates$Time <- d
+      rownames(model_time_estimates) <- paste0("estimates_Time_",d)
+      estimates <- rbind(estimates, model_time_estimates)
       
       # Define final time point for each model
       t2 <- d
@@ -348,6 +355,11 @@ lmmSynergy <- function(model,
     for (d in times) {
       data <- model$data %>% dplyr::filter(.data$Time <= d)
       model_time <- update(model, data = data)
+      model_time_estimates <- lmmModel_estimates(model_time, robust = robust, type = type)
+      model_time_estimates$Time <- d
+      rownames(model_time_estimates) <- paste0("estimates_Time_",d)
+      estimates <- rbind(estimates, model_time_estimates)
+      
       if (robust) {
         Test <- hypotheses(
           model_time,
@@ -397,7 +409,7 @@ lmmSynergy <- function(model,
             " If you used method = 'RA' consider increasing ra_nsim value for",
             " more precise p-values.")
   }
-  result <- list(Contrasts = Contrasts, Synergy = df)
+  result <- list(Contrasts = Contrasts, Synergy = df, Estimates = estimates)
   if(show_plot) {
     plot(plot_lmmSynergy(result)$CI_SS)
   }
