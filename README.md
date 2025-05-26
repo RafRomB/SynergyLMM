@@ -1,9 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SynergyLMM
+# SynergyLMM <a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" align="right" height="138" alt="SynergyLMM vignette" /></a>
 
 <!-- badges: start -->
+
+![CRAN/METACRAN
+Version](https://img.shields.io/cran/v/SynergyLMM?link=https%3A%2F%2Fcran.r-project.org%2Fweb%2Fpackages%2FSynergyLMM%2Findex.html)
 <!-- badges: end -->
 
 A comprehensive statistical framework for designing and analyzing *in
