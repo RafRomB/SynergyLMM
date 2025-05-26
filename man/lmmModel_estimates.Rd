@@ -4,10 +4,16 @@
 \alias{lmmModel_estimates}
 \title{Get estimates from a linear mixed model of tumor growth data}
 \usage{
-lmmModel_estimates(model)
+lmmModel_estimates(model, robust = FALSE, type = "CR2")
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
+
+\item{robust}{If TRUE, sandwich-based robust estimators
+of the standard error of the regression coefficient estimates by \code{\link[clubSandwich:conf_int]{clubSandwich::conf_int()}} are provided.}
+
+\item{type}{Character string specifying which small-sample adjustment should be used when \code{robust = True}. Available options are "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3".
+See "Details" section of \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}} for further information.}
 }
 \value{
 A data frame with the estimated values for the coefficients of the tumor growth for each treatment, their standard error,

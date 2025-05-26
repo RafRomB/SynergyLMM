@@ -551,3 +551,24 @@ test_that("lmmModel_estimates returns correct values for coefficients and standa
   expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))
   expect_equal(result$sd_resid, model$sigma)
 })
+
+
+test_that("lmmModel_estimates returns robust standard error estimates", {
+  model <- lmmModel(test_data, trt_control = "Control",
+                    drug_a = "Drug_A",
+                    drug_b = "Drug_B",
+                    drug_c = "Drug_Z",
+                    combination = "Drug_ABZ")
+  result <- lmmModel_estimates(model, robust = TRUE, type = "CR2")
+  
+  # Check that the coefficients match the model's fixed effects
+  expect_equal(result$sd_Control, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[1,3])
+  expect_equal(result$sd_Drug_A, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[2,3])
+  expect_equal(result$sd_Drug_B, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[3,3])
+  expect_equal(result$sd_Drug_Z, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[4,3])
+  expect_equal(result$sd_Combination, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[5,3])
+  
+  # Check that the standard deviations match the model's random effects and residuals
+  expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))
+  expect_equal(result$sd_resid, model$sigma)
+})

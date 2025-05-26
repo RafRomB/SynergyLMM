@@ -4,6 +4,10 @@
 #' such as for power calculation.
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
+#' @param robust If TRUE, sandwich-based robust estimators
+#' of the standard error of the regression coefficient estimates by [clubSandwich::conf_int()] are provided.
+#' @param type Character string specifying which small-sample adjustment should be used when `robust = True`. Available options are "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3". 
+#' See "Details" section of [clubSandwich::vcovCR()] for further information.
 #' @details
 #' The model estimates provided by `lmmModel_estimates` include:
 #' - Fixed effect coefficients: \eqn{\hat{\beta}_{Control}}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, ( \eqn{\hat{\beta}_{C}}), \eqn{\hat{\beta}_{Combination}}, 
@@ -33,10 +37,20 @@
 #' lmmModel_estimates(lmm)
 #' @export
 
-lmmModel_estimates <- function(model){
+lmmModel_estimates <- function(model, robust = FALSE, type = "CR2"){
   
   # Get table with coefficients of fixed effects and std errors
-  tTable <- summary(model)$tTable[,c("Value", "Std.Error")]
+  
+  # Using sandwich robust estimators
+  if (robust){
+    tTable <- as.data.frame(clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = type)))
+    tTable <- tTable[,c("beta", "SE")]
+  } else {
+    # If not, obtain them directly from the model
+    tTable <- summary(model)$tTable[,c("Value", "Std.Error")]
+  }
+  
+
   # Build table with fixed effects and residuals estimates
   dt <- data.frame(matrix(t(tTable), nrow = 1, byrow = TRUE), sqrt(model$modelStruct$reStruct[[1]][1]), model$sigma)
   
