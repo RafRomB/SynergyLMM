@@ -10,7 +10,7 @@ lmmModel_estimates(model)
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 }
 \value{
-A data frame with the estimated values for the coefficients of the tumor growth for each treatment,
+A data frame with the estimated values for the coefficients of the tumor growth for each treatment, their standard error,
 the standard deviation of the random effects, and the standard deviation of the residuals of the model.
 These values can be useful for the power analysis of the model using \code{\link[=APrioriPwr]{APrioriPwr()}}.
 }
@@ -21,9 +21,9 @@ such as for power calculation.
 \details{
 The model estimates provided by \code{lmmModel_estimates} include:
 \itemize{
-\item Fixed effect coefficients: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}},
-which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
-These are shown in columns \code{control}, \code{drug_a}, \code{drug_b}, and \code{combination}, respectively.
+\item Fixed effect coefficients: \eqn{\hat{\beta}_{Control}}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, ( \eqn{\hat{\beta}_{C}}), \eqn{\hat{\beta}_{Combination}},
+which represent the estimated specific growth rates for the Control, Drug A, Drug B, (Drug C, if present), and Combination groups, respectively.
+\item The standard deviation (sd) corresponding to each of the fixed effect coefficients.
 \item Standard deviation of the random effects (between-subject variance). Column \code{sd_ranef}.
 \item Standard deviation of the residuals (within-subject variance). Column \code{sd_resid}.
 }

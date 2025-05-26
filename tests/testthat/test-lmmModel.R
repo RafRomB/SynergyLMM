@@ -489,9 +489,9 @@ test_that("lmmModel_estimates returns a data frame with correct structure", {
   result <- lmmModel_estimates(model)
   
   expect_s3_class(result, "data.frame")
-  expect_equal(ncol(result), 6)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
+  expect_equal(ncol(result), 10)  # control, sd_control, drug_a, sd_druga, drug_b, sd_drugb, combination, sd_combination, sd_ranef, sd_resid
   expect_equal(rownames(result), "estimate")
-  expect_equal(colnames(result), c("Control", "Drug_A", "Drug_B", "Combination", "sd_ranef", "sd_resid"))
+  expect_equal(colnames(result), c("Control", "sd_Control","Drug_A","sd_Drug_A","Drug_B", "sd_Drug_B", "Combination", "sd_Combination", "sd_ranef", "sd_resid"))
 })
 
 test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
@@ -527,9 +527,9 @@ test_that("lmmModel_estimates returns a data frame with correct structure with 3
   result <- lmmModel_estimates(model)
   
   expect_s3_class(result, "data.frame")
-  expect_equal(ncol(result), 7)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
+  expect_equal(ncol(result), 12)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
   expect_equal(rownames(result), "estimate")
-  expect_equal(colnames(result), c("Control", "Drug_A", "Drug_B", "Drug_Z","Combination", "sd_ranef", "sd_resid"))
+  expect_equal(colnames(result), c("Control", "sd_Control","Drug_A","sd_Drug_A","Drug_B", "sd_Drug_B", "Drug_Z", "sd_Drug_Z", "Combination", "sd_Combination", "sd_ranef", "sd_resid"))
 })
 
 test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {

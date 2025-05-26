@@ -6,13 +6,13 @@
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @details
 #' The model estimates provided by `lmmModel_estimates` include:
-#' - Fixed effect coefficients: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}}, 
-#' which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
-#' These are shown in columns `control`, `drug_a`, `drug_b`, and `combination`, respectively.
+#' - Fixed effect coefficients: \eqn{\hat{\beta}_{Control}}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, ( \eqn{\hat{\beta}_{C}}), \eqn{\hat{\beta}_{Combination}}, 
+#' which represent the estimated specific growth rates for the Control, Drug A, Drug B, (Drug C, if present), and Combination groups, respectively.
+#' - The standard deviation (sd) corresponding to each of the fixed effect coefficients. 
 #' - Standard deviation of the random effects (between-subject variance). Column `sd_ranef`.
 #' - Standard deviation of the residuals (within-subject variance). Column `sd_resid`.
 #' 
-#' @returns A data frame with the estimated values for the coefficients of the tumor growth for each treatment,
+#' @returns A data frame with the estimated values for the coefficients of the tumor growth for each treatment, their standard error,
 #' the standard deviation of the random effects, and the standard deviation of the residuals of the model.
 #' These values can be useful for the power analysis of the model using [`APrioriPwr()`].
 #' @examples
@@ -34,14 +34,21 @@
 #' @export
 
 lmmModel_estimates <- function(model){
-  dt <- data.frame(t(model$coefficients$fixed), sqrt(model$modelStruct$reStruct[[1]][1]), model$sigma)
+  
+  # Get table with coefficients of fixed effects and std errors
+  tTable <- summary(model)$tTable[,c("Value", "Std.Error")]
+  # Build table with fixed effects and residuals estimates
+  dt <- data.frame(matrix(t(tTable), nrow = 1, byrow = TRUE), sqrt(model$modelStruct$reStruct[[1]][1]), model$sigma)
+  
+  # Name columns according to treatments
   trt_names <- names(model$coefficients$fixed)
   trt_names <- sub("Time:Treatment", replacement = "", trt_names)
-  if (ncol(dt) == 7) {
-    colnames(dt) <- c(trt_names[1:4],"Combination", "sd_ranef", "sd_resid")
-  } else {
-    colnames(dt) <- c(trt_names[1:3], "Combination", "sd_ranef", "sd_resid")
-  }
+  trt_names <- trt_names[-length(trt_names)]
+  
+  trt_names <- as.vector(rbind(trt_names, paste0("sd_", trt_names)))
+  
+  colnames(dt) <- c(trt_names,"Combination", "sd_Combination","sd_ranef", "sd_resid")
+  
   rownames(dt) <- "estimate"
   return(dt)
 }
