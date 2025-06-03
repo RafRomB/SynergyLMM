@@ -12,6 +12,33 @@
   CookD.value <- t(dbetaU) %*% vb.inv %*% dbetaU # Compute Cook distance (Gałecki, A., & Burzykowski, T. (2013)
 }
 
+## Leave-one-out prediction
+
+#' @title Helper function for creating the object `lmeUall` containing fitted models
+#' with leave-one-out data
+#' @param cx Subject to remove from the data to build the model
+#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
+#' and fitted using maximum likelihood.
+#' @returns A vector of predicted values via the leave-one-out model fits
+#' @keywords internal
+#' @noRd
+
+.lmeU2 <- function(cx, model){
+  SampleID <- NULL
+  dfU <- subset(model$data, SampleID != cx) ## LOO data
+  maxIter.tmp <- 50
+  repeat{
+    tmp.update <- try(update(model, data = dfU, control = list(maxIter = maxIter.tmp)), silent = T)
+    if (any(class(tmp.update) == "try-error")) {
+      maxIter.tmp <- 2 * maxIter.tmp
+    } else {
+      break
+    }
+  }
+  sum((predict(model, newdata = subset(model$data, SampleID == cx), level = 0) - 
+    predict(tmp.update, newdata = subset(model$data, SampleID == cx), level = 0))^2)
+}
+
 #' @title Cook's distance for the coefficient estimates
 #' @description
 #' `CookDistance` allows the user to identify those subjects with a greater influence in the estimation of the
@@ -65,21 +92,22 @@ CookDistance <- function(model,
                          label_angle = 0,
                          verbose = TRUE) {
   subject.c <- levels(model$data$SampleID)
-  lmeUall <- lapply(subject.c, .lmeU, model = model)
-  names(lmeUall) <- subject.c
+  # lmeUall <- lapply(subject.c, .lmeU, model = model)
+  # names(lmeUall) <- subject.c
   
-  betaUall <- sapply(lmeUall, fixef) # Matrix with betas(-i) estimates
+  # betaUall <- sapply(lmeUall, fixef) # Matrix with betas(-i) estimates
   
-  vcovb <- vcov(model) # Variance-covariance matrix for betas
-  vb.inv <- solve(vcovb) # Inverse of of the var-cov matrix of betas
+  # vcovb <- vcov(model) # Variance-covariance matrix for betas
+  # vb.inv <- solve(vcovb) # Inverse of of the var-cov matrix of betas
   
   beta0 <- fixef(model) # estimated betas
   
-  CookD.num <- apply(betaUall, 2, .CookDfun, beta0 = beta0, vb.inv = vb.inv)
+  # CookD.num <- apply(betaUall, 2, .CookDfun, beta0 = beta0, vb.inv = vb.inv)
+  CookD.num <- sapply(subject.c , .lmeU2, model = model)
   
   n.fixeff <- length(beta0) # Number of fixed effects
   rankX <- n.fixeff # Rank of matrix X
-  CookD <- CookD.num / rankX # Cook's distance Di
+  CookD <- CookD.num / rankX / mean(model$residuals^2) # Cook's distance Di
   
   if(is.na(cook_thr)){
     cook_thr <- round(quantile(CookD, probs = 0.9),3)
