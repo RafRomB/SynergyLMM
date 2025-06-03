@@ -34,15 +34,26 @@ NULL
 #' # Generate plots 
 #' plot_ranefDiagnostics(lmm)
 #' # Access to specific plots
-#' plot_ranefDiagnostics(lmm)[[1]]
-#' plot_ranefDiagnostics(lmm)[[2]]
+#' plot_ranefDiagnostics(lmm)$plots[[1]]
+#' plot_ranefDiagnostics(lmm)$plots[[2]]
 #' @export
-plot_ranefDiagnostics <- function(model){
+#' 
+
+plot_ranefDiagnostics <- function(model) {
   
-  # Individual Plots
-  p1 <- ggplot(nlme::ranef(model), aes(sample = nlme::ranef(model)$Time)) + stat_qq(col = "gray20") + stat_qq_line() +
-    labs(title = "Normal Q-Q Plot of Random Effects") + xlab("Theoretical Quantiles") + ylab("Sample Quantiles") + cowplot::theme_cowplot()+
-    theme(plot.title = element_text(size = 10, hjust = 0.5), axis.title = element_text(size = 12))
+  ranef_mod <- nlme::ranef(model)
+  ranef_names <- colnames(ranef_mod)
+  p1 <- list()
+  for (i in 1:ncol(ranef_mod)){
+    p <- ggplot(ranef_mod, aes(sample = ranef_mod[,ranef_names[i]])) + stat_qq(col = "gray20") + 
+      stat_qq_line() +
+      labs(title = paste("Normal Q-Q Plot of", ranef_names[i],"Random Effects")) + 
+      xlab("Theoretical Quantiles") + ylab("Sample Quantiles") + cowplot::theme_cowplot() +
+      theme(plot.title = element_text(size = 10, hjust = 0.5), axis.title = element_text(size = 12))
+    p1[[i]] <- p
+  }
+  
+  
   p2 <- qqnorm(model, ~resid(., type = "normalized")|SampleID, pch=20, cex = 0.5, col = "gray20",
                main = list("Normal Q-Q Plot of Normalized Residuals by Sample", cex = 0.8), 
                par.strip.text=list(col="black", cex=0.8), xlab = "Normalized Residuals", abline = c(0,1))
@@ -51,7 +62,10 @@ plot_ranefDiagnostics <- function(model){
   p4 <- plot(model, residuals(., type = "normalized") ~ fitted(.)|SampleID, id = 0.05, adj = -0.03, pch = 20, col = "slateblue4", cex=0.75,
              main = list("Normalized Residuals vs Fitted Values by Sample", cex =0.8),par.strip.text=list(col="black", cex=0.8), idLabels = ~Time,
              abline = 0, ylab = "Normalized residuals")
+  p <- append(p1, list(p2,p3,p4))
+  
   # Arranged plots
-  p5 <- cowplot::plot_grid(p1,p2,p3,p4, ncol = 2)
-  return(list(p1,p2,p3,p4,p5))
+  p5 <- cowplot::plot_grid(plotlist = p, ncol = 2)
+  return(list(plots = p, grid = p5))
 }
+

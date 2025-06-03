@@ -41,6 +41,6 @@ lmm <- lmmModel(
 # Generate plots 
 plot_ranefDiagnostics(lmm)
 # Access to specific plots
-plot_ranefDiagnostics(lmm)[[1]]
-plot_ranefDiagnostics(lmm)[[2]]
+plot_ranefDiagnostics(lmm)$plots[[1]]
+plot_ranefDiagnostics(lmm)$plots[[2]]
 }
