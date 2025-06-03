@@ -167,8 +167,19 @@ logLikSubjectDisplacements <- function(model,
                                        var_name = NULL,
                                        verbose = TRUE,
                                        ...) {
+  tryCatch({
+    if (!"explme" %in% class(model)) {
+      stop(
+        "Calculation of likelihood displacements are only available for exponential growth models ('explme')."
+      )
+    }
+  }, error = function(e) {
+    stop("Error in model class: ", e$message)
+  })
   
+  data <- model$data
   model <- update(model, method = "ML")
+  model$data <- data
   
   # Fitting the model to "leave-one-out" data
   

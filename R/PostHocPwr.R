@@ -60,6 +60,18 @@ PostHocPwr <- function(model,
                        pvalue = 0.05,
                        time = NA,
                        ...) {
+  
+  tryCatch({
+    if (!"explme" %in% class(model)) {
+      stop(
+        "Post hoc power calculation is only available for exponential growth models ('explme')."
+      )
+    }
+    
+  }, error = function(e) {
+    stop("Error in model class: ", e$message)
+  })
+  
   # Validate method input
   valid_methods <- c("Bliss", "HSA")
   if (!method %in% valid_methods) {
