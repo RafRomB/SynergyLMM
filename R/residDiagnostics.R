@@ -8,6 +8,10 @@
 #' 
 #' @param model  An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
 #' @param pvalue Threshold for the p-value of outlier observations based on their normalized residuals.
+#' @param norm_test String indicating the function for testing the normality of the normalized residuals. A collection of functions from
+#'  \code{fBasics::\link[fBasics:normalTest]{normalTest}} is available. We recommend using one of "shapiroTest", "dagoTest",
+#'  or "adTest" for performing Shapiro - Wilk, 
+#' D'Agostino, or Anderson - Darling normality test, respectively.
 #' @param verbose Logical indicating if the normality and homoscedasticity tests results, and the list of potential
 #' outlier observations should be printed to the console.
 #' 
@@ -31,8 +35,7 @@
 #' - `plots`: Different plots for evaluating the normality and homocedasticity of the residuals.
 #' - `outliers`: Data frame with the identified outliers based on the Pearson residuals and the value of `pval`. The column `resid.p` contains the
 #' value of the Pearson residuals for each observation.
-#' - `Normality`: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test, 
-#' D'Agostino normality test and Anderson - Darling normality test.
+#' - `Normality`: Results from the test of the normality of the normalized residuals of the model.
 #' - `Levene.test`: List with the Levene homoscedasticity test results of the normalized residuals by Time and Treatment.
 #' - `Fligner.test`: List with the Fligner-Killeen homoscedasticity test results of the normalized residuals by Time and Treatment.
 #' 
@@ -68,7 +71,6 @@
 #' 
 #' # Access results of normality tests
 #' resid_diag$Normality
-#' resid_diag$Normality$Shapiro.test
 #' 
 #' # Access to homoscedasticity test results
 #' 
@@ -79,6 +81,7 @@
 #' @export
 residDiagnostics <- function(model, 
                              pvalue=0.05,
+                             norm_test = "shapiroTest",
                              verbose = TRUE) {
   # Plots
   resid_plot <- plot_residDiagnostics(model)
@@ -88,18 +91,10 @@ residDiagnostics <- function(model,
   
   norm_res <- resid(model, type = "normalized")
   
+  # Normality test
   
-  res_shapiro <- fBasics::shapiroTest(norm_res, description = "Shapiro - Wilk Normality Test of normalized residuals")
-  
-  res_DAgostino <- fBasics::dagoTest(norm_res, description = "D'Agostino Normality Test of normalized residuals")
-  
-  res_ad <- fBasics::adTest(norm_res, description = "Anderson - Darling Normality Test of normalized residuals")
-  
-  Normality <- list(
-    Shapiro.test = res_shapiro,
-    DAgostino.test = res_DAgostino,
-    Anderson.Darling.test = res_ad
-  )
+  norm_test <- getFromNamespace(norm_test, "fBasics")
+  Normality <- norm_test(norm_res)
   
   # Homocedasticity test
   
@@ -128,9 +123,8 @@ residDiagnostics <- function(model,
   outliers <- outliers[,-c(9:10)]
   
   if (verbose) {
-    print(res_shapiro)
-    print(res_DAgostino)
-    print(res_ad)
+    writeLines("\nNormalized Residuals Normality Test")
+    print(Normality)
     
     writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Time")
     print(levene$Time)

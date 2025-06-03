@@ -4,12 +4,22 @@
 \alias{residDiagnostics}
 \title{Diagnostics of residuals of the linear mixed model}
 \usage{
-residDiagnostics(model, pvalue = 0.05, verbose = TRUE)
+residDiagnostics(
+  model,
+  pvalue = 0.05,
+  norm_test = "shapiroTest",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
 \item{pvalue}{Threshold for the p-value of outlier observations based on their normalized residuals.}
+
+\item{norm_test}{String indicating the function for testing the normality of the normalized residuals. A collection of functions from
+\code{fBasics::\link[fBasics:normalTest]{normalTest}} is available. We recommend using one of "shapiroTest", "dagoTest",
+or "adTest" for performing Shapiro - Wilk,
+D'Agostino, or Anderson - Darling normality test, respectively.}
 
 \item{verbose}{Logical indicating if the normality and homoscedasticity tests results, and the list of potential
 outlier observations should be printed to the console.}
@@ -20,8 +30,7 @@ A list with different elements for the diagnostics of the residuals are produced
 \item \code{plots}: Different plots for evaluating the normality and homocedasticity of the residuals.
 \item \code{outliers}: Data frame with the identified outliers based on the Pearson residuals and the value of \code{pval}. The column \code{resid.p} contains the
 value of the Pearson residuals for each observation.
-\item \code{Normality}: List with the results from 3 different test of the normality of the normalized residuals of the model: Shapiro - Wilk normality test,
-D'Agostino normality test and Anderson - Darling normality test.
+\item \code{Normality}: Results from the test of the normality of the normalized residuals of the model.
 \item \code{Levene.test}: List with the Levene homoscedasticity test results of the normalized residuals by Time and Treatment.
 \item \code{Fligner.test}: List with the Fligner-Killeen homoscedasticity test results of the normalized residuals by Time and Treatment.
 }
@@ -74,7 +83,6 @@ resid_diag$Plots[2]
 
 # Access results of normality tests
 resid_diag$Normality
-resid_diag$Normality$Shapiro.test
 
 # Access to homoscedasticity test results
 
