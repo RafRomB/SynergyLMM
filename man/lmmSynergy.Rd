@@ -2,15 +2,42 @@
 % Please edit documentation in R/lmmSynergy.R
 \name{lmmSynergy}
 \alias{lmmSynergy}
-\title{Synergy calculation using linear-mixed models}
+\alias{lmmSynergy.explme}
+\alias{lmmSynergy.gompertzlme}
+\title{Synergy calculation using linear-mixed and non-linear mixed-effect models}
 \usage{
 lmmSynergy(
   model,
   method = "Bliss",
   min_time = 0,
+  padj = "BH",
   robust = FALSE,
   type = "CR2",
-  ra_nsim = 1000,
+  nsim = 1000,
+  show_plot = TRUE,
+  ...
+)
+
+\method{lmmSynergy}{explme}(
+  model,
+  method = "Bliss",
+  min_time = 0,
+  padj = "BH",
+  robust = FALSE,
+  type = "CR2",
+  nsim = 1000,
+  show_plot = TRUE,
+  ...
+)
+
+\method{lmmSynergy}{gompertzlme}(
+  model,
+  method = "Bliss",
+  min_time = 0,
+  padj = "BH",
+  robust = FALSE,
+  type = "CR2",
+  nsim = 1000,
   show_plot = TRUE,
   ...
 )
@@ -19,17 +46,22 @@ lmmSynergy(
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
 \item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
-corresponding to Bliss, highest single agent and response additivity, respectively.}
+corresponding to Bliss, highest single agent, and response additivity, respectively.}
 
 \item{min_time}{Minimun time for which to start calculating synergy.}
 
-\item{robust}{If TRUE, uncertainty is estimated using sandwich-based robust estimators
-of the variance-covariance matrix of the regression coefficient estimates provided by \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.}
+\item{padj}{String indicating the correction method for adjusting p-values. Possible options are "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".
+More details in \code{\link[stats:p.adjust]{stats::p.adjust()}}.}
 
-\item{type}{Character string specifying which small-sample adjustment should be used, with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3".
+\item{robust}{If TRUE, uncertainty is estimated using sandwich-based robust estimators
+of the variance-covariance matrix of the regression coefficient estimates provided by \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}. Sandwich-based robust estimators
+are only available for exponential growth models ('explme').}
+
+\item{type}{Character string specifying which small-sample adjustment should be used if '\code{robust = TRUE}', with available options "CR0", "CR1", "CR1p", "CR1S", "CR2", or "CR3".
 See "Details" section of \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}} for further information.}
 
-\item{ra_nsim}{Number of random sampling to calculate the synergy for Response Additivity model.}
+\item{nsim}{Number of random sampling to calculate the synergy for Response Additivity model, and
+for synergy assessment in Gompertz growth models.}
 
 \item{show_plot}{Logical indicating if a plot with the results of the synergy calculation should be generated.}
 
@@ -42,6 +74,8 @@ The function returns a list with two elements:
 See \code{\link[marginaleffects:hypotheses]{marginaleffects::hypotheses()}} for more details.
 \item \code{Synergy}: Data frame with the synergy results, indicating the model of synergy ("Bliss", "HSA" or "RA"), the metric (combination index and synergy score),
 the value of the metric estimate (with upper and lower confidence interval bounds) and the p-value, for each time.
+\item \code{Estimates}: Data frame with the estimates from each model at each time point, obtained with \code{\link[=lmmModel_estimates]{lmmModel_estimates()}} function.
+For 'explme' exponential tumor growth models, if \code{robust=TRUE}, sandwich-based robust estimators for the standard errors of the estimated coefficients are reported.
 }
 
 If \code{show_plot = TRUE}, a plot with the synergy results obtained with \code{\link[=plot_lmmSynergy]{plot_lmmSynergy()}} is also shown.
@@ -53,10 +87,13 @@ response additivity. The calculation of synergy is based on hypothesis testing o
 }
 \details{
 \code{lmmSynergy} uses the statistical description provided by Demidenko and Miller (2019) for the calculation of synergy. It is based on hypothesis testing
-on the coefficients estimates from the model fitted by \code{\link[=lmmModel]{lmmModel()}}: \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}},
-which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively.
+on the coefficients estimates from the model fitted by \code{\link[=lmmModel]{lmmModel()}}.
+\subsection{Exponential Growth Model}{
 
-\strong{Bliss Indepence Model}
+Estimated coefficients \eqn{\hat{\beta}_C}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, \eqn{\hat{\beta}_{AB}},
+which represent the estimated specific growth rates for the Control, Drug A, Drug B and Combination groups, respectively, are to used to calculate synergy.
+
+\strong{Bliss Independence}
 
 For Bliss model, \code{lmmSynergy} test the following null hypothesis:
 
@@ -68,12 +105,14 @@ For Bliss model, \code{lmmSynergy} test the following null hypothesis:
 
 \strong{Highes Single Agent (HSA)}
 
-\emph{Two-drugs combination experiment}:
 For the HSA model, \code{lmmSynergy} test the following null hypothesis:
+
+\emph{Two-drugs combination experiment}:
+
 \deqn{H_0: \beta_{combination} = \min(\beta_A, \beta_B)}
 
 \emph{Three-drugs combination experiment}:
-For the HSA model, \code{lmmSynergy} test the following null hypothesis:
+
 \deqn{H_0: \beta_{combination} = \min(\beta_A, \beta_B, \beta_C)}
 
 \strong{Response Additivity (RA)}
@@ -91,8 +130,61 @@ For \strong{Bliss} and \strong{HSA} models, \code{lmmSynergy} uses \code{\link[m
 In the case of the \strong{RA} model, the null hypothesis is tested comparing the area under the curve (i.e. cumulative effect from the beginning of a treatment to
 a time point of interest) obtained from each side of the equation for the null hypothesis, based on \code{ra_sim} random samplings from the
 distribution of the coefficients.
+}
 
-\strong{Combination Index and Synergy Score}
+\subsection{Gompertz Growth Model}{
+
+Estimated coefficients \eqn{r_{0_{T_i}}} and \eqn{\rho_{T_i}} are to used to calculate synergy.
+\itemize{
+\item \eqn{r_{0_{T_i}}} is the fixed effect for the initial growth rate for treatment group \eqn{T_i}.
+\item \eqn{\rho_{T_i}} is the fixed effect for the constant accounting for the reduction in the tumor growth rate for treatment group \eqn{T_i}.
+}
+
+The following expressions are simplified with these symbols:
+
+\deqn{\gamma = \frac{r_{0_{Control}}}{\rho_{Control}} \cdot (1-e^{-\rho_{Control}\cdot t})}
+\deqn{A = \frac{r_{0_{DrugA}}}{\rho_{DrugA}} \cdot (1-e^{-\rho_{DrugA}\cdot t})}
+\deqn{B = \frac{r_{0_{DrugB}}}{\rho_{DrugB}} \cdot (1-e^{-\rho_{DrugB}\cdot t})}
+\deqn{C = \frac{r_{0_{DrugC}}}{\rho_{DrugC}} \cdot (1-e^{-\rho_{DrugC}\cdot t})}
+\deqn{\Lambda = \frac{r_{0_{Combination}}}{\rho_{Combination}} \cdot (1-e^{-\rho_{Combination}\cdot t})}
+
+\strong{Bliss Independence}
+
+For Bliss model, \code{lmmSynergy} test the following null hypothesis:
+
+\emph{Two-drugs combination experiment}:
+\deqn{H_0: \Lambda = A + B - \gamma}
+
+\emph{Three-drugs combination experiment}:
+\deqn{H_0: \Lambda = A + B + C- 2\gamma}
+
+\strong{Highes Single Agent (HSA)}
+
+For the HSA model, \code{lmmSynergy} test the following null hypothesis:
+
+\emph{Two-drugs combination experiment}:
+
+\deqn{H_0: \Lambda = \min(A,B)}
+
+\emph{Three-drugs combination experiment}:
+\deqn{H_0: \Lambda = \min(A,B,C)}
+
+\strong{Response Additivity (RA)}
+
+For the RA model, \code{lmmSynergy} test the following null hypothesis:
+
+\emph{Two-drugs combination experiment}:
+\deqn{H_0: e^{\Lambda} = e^{A}+e^{B}-e^{\gamma}}
+
+\emph{Three-drugs combination experiment}:
+\deqn{H_0: e^{\Lambda} = e^{A}+e^{B}+e^{C}-2e^{\gamma}}
+
+For the \strong{Gompertz models}, the null hypothesis is tested comparing the area under the curve (i.e. cumulative effect from the beginning of a treatment to
+a time point of interest) obtained from each side of the equations for the null hypothesis, based on \code{nsim} random samplings from the
+distribution of the coefficients.
+}
+
+\subsection{Combination Index and Synergy Score}{
 
 The results obtained by \code{lmmSynergy} include the synergy score (SS) and combination index (CI) for the model, for each time point, together with their confidence interval,
 and the corresponding p-value. The values of SS and CI provided by \code{lmmSynergy} follow previous definitions of these metrics so they have the same interpretation:
@@ -101,8 +193,8 @@ and the corresponding p-value. The values of SS and CI provided by \code{lmmSyne
 Following this definition, a \eqn{SS>0}, \eqn{SS=0}, and \eqn{SS<0}, represent synergistic, additive and antagonistic effects, respectively.
 \item According to the common definition of the CI, a \eqn{CI<1}, \eqn{CI=1}, and \eqn{CI>1} represent synergistic, additive and antagonistic effects, respectively (Yadav et al. (2015), Demidenko and Miller (2019),
 Mao and Guo (2023)), and provides information about the observed drug combination effect versus the expected additive effect provided by the reference synergy model.
-A drug combination effect larger than the expected (\eqn{CI > 1}) would indicate synergism, a drug combination effect equal to the expected (\eqn{CI = 1}) would indicate additivity,
-and a lower drug combination effect than the expected (\eqn{CI < 1}) would indicate antagonism.
+A drug combination effect larger than the expected (\eqn{CI < 1}) would indicate synergism, a drug combination effect equal to the expected (\eqn{CI = 1}) would indicate additivity,
+and a lower drug combination effect than the expected (\eqn{CI > 1}) would indicate antagonism.
 }
 
 As mentioned above, the results include the synergy results for \strong{each day}. This means that \code{lmmSynergy} refits the model using the data from \code{time_start} defined in \code{\link[=lmmModel]{lmmModel()}} until
@@ -111,9 +203,10 @@ each time point, providing the synergy results for each of these models and for 
 \strong{Uncertainty estimation using robust estimators}
 
 If \code{robust = TRUE}, \code{lmmSynergy} deals with possible model misspecifications, allowing for cluster-robust variance estimation using  \link[clubSandwich:vcovCR.lme]{clubSandwich::vcovCR.lme}.
-When using \code{robust = TRUE}, setting \code{type = "CR2"} is recommended. See more details in \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}.
+When using \code{robust = TRUE}, setting \code{type = "CR2"} is recommended. See more details in \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()}}. This option is only available for 'explme' exponential tumor growth models.
 
 \emph{Note}: When a variance structure has been specified in the model it is recommended to use always \code{robust = TRUE} to get a better estimation.
+}
 }
 \examples{
 # Load the example data
