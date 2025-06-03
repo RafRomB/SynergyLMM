@@ -14,12 +14,11 @@
 
 ## Leave-one-out prediction
 
-#' @title Helper function for creating the object `lmeUall` containing fitted models
-#' with leave-one-out data
+#' @title Helper function for calculating Cook's distance with leave-one-out data
 #' @param cx Subject to remove from the data to build the model
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
 #' and fitted using maximum likelihood.
-#' @returns A vector of predicted values via the leave-one-out model fits
+#' @returns Sum of squared errors via the leave-one-out model fits
 #' @keywords internal
 #' @noRd
 
@@ -35,8 +34,8 @@
       break
     }
   }
-  sum((predict(model, newdata = subset(model$data, SampleID == cx), level = 0) - 
-    predict(tmp.update, newdata = subset(model$data, SampleID == cx), level = 0))^2)
+  sum((predict(model, newdata = model$data, level = 0) - 
+    predict(tmp.update, newdata = model$data, level = 0))^2)
 }
 
 #' @title Cook's distance for the coefficient estimates
