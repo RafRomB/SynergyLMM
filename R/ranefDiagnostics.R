@@ -81,6 +81,7 @@ ranefDiagnostics <- function(model,
   # Plots
   ranef_plot <- plot_ranefDiagnostics(model)
   plot(ranef_plot$grid)
+  ranef_plot <- ranef_plot$plots
   
   # Normality test
   
