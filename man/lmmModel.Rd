@@ -6,6 +6,7 @@
 \usage{
 lmmModel(
   data,
+  grwth_model = "exp",
   sample_id = "SampleID",
   time = "Time",
   treatment = "Treatment",
@@ -20,12 +21,15 @@ lmmModel(
   min_observations = 1,
   show_plot = TRUE,
   tum_vol_0 = "ignore",
+  start_values = c(0.05, 0.01),
   ...
 )
 }
 \arguments{
 \item{data}{A data frame with the tumor growth data, in long format.
 It must contain at least the following columns: mice IDs, time of follow-up (numeric number), treatment and tumor volume (numeric number).}
+
+\item{grwth_model}{Tumor growth model to use. Possible options are "exp", for exponential tumor growth model, or "gompertz" for Gompertz tumor growth model.}
 
 \item{sample_id}{String indicating the name of the column with the mice IDs.}
 
@@ -60,34 +64,62 @@ and the model calculated marginal slope for each treatment, should be produced.}
 transformation is not possible. Possible options are 'ignore' (default), to ignore these measurements, or 'transform', to add 1 unit to all
 measurements before the log transformation.}
 
-\item{...}{Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}}.}
+\item{start_values}{Numeric vector of length 2 with initial estimates for the fixed effects of the Gompertz model (\eqn{r_0, \rho}). It can be set
+to "selfStart", in which case initial values will be derived from a Gompertz model derived from a call to \code{stats::\link[stats:nls]{nls}}}
+
+\item{...}{Additional arguments to be passed to \code{nlme::\link[nlme:lme]{lme}} or \code{nlme::\link[nlme:nlme]{nlme}}.}
 }
 \value{
-An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) representing the linear mixed-effects model fit. If \code{show_plot = TRUE}, the plot
+An object of class "lme" (see \code{nlme::\link[nlme:lme]{lme}} for details) or "nlme" (see \code{nlme::\link[nlme:nlme]{nlme}} for details) representing the linear mixed-effects model fit.
+If \code{show_plot = TRUE}, the plot
 of the tumor growth data obtained with \code{\link[=plot_lmmModel]{plot_lmmModel()}} is also shown.
 }
 \description{
-\code{lmmModel()} fits a linear mixed effect model from a tumor growth dataset. The input data frame must be in long format and include at least the following columns: column with the sample ids,
+\code{lmmModel()} fits a mixed effect model from a tumor growth dataset. The input data frame must be in long format and include at least the following columns: column with the sample ids,
 column with the time at which each measurement has been done, a column indicating the treatment group, and a column with the tumor measurement (e.g. tumor volume).
 }
 \details{
-\code{lmmModel()} relies in the assumption that tumor growth follows an exponential kinetics. Any departure from this assumption can be tested using the diagnostics functions \code{\link[=ranefDiagnostics]{ranefDiagnostics()}},
+\code{lmmModel()} fits a mixed effect model describing the tumor growth. Currently, two growth kinetics models are available: exponential growth, and Gompertz growth.
+
+\strong{Exponential}
+
+\code{lmmModel()} will fit a linear mixed-effect model (LMM) assuming that the tumor growth follows an exponential kinetics. Any departure from this assumption can be tested using the diagnostics functions \code{\link[=ranefDiagnostics]{ranefDiagnostics()}},
 \code{\link[=residDiagnostics]{residDiagnostics()}}, and \code{\link[=ObsvsPred]{ObsvsPred()}}.
 
-The model formula for the linear mixed-effect fitted model is:
+The model formula for the LMM following the \strong{exponential tumor growth} is:
 \deqn{\log RTV_{i}(t) = \beta_{T_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
-
-where \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}. The coefficient
-\eqn{\beta_{T_i}} represents the fixed effectsat time \eqn{t} for each  treatment \eqn{T_i}, where \eqn{T_i \in \{Control, DrugA, DrugB, Combination\}} in the case of
+\itemize{
+\item \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}.
+\item \eqn{\beta_{T_i}} represents the fixed effects at time \eqn{t} for each  treatment \eqn{T_i}, where \eqn{T_i \in \{Control, DrugA, DrugB, Combination\}} in the case of
 two-drugs combination experiments, or \eqn{T_i \in \{Control, DrugA, DrugB, DrugC, Combination\}} in the case of three-drugs combination experiments, and indicates the
 tumor-specific growth rate for each treatment group.
+\item \eqn{b_i \cdot t} corresponds to the subject-specific random slope that takes into account the longitudinal nature of the data, where \eqn{b_i \sim \mathcal{N}(0,\sigma^2_b)} is the random effect for subject \eqn{i}.
+\item \eqn{\varepsilon_{i}(t) \sim \mathcal{N}(0,\sigma^2)} is the residual error term.
+}
 
-Term \eqn{b_i \cdot t} corresponds to the subject-specific random slope that takes into account the longitudinal nature of the data, where \eqn{b_i} is the random effect for subject \eqn{i}.
-\eqn{\varepsilon_{i}(t)} is the residual random term for subject \eqn{i} at time \eqn{t}.
+\strong{Gompertz}
 
-The implementation of the linear mixed model in \code{lmmModel()} is done using \code{nlme::\link[nlme:lme]{lme}}, which also allows for the
+\code{lmmModel()} will fit a non-linear mixed effect (NLME) model assuming the tumor growth follows a Gompertz growth kinetics. Any departure from this assumption can be tested using the diagnostics functions \code{\link[=ranefDiagnostics]{ranefDiagnostics()}},
+\code{\link[=residDiagnostics]{residDiagnostics()}}, and \code{\link[=ObsvsPred]{ObsvsPred()}}.
+
+The model formula for the non-linear mixed-effect model following the \strong{Gompertz tumor growth} is:
+\deqn{\log RTV_{i}(t) = \frac{r_{0_{T_i}}+b_{0_i}}{\rho_{T_i}+b_{1_i}}(1-e^{-(\rho_{T_i}+b_{1_i})\cdot t})+\varepsilon_{i}(t).}
+\itemize{
+\item \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}.
+\item \eqn{T_i \in \{Control, DrugA, DrugB, Combination\}} in the case of
+two-drugs combination experiments, or \eqn{T_i \in \{Control, DrugA, DrugB, DrugC, Combination\}} in the case of three-drugs combination experiments,
+indicates the treatment groupt of individual \eqn{i}.
+\item \eqn{r_{0_{T_i}}} is the fixed effect for the initial growth rate for treatment group \eqn{T_i}.
+\item \eqn{\rho_{T_i}} is the fixed effect for the constant accounting for the reduction in the tumor growth rate for treatment group \eqn{T_i}.
+\item \eqn{b_{0_i} \sim \mathcal{N}(0,\sigma^2_{{r_0}})} is the random effect on \eqn{r_0} for individual \eqn{i}.
+\item \eqn{b_{1_i} \sim \mathcal{N}(0,\sigma^2_{{\rho}})} is the random effect on \eqn{\rho} for individual \eqn{i}.
+\item \eqn{\varepsilon_{i}(t) \sim \mathcal{N}(0,\sigma^2)} is the residual error term.
+}
+
+The implementation of the linear mixed model in \code{lmmModel()} is done using \code{nlme::\link[nlme:lme]{lme}} for the exponential model, or \code{nlme::\link[nlme:nlme]{nlme}}
+for the Gompertz model. Both also allow for the
 specification of within-group correlations structures and/or unequal variances. These, and additional parameters,
-can be passed to the \code{nlme::\link[nlme:lme]{lme}} function through the \code{...} argument for fitting the model (see examples below).
+can be passed to the \code{nlme::\link[nlme:lme]{lme}} or \code{nlme::\link[nlme:nlme]{nlme}} functions through the \code{...} argument for fitting the model (see examples below).
 }
 \examples{
 data("grwth_data")
@@ -148,6 +180,20 @@ lmmModel(
  weights = nlme::varIdent(form = ~1|Time)
  )
 
+# Fit a model using the Gompertz model
+
+lmmModel(
+data = grwth_data, 
+grwth_model = "gompertz", # Selecting Gompertz model
+sample_id = "subject",
+time = "Time",
+treatment = "Treatment",
+tumor_vol = "TumorVolume",
+trt_control = "Control",
+drug_a = "DrugA",
+drug_b = "DrugB",
+combination = "Combination"
+)
 
 
 }
