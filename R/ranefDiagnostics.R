@@ -1,3 +1,5 @@
+#' @importFrom utils getFromNamespace
+#' @importFrom fBasics normalTest
 # Random Effects Diagnostics ----
 #' @title Diagnostics of random effects of the linear mixed model
 #' 
@@ -5,7 +7,11 @@
 #' `ranefDiagnostics` provides several plots as well as statistical test for the examination
 #' of the normality of the random effects of the input model.
 #' 
-#' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
+#' @param model An object of class "lme" or "nlme" representing the mixed-effects model fitted by [`lmmModel()`].
+#' @param norm_test String indicating the function for testing the normality of the random effects. A collection of functions from
+#'  \code{fBasics::\link[fBasics:normalTest]{normalTest}} is available. We recommend using one of "shapiroTest", "dagoTest",
+#'  or "adTest" for performing Shapiro - Wilk, 
+#' D'Agostino, or Anderson - Darling normality test, respectively.
 #' @param verbose Logical indicating if the normality and homoscedasticity tests results should be printed to the console.
 #' @details
 #' One of the assumptions of the model obtained with [`lmmModel()`] (as in any other linear mixed model) is that
@@ -26,8 +32,7 @@
 #' 
 #' @returns A list with different elements for the diagnostics of the random effects are produced:
 #' - `plots`: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
-#' - `Normality`: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test, 
-#' D'Agostino normality test and Anderson - Darling normality test.
+#' - `Normality`: Results from the test of the normality of the random effects.
 #' - `Levene.test`: results from Levene homoscedasticity test ([car::leveneTest()]) of the normalized residuals by SampleID (i.e., by subject).
 #' - `Fligner.test`: results from Fligner homoscedasticity test ([stats::fligner.test()]) of the normalized residuals by SampleID (i.e., by subject).
 #' 
@@ -62,8 +67,6 @@
 #' 
 #' ranef_diag$Normality
 #' 
-#' ranef_diag$Normality$Shapiro.test
-#' 
 #' # Access to homoscedasticity tests of residuals by subject
 #' 
 #' ranef_diag$Levene.test
@@ -73,29 +76,27 @@
 #' @export
 
 ranefDiagnostics <- function(model,
+                             norm_test = "shapiroTest",
                              verbose = TRUE) {
   # Plots
   ranef_plot <- plot_ranefDiagnostics(model)
-  plot(ranef_plot[[5]])
+  plot(ranef_plot$grid)
   
   # Normality test
   
-  ranef_shapiro <- fBasics::shapiroTest(nlme::ranef(model)$Time, 
-                                          title = "Shapiro - Wilk Normality Test of random effects")
+  norm_test <- getFromNamespace(norm_test, "fBasics")
   
-  if (length(nlme::ranef(model)$Time) < 20) {
-    ranef_DAgostino <- warning("Sample size must be at least 20 for D'Agostino Normality Test")
-  } else {
-    ranef_DAgostino <- fBasics::dagoTest(nlme::ranef(model)$Time, title = "D'Agostino Normality Test of random effects")
+  ranef_mod <- nlme::ranef(model)
+  ranef_names <- colnames(ranef_mod)
+  Normality <- list()
+  
+  for (i in 1:ncol(ranef_mod)) {
+    Normality[[i]] <- norm_test(ranef_mod[,ranef_names[i]],
+                                 description = paste("Normality Test of",
+                                 ranef_names[i],"random effects"))
   }
   
-  ranef_ad <- fBasics::adTest(nlme::ranef(model)$Time, title = "Anderson - Darling Normality Test of random effects")
-  
-  Normality <- list(
-    Shapiro.test = ranef_shapiro,
-    DAgostino.test = ranef_DAgostino,
-    Anderson.Darling.test = ranef_ad
-  )
+  names(Normality) <- ranef_names
   
   # Homoscedasticity test
   
@@ -114,9 +115,8 @@ ranefDiagnostics <- function(model,
   fligner <- fligner.test(normalized_resid ~ SampleID, data = norm_res)
   
   if (verbose) {
-    print(ranef_shapiro)
-    print(ranef_DAgostino)
-    print(ranef_ad)
+    writeLines("\nNormality Test of Random Effects")
+    print(Normality)
     
     writeLines("\nNormalized Residuals Levene Homoscedasticity Test by Sample")
     print(levene)
@@ -134,6 +134,4 @@ ranefDiagnostics <- function(model,
     )
   ))
 }
-
-
 

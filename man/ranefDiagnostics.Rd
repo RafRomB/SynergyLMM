@@ -4,10 +4,15 @@
 \alias{ranefDiagnostics}
 \title{Diagnostics of random effects of the linear mixed model}
 \usage{
-ranefDiagnostics(model, verbose = TRUE)
+ranefDiagnostics(model, norm_test = "shapiroTest", verbose = TRUE)
 }
 \arguments{
-\item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
+\item{model}{An object of class "lme" or "nlme" representing the mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
+
+\item{norm_test}{String indicating the function for testing the normality of the random effects. A collection of functions from
+\code{fBasics::\link[fBasics:normalTest]{normalTest}} is available. We recommend using one of "shapiroTest", "dagoTest",
+or "adTest" for performing Shapiro - Wilk,
+D'Agostino, or Anderson - Darling normality test, respectively.}
 
 \item{verbose}{Logical indicating if the normality and homoscedasticity tests results should be printed to the console.}
 }
@@ -15,8 +20,7 @@ ranefDiagnostics(model, verbose = TRUE)
 A list with different elements for the diagnostics of the random effects are produced:
 \itemize{
 \item \code{plots}: Different plots for evaluating the normality and homoscedasticity of the random effects are produced.
-\item \code{Normality}: List with the results from 3 different test of the normality of the random effects: Shapiro - Wilk normality test,
-D'Agostino normality test and Anderson - Darling normality test.
+\item \code{Normality}: Results from the test of the normality of the random effects.
 \item \code{Levene.test}: results from Levene homoscedasticity test (\code{\link[car:leveneTest]{car::leveneTest()}}) of the normalized residuals by SampleID (i.e., by subject).
 \item \code{Fligner.test}: results from Fligner homoscedasticity test (\code{\link[stats:fligner.test]{stats::fligner.test()}}) of the normalized residuals by SampleID (i.e., by subject).
 }
@@ -68,8 +72,6 @@ ranef_diag$Plots[2]
 # Access to normality tests
 
 ranef_diag$Normality
-
-ranef_diag$Normality$Shapiro.test
 
 # Access to homoscedasticity tests of residuals by subject
 
