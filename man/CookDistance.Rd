@@ -27,8 +27,8 @@ If saved to a variable, the function returns a vector with the Cook's distances 
 \eqn{\beta} (tumor growth rate) for the treatment group, based in the calculation of Cook's distances.
 }
 \details{
-The identification of the subjects with a greater influence in each estimated \eqn{\beta} representing the tumor growth is based on the calculation of Cook's distances, as
-described in Gałecki and Burzykowsk (2013). To compute the Cook's distance for the \eqn{\beta} estimates (i.e., the contribution to each subject to the coefficient of its treatment group),
+The identification of the subjects with a greater influence in each estimated \eqn{\beta} representing the fixed effects is based on the calculation of Cook's distances, as
+described in Gałecki and Burzykowsk (2013). To compute the Cook's distance for the \eqn{\beta} estimates (i.e., the contribution to each subject to the coefficients of its treatment group),
 first a matrix containing the leave-one-subject-out estimates or \eqn{\beta} is calculated. Then, the Cook's distances are calculated according to:
 
 \deqn{D_i \equiv  \frac{(\hat{\beta} - \hat{\beta}_{(-i)})[\widehat{Var(\hat{\beta})}]^{-1}(\hat{\beta} - \hat{\beta}_{(-i)})}{rank(X)}}
