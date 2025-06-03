@@ -40,7 +40,6 @@ test_that("ranefDiagnostics returns the correct structure and classes", {
   
   # Check that Normality is a list and contains the correct elements
   expect_type(diagnostics$Normality, "list")
-  expect_named(diagnostics$Normality, c("Shapiro.test", "DAgostino.test", "Anderson.Darling.test"))
   
   # Check that Levene.test is a list
   expect_type(diagnostics$Levene.test, "list")
@@ -53,18 +52,9 @@ test_that("Normality tests return the correct classes", {
   diagnostics <- ranefDiagnostics(model)
   
   # Check the class of Shapiro-Wilk test result
-  expect_s4_class(diagnostics$Normality$Shapiro.test, "fHTEST")
-  
-  # Check the class of Anderson-Darling test result
-  expect_s4_class(diagnostics$Normality$Anderson.Darling.test, "fHTEST")
-  
-  # Check if D'Agostino test was skipped due to sample size
-  if (is(diagnostics$Normality$DAgostino.test, "character")) {
-    expect_match(diagnostics$Normality$DAgostino.test, "Sample size must be at least 20")
-  } else {
-    expect_s4_class(diagnostics$Normality$DAgostino.test, "fHTEST")
-  }
+  expect_s4_class(diagnostics$Normality$Time, "fHTEST")
 })
+
 
 test_that("Levene and Fligner tests return the correct classes", {
   diagnostics <- ranefDiagnostics(model)
@@ -95,11 +85,9 @@ test_that("ranefDiagnostics handles small sample sizes for D'Agostino test", {
     show_plot = FALSE
   )
   
-  diagnostics <- ranefDiagnostics(small_model)
+  expect_error(ranefDiagnostics(small_model, norm_test = "dagoTest"), 
+               regexp = "sample size must be at least 20")
   
-  # Check if D'Agostino test was skipped due to small sample size
-  expect_true(is.character(diagnostics$Normality$DAgostino.test))
-  expect_match(diagnostics$Normality$DAgostino.test, "Sample size must be at least 20")
 })
 
 # Tests for residDiagnostics ----
@@ -152,15 +140,9 @@ test_that("residDiagnostics performs and returns results from normality tests", 
   
   # Check that the result contains a "Normality" list
   expect_true("Normality" %in% names(result))
-  expect_type(result$Normality, "list")
-  
-  # Ensure all three tests are present
-  expect_true(all(c("Shapiro.test", "DAgostino.test", "Anderson.Darling.test") %in% names(result$Normality)))
-  
+
   # Check that each test result is a valid object (not NULL)
-  expect_s4_class(result$Normality$Shapiro.test, "fHTEST")
-  expect_s4_class(result$Normality$DAgostino.test, "fHTEST")
-  expect_s4_class(result$Normality$Anderson.Darling.test, "fHTEST")
+  expect_s4_class(result$Normality, "fHTEST")
 })
 
 test_that("residDiagnostics generates diagnostic plots", {
@@ -494,7 +476,20 @@ test_that("Test logLikSubjectDisplacements with valid input without varIdent str
 test_that("Test logLikSubjectDisplacements with valid input with varIdent structure", {
   
   # Update model to include varStruct
-  model <- update(model, weights = varIdent(form = ~1|SampleID))
+  model <- lmmModel(
+    data = test_data,
+    sample_id = "SampleID",
+    time = "Time",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    combination = "Drug_AB",
+    time_start = 0,
+    min_observations = 1,
+    show_plot = FALSE,
+    weights = varIdent(form = ~1|SampleID))
   
   # Call the function with valid input and correct var_name
   result <- logLikSubjectDisplacements(model, var_name = "SampleID")
@@ -509,7 +504,20 @@ test_that("Test logLikSubjectDisplacements with valid input with varIdent struct
 test_that("Test logLikSubjectDisplacements throws an error with missing var_name when needed", {
   
   # Update model to include varStruct
-  model <- update(model, weights = varIdent(form = ~1|SampleID))
+  model <- lmmModel(
+    data = test_data,
+    sample_id = "SampleID",
+    time = "Time",
+    treatment = "Treatment",
+    tumor_vol = "TV",
+    trt_control = "Control",
+    drug_a = "Drug_A",
+    drug_b = "Drug_B",
+    combination = "Drug_AB",
+    time_start = 0,
+    min_observations = 1,
+    show_plot = FALSE,
+    weights = varIdent(form = ~1|SampleID))
   
   # Call the function without providing var_name when variance structure is used
   expect_error(logLikSubjectDisplacements(model), 
@@ -536,6 +544,7 @@ test_that("Test logLikSubjectDisplacements output consistency", {
   expect_named(result)
   expect_equal(length(result), length(unique(test_data$SampleID)))
 })
+
 
 # Tests for .CookDfun ----
 
