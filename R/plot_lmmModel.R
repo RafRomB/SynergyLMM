@@ -59,27 +59,6 @@ plot_lmmModel <- function(model,
          "in the arguments.")
   }
   
-  if (!is.na(drug_c)) {
-    segment_data <- data.frame(x = rep(0,5), 
-                               xend = model$dt1 %>% dplyr::group_by(.data$Treatment) %>% dplyr::summarise(Max = max(.data$Time)) %>% dplyr::select(.data$Max),
-                               y = rep(0, 5), 
-                               yend = nlme::fixef(model))
-  } else {
-    segment_data <- data.frame(x = rep(0,4), 
-                               xend = model$dt1 %>% dplyr::group_by(.data$Treatment) %>% dplyr::summarise(Max = max(.data$Time)) %>% dplyr::select(.data$Max),
-                               y = rep(0, 4), 
-                               yend = nlme::fixef(model))
-  }
-  
-  
-  
-  segment_data$yend <- segment_data$Max*segment_data$yend
-  colnames(segment_data) <- c("x", "xend", "y", "yend")
-  if (!is.na(drug_c)){
-    segment_data$Treatment <- factor(x = c(trt_control, drug_a, drug_b, drug_c, combination), levels = c(trt_control, drug_a, drug_b, drug_c, combination))
-  } else {
-    segment_data$Treatment <- factor(x = c(trt_control, drug_a, drug_b, combination), levels = c(trt_control, drug_a, drug_b, combination))
-  }
   hline <- data.frame(yintercept = 0)
   trt_col <- c("#3c3c3b", "#d50c52", "#00a49c", "#ff7f55","#601580")
   
@@ -87,16 +66,27 @@ plot_lmmModel <- function(model,
     trt_col <- trt_col[c(1:3,5)]
   }
   
-  p <- model$dt1 %>% 
+  plot_df <- model$data %>%
+    dplyr::mutate(fixed_effect = predict(model, level = 0))  # level = 0 = fixed only
+  
+  # Add manually data at time zero
+  initial_points <- model$data %>%
+    dplyr::distinct(.data$SampleID, .data$Treatment) %>%
+    dplyr::mutate(Time = 0, logRTV = 0)
+  initial_points <- initial_points %>%
+    dplyr::mutate(fixed_effect = 0)
+  
+  plot_df <- dplyr::bind_rows(plot_df, initial_points)
+  
+  
+  p <- plot_df %>% 
     ggplot(aes(.data$Time, .data$logRTV, color = .data$Treatment)) +
     geom_line(aes(group = .data$SampleID), alpha = 0.33) + geom_point(aes(group = .data$SampleID)) +
+    geom_line(aes(y = .data$fixed_effect, group = .data$SampleID), lwd = 1, alpha = 0.8) +
     ylab("log (RTV)") + 
     xlab("Time since start of treatment") + 
     scale_x_continuous(breaks = unique(model$dt1$Time)) + 
     cowplot::theme_cowplot() + facet_wrap(~Treatment) +
-    geom_segment(data = segment_data, 
-                 aes(x = .data$x, xend = .data$xend, y = .data$y, yend = .data$yend), 
-                 lwd = 1.25, alpha = 0.75) + 
     geom_hline(data = hline, aes(yintercept = .data$yintercept), linetype = "dashed") +
     scale_color_manual(values = trt_col)
   return(p)
