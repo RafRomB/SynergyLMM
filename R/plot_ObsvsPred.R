@@ -31,7 +31,7 @@ NULL
 #' @export
 plot_ObsvsPred <- function(model, nrow = 4, ncol = 5){
   TV.df <- model$data
-  aug.Pred <- nlme::augPred(model, primary = ~Time, level = 0:1, length.out = 2, minimum = 0)
+  aug.Pred <- nlme::augPred(model, primary = ~Time, level = 0:1, length.out = 51, minimum = 0)
   plot(aug.Pred, layout = c(ncol, nrow, 1), lty = c(1,2),
        key = list(lines = list(lty = c(1,2), col = c("slateblue", "orange")),
                   text = list(c("Marginal", "Subject-specific")),
