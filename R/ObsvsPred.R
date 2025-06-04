@@ -48,6 +48,7 @@
 #' ObsvsPred(model = lmm, nrow = 4, ncol = 8)
 #' @export
 ObsvsPred <- function(model, nrow = 4, ncol = 5, ...) {
+  model <- update(model, method = "ML")
   obsvspred <- performance::model_performance(model, metrics = c("AIC", "AICc", "BIC", "R2", "RMSE", "SIGMA"), ...)
   plot(plot_ObsvsPred(model, nrow, ncol))
   return(obsvspred)
