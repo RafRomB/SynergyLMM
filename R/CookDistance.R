@@ -27,7 +27,9 @@
   dfU <- subset(model$data, SampleID != cx) ## LOO data
   maxIter.tmp <- 50
   repeat{
-    tmp.update <- try(update(model, data = dfU, control = list(maxIter = maxIter.tmp)), silent = T)
+    tmp.update <- suppressWarnings(
+      try(update(model, data = dfU, control = list(maxIter = maxIter.tmp)), silent = T)
+    )
     if (any(class(tmp.update) == "try-error")) {
       maxIter.tmp <- 2 * maxIter.tmp
     } else {
