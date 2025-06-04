@@ -416,7 +416,7 @@ test_that("Test .lLik function throws an error with missing var_name when needed
   
   # Call the function without providing var_name when variance structure is used
   expect_error(.lLik(1, model, lmeUall_varIdent, var_name = NULL),
-               "`var_name` cannot be NULL if a variance estructure has been specified in the model")
+               "`var_name` cannot be NULL if a variance structure has been specified in the model")
 })
 
 test_that("Test .lLik function with different variance structures", {
@@ -521,7 +521,7 @@ test_that("Test logLikSubjectDisplacements throws an error with missing var_name
   
   # Call the function without providing var_name when variance structure is used
   expect_error(logLikSubjectDisplacements(model), 
-               "`var_name` cannot be NULL if a variance estructure has been specified in the model")
+               "`var_name` cannot be NULL if a variance structure has been specified in the model", fixed = TRUE)
 })
 
 test_that("Test logLikSubjectDisplacements with different thresholds", {
