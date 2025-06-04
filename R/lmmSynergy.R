@@ -24,6 +24,8 @@ NULL
 #' See "Details" section of [clubSandwich::vcovCR()] for further information.
 #' @param nsim Number of random sampling to calculate the synergy for Response Additivity model, and 
 #' for synergy assessment in Gompertz growth models.
+#' @param set_seed Logical indicating if the seed for those methods based on simulations (RA synergy and Gompertz growth models) should be fixed for reproducible results.
+#' The seed can be also set before running `lmmSynergy()` using `set.seed()` function.
 #' @param show_plot Logical indicating if a plot with the results of the synergy calculation should be generated.
 #' @param ... Additional arguments to be passed to [marginaleffects::hypotheses()].
 #' @details
@@ -205,6 +207,7 @@ lmmSynergy <- function(model,
                        robust = FALSE,
                        type = "CR2",
                        nsim = 1000,
+                       set_seed = TRUE,
                        show_plot = TRUE,
                        ...) {
   UseMethod("lmmSynergy")
@@ -224,6 +227,7 @@ lmmSynergy.explme <- function(model,
                               robust = FALSE,
                               type = "CR2",
                               nsim = 1000,
+                              set_seed = TRUE,
                               show_plot = TRUE,
                               ...) {
   
@@ -287,6 +291,10 @@ lmmSynergy.explme <- function(model,
         cluster_robust_vcov <- clubSandwich::vcovCR(model_time, type = type) # Cluster-robust variance-covariance matrix
         betas <- fixef(model_time) # model betas estimates
         
+        if (set_seed) {
+          set.seed(123)
+        }
+        
         betas_mvnorm <- MASS::mvrnorm(n = nsim, mu = betas, Sigma = cluster_robust_vcov) # Simulate from the multivariate normal distribution
         
         b1 <- betas_mvnorm[,1]
@@ -332,6 +340,10 @@ lmmSynergy.explme <- function(model,
         
         vcov_mtx <- vcov(model_time) # Variance-Covariance Matrix for the Fitted Model Object
         betas <- fixef(model_time) # model betas estimates
+        
+        if (set_seed) {
+          set.seed(123)
+        }
         
         betas_mvnorm <- MASS::mvrnorm(n = nsim, mu = betas, Sigma = vcov_mtx) # Simulate from the multivariate normal distribution
         
@@ -515,6 +527,7 @@ lmmSynergy.gompertzlme <- function(model,
                                    robust = FALSE,
                                    type = "CR2",
                                    nsim = 10000,
+                                   set_seed = TRUE,
                                    show_plot = TRUE,
                               ...) {
   
@@ -548,6 +561,10 @@ lmmSynergy.gompertzlme <- function(model,
   
   vcov_mtx <- vcov(model_time) # Variance-Covariance Matrix for the Fitted Model Object
   betas <- fixef(model_time) # model betas estimates
+  
+  if (set_seed) {
+    set.seed(123)
+  }
   
   betas_mvnorm <- MASS::mvrnorm(n = nsim, mu = betas, Sigma = vcov_mtx) # Simulate from the multivariate normal distribution
   

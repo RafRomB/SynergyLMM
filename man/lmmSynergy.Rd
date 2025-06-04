@@ -14,6 +14,7 @@ lmmSynergy(
   robust = FALSE,
   type = "CR2",
   nsim = 1000,
+  set_seed = TRUE,
   show_plot = TRUE,
   ...
 )
@@ -26,6 +27,7 @@ lmmSynergy(
   robust = FALSE,
   type = "CR2",
   nsim = 1000,
+  set_seed = TRUE,
   show_plot = TRUE,
   ...
 )
@@ -38,6 +40,7 @@ lmmSynergy(
   robust = FALSE,
   type = "CR2",
   nsim = 10000,
+  set_seed = TRUE,
   show_plot = TRUE,
   ...
 )
@@ -62,6 +65,9 @@ See "Details" section of \code{\link[clubSandwich:vcovCR]{clubSandwich::vcovCR()
 
 \item{nsim}{Number of random sampling to calculate the synergy for Response Additivity model, and
 for synergy assessment in Gompertz growth models.}
+
+\item{set_seed}{Logical indicating if the seed for those methods based on simulations (RA synergy and Gompertz growth models) should be fixed for reproducible results.
+The seed can be also set before running \code{lmmSynergy()} using \code{set.seed()} function.}
 
 \item{show_plot}{Logical indicating if a plot with the results of the synergy calculation should be generated.}
 
