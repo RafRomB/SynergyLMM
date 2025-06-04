@@ -183,7 +183,16 @@ lmmModel <- function(data,
                      start_values = c(0.05, 0.01),
                      ...) {
   
+  # Check if specified tumor growth model is valid
+
+  if (!grwth_model %in% c("exp", "gompertz")) {
+    stop("Incorrect 'grwth_model'. Tumor growth model can only be 'exp' or 'gompertz'.")
+  }
   
+  # Return a call with names of all specified arguments
+
+  cl <- match.call()
+
   # Check if required columns are present
   tryCatch({
     required_columns <- c(sample_id, time, treatment, tumor_vol)
@@ -380,6 +389,7 @@ lmmModel <- function(data,
   }
   
   model$dt1 <- TV.plot
+  # model$call$data <- cl$data
   
   if (show_plot) {
     plot(

@@ -37,7 +37,7 @@ lmmSynergy(
   padj = "BH",
   robust = FALSE,
   type = "CR2",
-  nsim = 1000,
+  nsim = 10000,
   show_plot = TRUE,
   ...
 )

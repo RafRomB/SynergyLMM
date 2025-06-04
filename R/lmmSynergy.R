@@ -514,7 +514,7 @@ lmmSynergy.gompertzlme <- function(model,
                                    padj = "BH",
                                    robust = FALSE,
                                    type = "CR2",
-                                   nsim = 1000,
+                                   nsim = 10000,
                                    show_plot = TRUE,
                               ...) {
   
@@ -525,7 +525,8 @@ lmmSynergy.gompertzlme <- function(model,
   }
   
   if(robust) {
-    warning("Sandwich-based robust estimators are only available for exponential growth models.")
+    warning("Sandwich-based robust estimators are only available for exponential growth models, 
+    and the results are from standard estimation techniques.")
   }
   
   ss <- data.frame()

@@ -18,7 +18,17 @@ NULL
 .lmeU <- function(cx, model){
   SampleID <- NULL
   dfU <- subset(model$data, SampleID != cx) ## LOO data
-  update(model, data = dfU)
+  # update(model, data = dfU)
+  maxIter.tmp <- 50
+  repeat{
+    tmp.update <- try(update(model, data = dfU, control = list(maxIter = maxIter.tmp)), silent = T)
+    if (any(class(tmp.update) == "try-error")) {
+      maxIter.tmp <- 2 * maxIter.tmp
+    } else {
+      break
+    }
+  }
+  tmp.update
 }
 
 # logLik1 function for varStruct with LOO data
@@ -87,7 +97,7 @@ NULL
     lLik.s <- nlmeU::logLik1(lmeU, df.s) # ... and log-likelihood  
   } else{
     if(is.null(var_name)){
-      stop("`var_name` cannot be NULL if a variance estructure has been specified in the model")
+      stop("`var_name` cannot be NULL if a variance structure has been specified in the model")
     }
     lLik.s <- .logLik1.varIdent_loo(lmeU, df.s, model, var_name) # ... and log-likelihood
   }
