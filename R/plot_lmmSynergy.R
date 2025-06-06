@@ -50,6 +50,13 @@ plot_lmmSynergy <- function(syn_data){
   syn_data$Metric[syn_data$Metric == "CI"] <- "Combination Index"
   syn_data$Metric[syn_data$Metric == "SS"] <- "Synergy Score"
   
+  if ("padj" %in% colnames(syn_data)) {
+    legend_name <- "Adjusted\np-value"
+  } else {
+    legend_name <- "p-value"
+    syn_data$padj <- syn_data$pval
+  }
+  
   if (sum(syn_data$padj == 0) > 1) {
     
     ndec <- strsplit(format(nsim, scientific = T), split = "\\+")[[1]][2]
@@ -68,7 +75,7 @@ plot_lmmSynergy <- function(syn_data){
                  arrow = arrow(angle = 90, length = unit(0.01, "npc"),ends = "both")) + cowplot::theme_cowplot() +
     geom_point(aes(fill  = .data$padj), size = 5, shape = 23, color = "gray60") +
     #scale_fill_gradient2(name = "Adjusted\np-value", high = "darkorchid4",mid = "gray90", low = "darkcyan",midpoint = 0.05, na.value = "white") +
-    scale_fill_gradient(name = "Adjusted\np-value", high = "darkorchid4", low = "darkcyan", na.value = "white", limits = c(0,1)) +
+    scale_fill_gradient(name = legend_name, high = "darkorchid4", low = "#d0f5ec", na.value = "white", limits = c(0,1)) +
     ylab("Combination Index") + xlab("Time since start of treatment") + 
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 1, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))
@@ -99,7 +106,7 @@ plot_lmmSynergy <- function(syn_data){
                  arrow = arrow(angle = 90, length = unit(0.01, "npc"),ends = "both")) + cowplot::theme_cowplot() +
     geom_point(aes(fill  = .data$padj), size = 5, shape = 23, color = "gray60") +
     #scale_fill_gradient2(name = "Adjusted\np-value", high = "darkorchid4",mid = "gray90", low = "darkcyan",midpoint = 0.05, na.value = "white") +
-    scale_fill_gradient(name = "Adjusted\np-value", high = "darkorchid4", low = "darkcyan", na.value = "white", limits = c(0,1)) +
+    scale_fill_gradient(name = legend_name, high = "darkorchid4", low = "#d0f5ec", na.value = "white", limits = c(0,1)) +
     ylab("Synergy Score") + xlab("Time since start of treatment") +
     scale_x_continuous(breaks = unique(syn_data$Time)) + 
     geom_hline(yintercept = 0, lty = "dashed") + #facet_wrap(~Metric) + theme(strip.background = element_rect(fill = "cyan4"), strip.text = element_text(color = "white", face = "bold"))

@@ -203,7 +203,7 @@ NULL
 lmmSynergy <- function(model,
                        method = "Bliss",
                        min_time = 0,
-                       padj = "BH",
+                       padj = "none",
                        robust = FALSE,
                        type = "CR2",
                        nsim = 1000,
@@ -223,7 +223,7 @@ lmmSynergy <- function(model,
 lmmSynergy.explme <- function(model,
                               method = "Bliss",
                               min_time = 0,
-                              padj = "BH",
+                              padj = "none",
                               robust = FALSE,
                               type = "CR2",
                               nsim = 1000,
@@ -488,12 +488,17 @@ lmmSynergy.explme <- function(model,
   }
   
   colnames(ci) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
-  ci$padj <- stats::p.adjust(p = ci$pval, method = padj)
-  ci <- ci[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  if (padj != "none") {
+    ci$padj <- stats::p.adjust(p = ci$pval, method = padj)
+    ci <- ci[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  }
+  
   
   colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
-  ss$padj <- stats::p.adjust(p = ss$pval, method = padj)
-  ss <- ss[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  if (padj != "none") {
+    ss$padj <- stats::p.adjust(p = ss$pval, method = padj)
+    ss <- ss[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  }
   
   df <- rbind(ci, ss)
   
@@ -866,12 +871,17 @@ lmmSynergy.gompertzlme <- function(model,
   }
   
   colnames(ci) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
-  ci$padj <- stats::p.adjust(p = ci$pval, method = padj)
-  ci <- ci[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  if (padj != "none") {
+    ci$padj <- stats::p.adjust(p = ci$pval, method = padj)
+    ci <- ci[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  }
+  
   
   colnames(ss) <- c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time")
-  ss$padj <- stats::p.adjust(p = ss$pval, method = padj)
-  ss <- ss[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  if (padj != "none") {
+    ss$padj <- stats::p.adjust(p = ss$pval, method = padj)
+    ss <- ss[,c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time")]
+  }
   
   df <- rbind(ci, ss)
   rownames(df) <- NULL
