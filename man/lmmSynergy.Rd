@@ -10,7 +10,8 @@ lmmSynergy(
   model,
   method = "Bliss",
   min_time = 0,
-  padj = "BH",
+  conf_level = 0.95,
+  padj = "none",
   robust = FALSE,
   type = "CR2",
   nsim = 1000,
@@ -23,7 +24,8 @@ lmmSynergy(
   model,
   method = "Bliss",
   min_time = 0,
-  padj = "BH",
+  conf_level = 0.95,
+  padj = "none",
   robust = FALSE,
   type = "CR2",
   nsim = 1000,
@@ -36,7 +38,8 @@ lmmSynergy(
   model,
   method = "Bliss",
   min_time = 0,
-  padj = "BH",
+  conf_level = 0.95,
+  padj = "none",
   robust = FALSE,
   type = "CR2",
   nsim = 10000,
@@ -52,6 +55,8 @@ lmmSynergy(
 corresponding to Bliss, highest single agent, and response additivity, respectively.}
 
 \item{min_time}{Minimun time for which to start calculating synergy.}
+
+\item{conf_level}{Numeric value between 0 and 1. Confidence level to use to build a confidence interval and obtain p-values. The default value is 0.95.}
 
 \item{padj}{String indicating the correction method for adjusting p-values. Possible options are "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".
 More details in \code{\link[stats:p.adjust]{stats::p.adjust()}}.}

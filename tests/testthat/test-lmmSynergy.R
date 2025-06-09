@@ -39,8 +39,27 @@ test_that("Test lmmSynergy with valid input and default parameters (Bliss method
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
+})
+
+test_that("Test lmmSynergy with p-value adjustment", {
+  # Call the function with default method ("Bliss")
+  result <- lmmSynergy(model, show_plot = FALSE, padj = "BH")
+  
+  # Check that the result is a list with two elements
+  expect_type(result, "list")
+  expect_equal(length(result), 4)
+  expect_named(result, c("Contrasts", "Synergy", "Estimates","nsim"))
+  
+  # Check that "Contrasts" is a list and "Synergy" is a data frame
+  expect_type(result$Contrasts, "list")
+  expect_s3_class(result$Synergy, "data.frame")
+  
+  # Check the structure of 'Synergy' dataframe
+  synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time") %in% colnames(synergy)))
 })
+
 
 test_that("Test lmmSynergy with HSA method", {
   # Call the function with method = "HSA"
@@ -52,7 +71,7 @@ test_that("Test lmmSynergy with HSA method", {
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj","Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval","Time") %in% colnames(synergy)))
 })
 
 test_that("Test lmmSynergy with RA method", {
@@ -71,7 +90,7 @@ test_that("Test lmmSynergy with RA method", {
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj","Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval","Time") %in% colnames(synergy)))
   
 })
 
@@ -84,7 +103,7 @@ test_that("Test lmmSynergy with robust sandwich estimators (robust = TRUE)", {
   expect_s3_class(result$Synergy, "data.frame")
   
   # Call the function with robust = TRUE and type = "CR2"
-  result <- lmmSynergy(model, robust = TRUE, type = "CR2", show_plot = FALSE)
+  result <- lmmSynergy(model, robust = TRUE, type = "CR2", show_plot = FALSE, padj = "BH")
   
   # Check that the result is structured as expected
   expect_type(result, "list")
@@ -96,7 +115,7 @@ test_that("Test lmmSynergy with robust sandwich estimators (robust = TRUE)", {
 })
 
 test_that("Test lmmSynergy method = 'RA' robust = TRUE works correctly", {
-  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 1000, robust = TRUE, type = "CR2", show_plot = FALSE)
+  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 1000, robust = TRUE, type = "CR2", padj = "BH", show_plot = FALSE)
   
   expect_type(result, "list")
   expect_named(result, c("Contrasts", "Synergy", "Estimates", "nsim"))
@@ -159,7 +178,7 @@ model <- lmmModel(
 
 test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
   # Call the function with default method ("Bliss")
-  result <- lmmSynergy(model, show_plot = FALSE)
+  result <- lmmSynergy(model, padj = "BH", show_plot = FALSE)
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
@@ -177,7 +196,7 @@ test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
 
 test_that("Test lmmSynergy with 3 drugs with HSA method", {
   # Call the function with method = "HSA"
-  result <- lmmSynergy(model, method = "HSA", show_plot = FALSE)
+  result <- lmmSynergy(model, method = "HSA", padj = "BH", show_plot = FALSE)
   
   # Check that the result is structured as expected
   expect_type(result, "list")
@@ -204,7 +223,7 @@ test_that("Test lmmSynergy with RA method", {
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
   
 })
 
@@ -224,7 +243,7 @@ test_that("Test lmmSynergy with RA method and 'robust' = TRUE works correctly", 
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
   
 })
 
@@ -265,7 +284,7 @@ model <- lmmModel(
 
 test_that("Test lmmSynergy with valid input and default parameters (Bliss method)", {
   # Call the function with default method ("Bliss")
-  result <- lmmSynergy(model, show_plot = FALSE)
+  result <- lmmSynergy(model, padj = "BH", show_plot = FALSE)
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
@@ -291,7 +310,7 @@ test_that("Test lmmSynergy with HSA method", {
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj","Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval","Time") %in% colnames(synergy)))
 })
 
 test_that("Test lmmSynergy with RA method", {
@@ -309,7 +328,7 @@ test_that("Test lmmSynergy with RA method", {
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj","Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval","Time") %in% colnames(synergy)))
   
 })
 
@@ -368,7 +387,7 @@ model <- lmmModel(
 
 test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
   # Call the function with default method ("Bliss")
-  result <- lmmSynergy(model, show_plot = FALSE)
+  result <- lmmSynergy(model, padj = "BH", show_plot = FALSE)
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
@@ -393,7 +412,7 @@ test_that("Test lmmSynergy with 3 drugs with HSA method", {
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
 })
 
 test_that("Test lmmSynergy with RA method", {
@@ -411,7 +430,7 @@ test_that("Test lmmSynergy with RA method", {
   
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
-  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time") %in% colnames(synergy)))
+  expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
   
 })
 

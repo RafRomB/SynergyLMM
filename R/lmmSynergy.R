@@ -15,6 +15,7 @@ NULL
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss", "HSA" and "RA",
 #' corresponding to Bliss, highest single agent, and response additivity, respectively.
 #' @param min_time Minimun time for which to start calculating synergy.
+#' @param conf_level Numeric value between 0 and 1. Confidence level to use to build a confidence interval and obtain p-values. The default value is 0.95.
 #' @param padj String indicating the correction method for adjusting p-values. Possible options are "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".
 #' More details in [stats::p.adjust()].
 #' @param robust If TRUE, uncertainty is estimated using sandwich-based robust estimators
@@ -203,6 +204,7 @@ NULL
 lmmSynergy <- function(model,
                        method = "Bliss",
                        min_time = 0,
+                       conf_level = 0.95,
                        padj = "none",
                        robust = FALSE,
                        type = "CR2",
@@ -223,6 +225,7 @@ lmmSynergy <- function(model,
 lmmSynergy.explme <- function(model,
                               method = "Bliss",
                               min_time = 0,
+                              conf_level = 0.95,
                               padj = "none",
                               robust = FALSE,
                               type = "CR2",
@@ -327,9 +330,9 @@ lmmSynergy.explme <- function(model,
         sd_delta <- sd(delta_aucs)
         
         # 95% Confidence interval
-        ci_delta <- quantile(delta_aucs, c(0.025, 0.975))
+        ci_delta <- quantile(delta_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
         
-        ci_ratio <- quantile(ratio_aucs, c(0.025, 0.975))
+        ci_ratio <- quantile(ratio_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
         
         # p-value (two-tailed test)
         p_delta <-  2 * min(mean(delta_aucs <= 0), mean(delta_aucs >= 0))
@@ -378,9 +381,9 @@ lmmSynergy.explme <- function(model,
         sd_delta <- sd(delta_aucs)
         
         # 95% Confidence interval
-        ci_delta <- quantile(delta_aucs, c(0.025, 0.975))
+        ci_delta <- quantile(delta_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
         
-        ci_ratio <- quantile(ratio_aucs, c(0.025, 0.975))
+        ci_ratio <- quantile(ratio_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
         
         # p-value (two-tailed test)
         p_delta <-  2 * min(mean(delta_aucs <= 0), mean(delta_aucs >= 0))
@@ -454,10 +457,11 @@ lmmSynergy.explme <- function(model,
           model_time,
           hypothesis = contrast,
           vcov = clubSandwich::vcovCR(model_time, type = type),
+          conf_level = conf_level,
           ...
         )
       } else {
-        Test <- hypotheses(model_time, hypothesis = contrast, ...)
+        Test <- hypotheses(model_time, hypothesis = contrast, conf_level = conf_level, ...)
       }
       
       ss <- rbind(ss,
@@ -528,6 +532,7 @@ lmmSynergy.explme <- function(model,
 lmmSynergy.gompertzlme <- function(model,
                                    method = "Bliss",
                                    min_time = 0,
+                                   conf_level = 0.95,
                                    padj = "none",
                                    robust = FALSE,
                                    type = "CR2",
@@ -682,9 +687,9 @@ lmmSynergy.gompertzlme <- function(model,
       sd_delta <- sd(delta_aucs)
       
       # 95% Confidence interval
-      ci_delta <- quantile(delta_aucs, c(0.025, 0.975))
+      ci_delta <- quantile(delta_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
       
-      ci_ratio <- quantile(ratio_aucs, c(0.025, 0.975))
+      ci_ratio <- quantile(ratio_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
       
       # p-value (two-tailed test)
       p_delta <-  2 * min(mean(delta_aucs <= 0), mean(delta_aucs >= 0))
@@ -774,9 +779,9 @@ lmmSynergy.gompertzlme <- function(model,
       sd_delta <- sd(delta_aucs)
       
       # 95% Confidence interval
-      ci_delta <- quantile(delta_aucs, c(0.025, 0.975))
+      ci_delta <- quantile(delta_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
       
-      ci_ratio <- quantile(ratio_aucs, c(0.025, 0.975))
+      ci_ratio <- quantile(ratio_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
       
       # p-value (two-tailed test)
       p_delta <-  2 * min(mean(delta_aucs <= 0), mean(delta_aucs >= 0))
@@ -838,9 +843,9 @@ lmmSynergy.gompertzlme <- function(model,
       sd_delta <- sd(delta_aucs)
       
       # 95% Confidence interval
-      ci_delta <- quantile(delta_aucs, c(0.025, 0.975))
+      ci_delta <- quantile(delta_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
       
-      ci_ratio <- quantile(ratio_aucs, c(0.025, 0.975))
+      ci_ratio <- quantile(ratio_aucs, c((1-conf_level)/2, 1-(1-conf_level)/2))
       
       # p-value (two-tailed test)
       p_delta <-  2 * min(mean(delta_aucs <= 0), mean(delta_aucs >= 0))
