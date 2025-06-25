@@ -71,7 +71,7 @@ lmmModel_estimates.explme <- function(model,
   # Build table with fixed effects and residuals estimates
   dt <- data.frame(matrix(t(tTable), nrow = 1, byrow = TRUE), # Fixed effects and their std. dev.
                    sqrt(diag(nlme::pdMatrix(model$modelStruct$reStruct[[1]]))), # std. dev. of random effects
-                   model$sigma) # std.dev of residuals
+                   model$sigma, row.names = NULL) # std.dev of residuals
   
   # Name columns according to treatments
   trt_names <- names(model$coefficients$fixed)
@@ -108,7 +108,7 @@ lmmModel_estimates.gompertzlme <- function(model,
   # Build table with fixed effects and residuals estimates
   dt <- data.frame(matrix(t(tTable), nrow = 1, byrow = TRUE), # Fixed effects and their std. dev.
                    matrix(sqrt(diag(nlme::pdMatrix(model$modelStruct$reStruct[[1]]))), nrow = 1, byrow = TRUE), # std. dev. of random effects
-                   model$sigma) # std.dev of residuals
+                   model$sigma, row.names = NULL) # std.dev of residuals
   
   # Name columns according to treatments
   trt_names <- names(model$coefficients$fixed)
