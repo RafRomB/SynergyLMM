@@ -14,6 +14,7 @@ PwrSampleSize(
   sd_ranef = 0.01,
   sgma = 0.1,
   method = "Bliss",
+  vF = NULL,
   ...
 )
 }
@@ -37,6 +38,11 @@ the synergy analysis.}
 
 \item{method}{String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 corresponding to Bliss and highest single agent, respectively.}
+
+\item{vF}{An optional \link[nlme:varFunc]{nlme::varFunc} object or one-sided formula describing the within-group heteroscedasticity
+structure. If given as a formula, it is used as the argument to \link[nlme:varFixed]{nlme::varFixed}, corresponding to fixed variance weights.
+See the documentation on \link[nlme:varClasses]{nlme::varClasses} for a description of the available \link[nlme:varFunc]{nlme::varFunc} classes. Defaults to NULL, corresponding to
+homoscedastic within-group errors.}
 
 \item{...}{Additional parameters to be passed to \link[nlmeU:Pwr.lme]{nlmeU::Pwr.lme} method.}
 }

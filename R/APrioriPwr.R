@@ -23,8 +23,8 @@ NULL
   selDt <- with(exmpDt,{
     lvls <- levels(Treatment)
     i <- match(lvls, Treatment)
-    subj <- subject[i]
-    subset(exmpDt, subject %in% subj)
+    subj <- SampleID[i]
+    subset(exmpDt, SampleID %in% subj)
   })
   
   selDt %>% ggplot(aes(x = .data$Time, y = .data$mA)) + geom_line(aes(colour = .data$Treatment), lwd = 2) + 
@@ -61,6 +61,10 @@ NULL
 #' through which the power for synergy calculation will be evaluated.
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 #' corresponding to Bliss and highest single agent, respectively.
+#' @param vF An optional [nlme::varFunc] object or one-sided formula describing the within-group heteroscedasticity
+#' structure. If given as a formula, it is used as the argument to [nlme::varFixed], corresponding to fixed variance weights. 
+#' See the documentation on [nlme::varClasses] for a description of the available [nlme::varFunc] classes. Defaults to NULL, corresponding to 
+#' homoscedastic within-group errors.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
 #' @details
 #' `APrioriPwr` allows for total customization of an hypothetical drug combination study and allows the user
@@ -121,6 +125,7 @@ APrioriPwr <- function(npg = 5,
                        sgma_eval = NULL,
                        grwrComb_eval = NULL,
                        method = "Bliss",
+                       vF = NULL,
                        ...) {
   if (is.null(sd_eval) & is.null(sgma_eval) & is.null(grwrComb_eval)) {
     stop(
@@ -142,11 +147,11 @@ APrioriPwr <- function(npg = 5,
   npg <- npg # No of subjects per group
   Time <- time # Vector with times of tumor volume measurements
   
-  subject <- 1:(4 * npg) # Subjects' ids
+  SampleID <- 1:(4 * npg) # Subjects' ids
   Treatment <- gl(4, npg, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
-  dts <- data.frame(subject, Treatment) # Subject-level data
+  dts <- data.frame(SampleID, Treatment) # Subject-level data
   
-  dtL <- list(Time = Time, subject = subject)
+  dtL <- list(Time = Time, SampleID = SampleID)
   dtLong <- expand.grid(dtL) # Long format
   mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
   
@@ -205,12 +210,15 @@ APrioriPwr <- function(npg = 5,
     opt = "optim"
   )
   
-  fmA <- lme(
-    mA ~ Time:Treatment,
-    random = list(subject = pd1),
-    data = exmpDt,
-    control = cntrl
-  )
+  fmA <- do.call(nlme::lme, c(
+    list(
+      fixed = mA ~  0 + Time:Treatment,
+      random = list(SampleID = pd1),
+      data = exmpDt,
+      control = cntrl,
+      weights = vF
+    )
+  ))
   
   fmB <- fmA # Save copy of the model to use with different
   # values of grwrComb
@@ -270,12 +278,15 @@ APrioriPwr <- function(npg = 5,
       for (j in 1:length(sgma_eval)) {
         D <- log(sd_eval[i])
         pd1 <- pdDiag(D, form = ~ 0 + Time)
-        fmA <- lme(
-          mA ~ 0 + Time:Treatment,
-          random = list(subject = pd1),
-          data = exmpDt,
-          control = cntrl
-        )
+        fmA <- do.call(nlme::lme, c(
+          list(
+            fixed = mA ~  0 + Time:Treatment,
+            random = list(SampleID = pd1),
+            data = exmpDt,
+            control = cntrl,
+            weights = vF
+          )
+        ))
         if (method == "Bliss") {
           dtF <- Pwr(
             fmA,

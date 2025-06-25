@@ -19,6 +19,10 @@ NULL
 #' @param sgma Residuals standard deviation for the model.
 #' @param method String indicating the method for synergy calculation. Possible methods are "Bliss" and "HSA",
 #' corresponding to Bliss and highest single agent, respectively.
+#' @param vF An optional [nlme::varFunc] object or one-sided formula describing the within-group heteroscedasticity
+#' structure. If given as a formula, it is used as the argument to [nlme::varFixed], corresponding to fixed variance weights. 
+#' See the documentation on [nlme::varClasses] for a description of the available [nlme::varFunc] classes. Defaults to NULL, corresponding to 
+#' homoscedastic within-group errors.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
 #' @details
 #' `PwrSampleSize` allows the user to define an hypothetical drug combination study, customizing several 
@@ -65,6 +69,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
                           sd_ranef = 0.01,
                           sgma = 0.1,
                           method = "Bliss",
+                          vF = NULL,
                           ...) {
   
   ## Constructing an exemplary dataset
@@ -82,11 +87,11 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
   
   for (n in npg) {
     # No of subjects per group
-    subject <- 1:(4 * n) # Subjects' ids
+    SampleID <- 1:(4 * n) # Subjects' ids
     Treatment <- gl(4, n, labels = c("Control", "DrugA", "DrugB", "Combination")) # Treatment for each subject
-    dts <- data.frame(subject, Treatment) # Subject-level data
+    dts <- data.frame(SampleID, Treatment) # Subject-level data
     
-    dtL <- list(Time = Time, subject = subject)
+    dtL <- list(Time = Time, SampleID = SampleID)
     dtLong <- expand.grid(dtL) # Long format
     mrgDt <- merge(dtLong, dts, sort = FALSE) # Merged
     
@@ -134,12 +139,15 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
       opt = "optim"
     )
     
-    fmA <- lme(
-      mA ~ Time:Treatment,
-      random = list(subject = pd1),
-      data = exmpDt,
-      control = cntrl
-    )
+    fmA <- do.call(nlme::lme, c(
+      list(
+        fixed = mA ~  0 + Time:Treatment,
+        random = list(SampleID = pd1),
+        data = exmpDt,
+        control = cntrl,
+        weights = vF
+      )
+    ))
     
     # Use of Pwr() function for a priori power calculations
     

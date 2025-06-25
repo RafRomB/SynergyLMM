@@ -271,7 +271,7 @@ test_that("APrioriPwr plots are generated correctly for different methods", {
 
 test_that("APrioriPwr handles correctly HSA method independently of the order of drug definition in the input", {
   
-  expc_output <- data.frame(1, 56, 3.266493, 3.2664928, 0.42724591)
+  expc_output <- data.frame(1, 57, 3.266493, 3.2664928, 0.427459150)
   colnames(expc_output) <- c("numDF", "denDF", "F-value", "nc", "Power")
   
   result <- APrioriPwr(
