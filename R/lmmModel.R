@@ -361,7 +361,7 @@ lmmModel <- function(data,
         
         # Split TV.df dataframe by treatment groups
         
-        df_list <- TV.df %>% dplyr::group_by(Treatment) %>% dplyr::group_split()
+        df_list <- split(TV.df, TV.df$Treatment)
         
         # Create vector with start coefficients
         
