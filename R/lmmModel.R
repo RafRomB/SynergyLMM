@@ -357,19 +357,52 @@ lmmModel <- function(data,
     
     # Retrieve initial estimates
     if (is.character(start_values)) {
-      if (start_values == "selfStart"){
-    nls_fit <- stats::nls(logRTV ~ SSgompertzLog(Time, r0, rho), data = TV.df)
-    start_coef <- coef(nls_fit)
+      if (start_values == "selfStart") {
+        
+        # Split TV.df dataframe by treatment groups
+        
+        df_list <- TV.df %>% dplyr::group_by(Treatment) %>% dplyr::group_split()
+        
+        # Create vector with start coefficients
+        
+        start_coef <- c()
+        
+        # Iterate through each sub-data frame to obtain the initial estimates for each group
+        
+        for (g in df_list) {
+          nls_fit <- stats::nls(logRTV ~ SSgompertzLog(Time, r0, rho), data = g)
+          start_coef <- c(start_coef, coef(nls_fit))
+        }
+
       } else {
-        stop(paste("Invalid start values provided: '", start_values, "', for '", grwth_model, "' model. ",
-                   "Please provide a two element numeric vector or set to 'selfStart'.", sep = ""))
+        stop(
+          paste(
+            "Invalid start values provided: '",
+            start_values,
+            "', for '",
+            grwth_model,
+            "' model. ",
+            "Please provide a two element numeric vector or set to 'selfStart'.",
+            sep = ""
+          )
+        )
       }
     } else {
-      if (is.numeric(start_values) & length(start_values) == 2){
-      start_coef <- start_values
+      if (is.numeric(start_values) & length(start_values) == 2) {
+        start_coef <- start_values
+        start_coef <- rep(start_coef, length(unique(TV.df$Treatment)))
       } else {
-        stop(paste("Invalid length of starting values provided: '", length(start_values), "', for '", grwth_model, "' model. ",
-                   "Please provide a two element numeric vector or set to 'selfStart'.", sep = ""))
+        stop(
+          paste(
+            "Invalid length of starting values provided: '",
+            length(start_values),
+            "', for '",
+            grwth_model,
+            "' model. ",
+            "Please provide a two element numeric vector or set to 'selfStart'.",
+            sep = ""
+          )
+        )
       }
     }
     
@@ -380,7 +413,7 @@ lmmModel <- function(data,
         fixed = r0 + rho ~ 0 + Treatment, # treatment-specific fixed effects
         random =  r0 + rho ~ 1 | SampleID, # random effects by subject
         data = TV.df,
-        start = rep(start_coef, length(unique(TV.df$Treatment)))
+        start = start_coef
       ),
       args
     ))
