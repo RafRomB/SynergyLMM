@@ -370,7 +370,7 @@ lmmModel <- function(data,
         # Iterate through each sub-data frame to obtain the initial estimates for each group
         
         for (g in df_list) {
-          nls_fit <- stats::nls(logRTV ~ SSgompertzLog(Time, r0, rho), data = g, control = stats::nls.control(maxiter = 1000, warnOnly = TRUE, scaleOffset = 1))
+          nls_fit <- stats::nls(logRTV ~ SSgompertzLog(Time, r0, rho), data = g, control = stats::nls.control(maxiter = 100, warnOnly = TRUE))
           start_coef <- c(start_coef, coef(nls_fit))
         }
 
