@@ -137,7 +137,7 @@ CookDistance <- function(model,
     
   } else if (type == "fixef") {
     
-    lmeUall <- lapply(subject.c, .lmeU, model = model)
+    lmeUall <- lapply(subject.c, .lmeU, model = model, maxIter = maxIter)
     names(lmeUall) <- subject.c
     
     idx <- c()
