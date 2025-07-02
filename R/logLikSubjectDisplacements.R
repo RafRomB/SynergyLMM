@@ -11,11 +11,12 @@ NULL
 #' @param cx Subject to remove from the data to build the model
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
 #' and fitted using maximum likelihood.
+#' @param maxIter Limit of maximum number of iterations for the optimization algorithm. Default to 1000. 
 #' @returns A list with the leave-one-out model fits
 #' @keywords internal
 #' @noRd
 
-.lmeU <- function(cx, model){
+.lmeU <- function(cx, model, maxIter){
   SampleID <- NULL
   dfU <- subset(model$data, SampleID != cx) ## LOO data
   # update(model, data = dfU)
@@ -26,6 +27,11 @@ NULL
     )
     if (any(class(tmp.update) == "try-error")) {
       maxIter.tmp <- 2 * maxIter.tmp
+      if (maxIter.tmp > maxIter) {
+        warning(paste0("Maximum number of iterations (", maxIter, ") exceeded for SampleID = ", cx,
+                       ". Cook distance not calculated for SampleID = ", cx))
+        return(0)
+      }
     } else {
       break
     }

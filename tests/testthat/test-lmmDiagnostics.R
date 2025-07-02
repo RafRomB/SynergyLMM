@@ -644,6 +644,21 @@ test_that("Test CookDistance with valid input without Cook threshold", {
   expect_true(all(is.finite(result)))
 })
 
+test_that("Test CookDistance with type = 'fixef'", {
+  # Call the function with a valid input and default cook_thr
+  result <- CookDistance(model, type = "fixef")
+  
+  # Check that the result is a numeric vector
+  expect_type(result, "double")
+  
+  # Check that the length of the result matches the number of subjects
+  expect_equal(length(result), length(unique(test_data$SampleID)))
+  
+  # Check that all values are finite
+  expect_true(all(is.finite(result)))
+})
+
+
 test_that("Test CookDistance with different thresholds", {
   
   # Test with a threshold that is higher than any Cook's distance
