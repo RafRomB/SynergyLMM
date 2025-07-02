@@ -15,7 +15,7 @@ CookDistance(
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
-\item{cook_thr}{Numeric value indicating the threshold for the Cook's distance. If not specified, the threshold is set to the 90\% percentile of the Cook's
+\item{cook_thr}{Numeric value indicating the threshold for the Cook's distance. If not specified, the threshold is set to three times the mean of the Cook's
 distance values.}
 
 \item{label_angle}{Numeric value indicating the angle for the label of subjects with a Cook's distance greater than \code{cook_thr}.}

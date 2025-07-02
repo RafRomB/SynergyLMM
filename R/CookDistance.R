@@ -52,7 +52,7 @@
 #' \eqn{\beta} (tumor growth rate) for the treatment group, based in the calculation of Cook's distances.
 #' 
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @param cook_thr Numeric value indicating the threshold for the Cook's distance. If not specified, the threshold is set to the 90% percentile of the Cook's
+#' @param cook_thr Numeric value indicating the threshold for the Cook's distance. If not specified, the threshold is set to three times the mean of the Cook's
 #' distance values.
 #' @param label_angle Numeric value indicating the angle for the label of subjects with a Cook's distance greater than `cook_thr`.
 #' @param maxIter Limit of maximum number of iterations for the optimization algorithm. Default to 1000. 
@@ -123,7 +123,7 @@ CookDistance <- function(model,
   CookD <- CookD.num / rankX / mean(model$residuals^2) # Cook's distance Di
   
   if(is.na(cook_thr)){
-    cook_thr <- round(quantile(CookD, probs = 0.9),3)
+    cook_thr <- round(3*mean(CookD[CookD != 0]),3)
   }
   
   outD <- CookD > cook_thr # Outlying Di's
