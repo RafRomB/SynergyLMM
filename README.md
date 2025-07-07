@@ -3,7 +3,7 @@
 
 # SynergyLMM
 
-<a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" align="right" height="125" alt="SynergyLMM logo" /></a>
+<a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" alt="SynergyLMM logo" style="float: right; height: 100px; margin-left: 15px;" /></a>
 
 <!-- badges: start -->
 
