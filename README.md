@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SynergyLMM <a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" position = "[top] [right]" height="75" alt="SynergyLMM vignette" /></a>
+# SynergyLMM
+
+<a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" align="right" height="125" alt="SynergyLMM logo" /></a>
 
 <!-- badges: start -->
 
