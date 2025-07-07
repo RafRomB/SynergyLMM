@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SynergyLMM <a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" align="right" height="125" alt="SynergyLMM vignette" /></a>
+# SynergyLMM <a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" position = "[top] [right]" height="75" alt="SynergyLMM vignette" /></a>
 
 <!-- badges: start -->
 
@@ -27,6 +27,11 @@ Or you can install the CRAN-released version with:
 ``` r
 install.packages("SynergyLMM")
 ```
+
+## Wep-App
+
+You can also use *SynergyLMM* directly in your browser at:
+<https://synergylmm.uiocloud.no/>
 
 ## Example Use of SynergyLMM
 
