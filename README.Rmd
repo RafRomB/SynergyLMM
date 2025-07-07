@@ -13,8 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# SynergyLMM 
-<a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" alt="SynergyLMM logo" style="float: right; height: 100px; margin-left: 15px;" /></a>
+# SynergyLMM  <a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" alt="SynergyLMM logo" style="float: right; height: 100px; margin-left: 15px;" /></a>
 
 
 
@@ -41,7 +40,7 @@ install.packages("SynergyLMM")
 
 ## Wep-App
 
-You can also use *SynergyLMM* directly in your browser at: https://synergylmm.uiocloud.no/ 
+You can also use **SynergyLMM** directly in your browser at: https://synergylmm.uiocloud.no/ 
 
 ## Example Use of SynergyLMM
 

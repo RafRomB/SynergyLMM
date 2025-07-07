@@ -1,9 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SynergyLMM
-
-<a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" alt="SynergyLMM logo" style="float: right; height: 100px; margin-left: 15px;" /></a>
+# SynergyLMM <a href="https://cran.r-project.org/web/packages/SynergyLMM/vignettes/SynergyLMM.html"><img src="man/figures/logo.png" alt="SynergyLMM logo" style="float: right; height: 100px; margin-left: 15px;" /></a>
 
 <!-- badges: start -->
 
@@ -32,7 +30,7 @@ install.packages("SynergyLMM")
 
 ## Wep-App
 
-You can also use *SynergyLMM* directly in your browser at:
+You can also use **SynergyLMM** directly in your browser at:
 <https://synergylmm.uiocloud.no/>
 
 ## Example Use of SynergyLMM
