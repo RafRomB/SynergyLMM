@@ -325,8 +325,8 @@ lmmSynergy.explme <- function(model,
         ratio_aucs <- lhs_aucs/rhs_aucs
         
         if (sum(ratio_aucs == Inf) > 0) {
-          message("Some Combination Index values were infinite (+Inf) due to invalid or zero denominators.
-                  These values have been capped at a maximum of 100 to preserve interpretability.")
+          message(paste0("Some Combination Index values were infinite (+Inf) due to zero denominators for time: ", d, ".
+                   These values have been capped at a maximum of 100 to preserve interpretability."))
           ratio_aucs[which(ratio_aucs == Inf)] <- 100
         }
         
@@ -382,8 +382,8 @@ lmmSynergy.explme <- function(model,
         ratio_aucs <- lhs_aucs/rhs_aucs
         
         if (sum(ratio_aucs == Inf) > 0) {
-          message("Some Combination Index values were infinite (+Inf) due to invalid or zero denominators.
-                  These values have been capped at a maximum of 100 to preserve interpretability.")
+          message(paste0("Some Combination Index values were infinite (+Inf) due to zero denominators for time: ", d, ".
+                   These values have been capped at a maximum of 100 to preserve interpretability."))
           ratio_aucs[which(ratio_aucs == Inf)] <- 100
         }
         
@@ -855,8 +855,8 @@ lmmSynergy.gompertzlme <- function(model,
       ratio_aucs <- lhs_aucs/rhs_aucs
       
       if (sum(ratio_aucs == Inf) > 0) {
-        message("Some Combination Index values were infinite (+Inf) due to invalid or zero denominators.
-                  These values have been capped at a maximum of 100 to preserve interpretability.")
+        message(paste0("Some Combination Index values were infinite (+Inf) due to zero denominators for time: ", d, ".
+                   These values have been capped at a maximum of 100 to preserve interpretability."))
         ratio_aucs[which(ratio_aucs == Inf)] <- 100
       }
       
