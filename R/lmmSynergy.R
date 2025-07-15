@@ -316,12 +316,15 @@ lmmSynergy.explme <- function(model,
           rhs_aucs <- mapply(rhs_auc, beta_A = b2, beta_B = b3, beta_C = b1)
         }
         
+        # Substitute negative values by 0
+        rhs_aucs[which(rhs_aucs<0)] <- 0
+        
         # Compute the difference in AUCs
         delta_aucs <- lhs_aucs - rhs_aucs
         
         ratio_aucs <- lhs_aucs/rhs_aucs
         
-        ratio_aucs[which(ratio_aucs<0)] <- max(ratio_aucs) + 1
+        ratio_aucs[which(ratio_aucs == Inf)] <- max(ratio_aucs) + 1
         
         # Estimates
         
@@ -366,12 +369,15 @@ lmmSynergy.explme <- function(model,
           rhs_aucs <- mapply(rhs_auc, beta_A = b2, beta_B = b3, beta_C = b1)
         }
         
+        # Substitute negative values by 0
+        rhs_aucs[which(rhs_aucs<0)] <- 0
+        
         # Compute the difference in AUCs
         delta_aucs <- lhs_aucs - rhs_aucs
         
         ratio_aucs <- lhs_aucs/rhs_aucs
         
-        ratio_aucs[which(ratio_aucs<0)] <- max(ratio_aucs) + 1
+        ratio_aucs[which(ratio_aucs == Inf)] <- max(ratio_aucs) + 1
         
         # Estimates
         
@@ -673,6 +679,8 @@ lmmSynergy.gompertzlme <- function(model,
         stop("Incorrect number of treatments. Synergy analysis can only be performed for 2 or 3 drug combinations.")
       }
       
+      # Substitute negative values by 0
+      rhs_aucs[which(rhs_aucs<0)] <- 0
       
       # Compute the difference in AUCs
       delta_aucs <- lhs_aucs - rhs_aucs
@@ -765,6 +773,8 @@ lmmSynergy.gompertzlme <- function(model,
         stop("Incorrect number of treatments. Synergy analysis can only be performed for 2 or 3 drug combinations.")
       }
       
+      # Substitute negative values by 0
+      rhs_aucs[which(rhs_aucs<0)] <- 0
       
       # Compute the difference in AUCs
       delta_aucs <- lhs_aucs - rhs_aucs
@@ -828,12 +838,15 @@ lmmSynergy.gompertzlme <- function(model,
         stop("Incorrect number of treatments. Synergy analysis can only be performed for 2 or 3 drug combinations.")
       }
       
+      # Substitute negative values by 0
+      rhs_aucs[which(rhs_aucs<0)] <- 0
+      
       # Compute the difference in AUCs
       delta_aucs <- lhs_aucs - rhs_aucs
       
       ratio_aucs <- lhs_aucs/rhs_aucs
       
-      ratio_aucs[which(ratio_aucs<0)] <- max(ratio_aucs) + 1
+      ratio_aucs[which(ratio_aucs == Inf)] <- max(ratio_aucs) + 1
       
       # Estimates
       
