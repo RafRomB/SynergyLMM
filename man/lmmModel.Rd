@@ -90,7 +90,7 @@ The model formula for the LMM following the \strong{exponential tumor growth} is
 \deqn{\log RTV_{i}(t) = \beta_{T_i} \cdot t + b_i \cdot t + \varepsilon_{i} (t).}
 \itemize{
 \item \eqn{\log RTV_{i}(t)} denotes the value of the logarithm of the relative tumor volume measured for subject \eqn{i} at time \eqn{t}.
-\item \eqn{\beta_{T_i}} represents the fixed effects at time \eqn{t} for each  treatment \eqn{T_i}, where \eqn{T_i \in \{Control, DrugA, DrugB, Combination\}} in the case of
+\item \eqn{\beta_{T_i}} represents the fixed effects for each  treatment \eqn{T_i}, where \eqn{T_i \in \{Control, DrugA, DrugB, Combination\}} in the case of
 two-drugs combination experiments, or \eqn{T_i \in \{Control, DrugA, DrugB, DrugC, Combination\}} in the case of three-drugs combination experiments, and indicates the
 tumor-specific growth rate for each treatment group.
 \item \eqn{b_i \cdot t} corresponds to the subject-specific random slope that takes into account the longitudinal nature of the data, where \eqn{b_i \sim \mathcal{N}(0,\sigma^2_b)} is the random effect for subject \eqn{i}.
