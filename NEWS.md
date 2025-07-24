@@ -1,5 +1,21 @@
 # SynergyLMM 1.1.0
 
+New:
+
+- Gompertz growth model is now available for fitting data using nonlinear mixed effect models.
+- `lmmSynergy()` now allows for multiple testing correction and p-value adjustment.
+
+Changes:
+
+- `lmmModel_estimates()` function now also reports the standard error of the fixed effect coefficients.
+- `lmmSynergy()` now also returns a data frame with the estimated coefficients, calculated with `lmmModel_estimates()`, for each time point.
+- `CookDistance()` now allows to choose between calculating Cook's distances based on changes of the fitted values, or changes of the fixed effects.
+
+Bugs:
+
+- Correction of combination index values in `lmmSynergy()` when `method = "RA"` and negative values in the denominator appear. A message is promted
+and CI values are capped at 100 to maintain interpretability. 
+
 # SynergyLMM 1.0.1
 
 Correcting minor errors in vignette.
