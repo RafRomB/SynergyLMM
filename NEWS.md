@@ -1,4 +1,4 @@
-# SynergyLMM (development version)
+# SynergyLMM 1.1.0
 
 # SynergyLMM 1.0.1
 
