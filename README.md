@@ -12,6 +12,14 @@ Version](https://img.shields.io/cran/v/SynergyLMM?link=https%3A%2F%2Fcran.r-proj
 A comprehensive statistical framework for designing and analyzing *in
 vivo* drug combination experiments.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [1. Fit Model](#1-fit-model)
+- [2. Synergy Analysis](#2-synergy-analysis)
+- [3. Model Diagnosis](#3-model-diagnosis)
+- [4. Power Analysis](#4-power-analysis)
+
 ## Installation
 
 You can install the development version of SynergyLMM from
@@ -57,6 +65,7 @@ The first step is fitting the model from our data:
 # Most simple model
 lmm <- lmmModel(
   data = grwth_data,
+  grwth_model = "exp",
   sample_id = "subject",
   time = "Time",
   treatment = "Treatment",
@@ -68,8 +77,38 @@ lmm <- lmmModel(
 )
 ```
 
-<img src="man/figures/README-fit_model-1.png" width="100%" /> We can
-obtain the model estimates using:
+<img src="man/figures/README-fit_model-1.png" width="100%" />
+
+The previous example fits the model using an exponential growth. Users
+can also use a Gompertz growth model using `grwth_model = "gompertz"`:
+
+``` r
+# Most simple model
+lmm_gomp <- lmmModel(
+  data = grwth_data,
+  grwth_model = "gompertz",
+  start_values = "selfStart",
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  combination = "Combination"
+)
+```
+
+<img src="man/figures/README-fit_model_gomp-1.png" width="100%" />
+
+When using the Gompertz growth model, setting
+`start_values = "selfStart"` derives the initial values from a call to
+`stats::nls`, which can facilitate successful model fitting.
+
+**Model Estimates**
+
+We can obtain the model estimates and their standard deviation (sd)
+using:
 
 ``` r
 lmmModel_estimates(lmm)
@@ -79,7 +118,26 @@ lmmModel_estimates(lmm)
 #> 1     0.00322683 0.03946667 0.2124122
 ```
 
+Also for the Gompertz model:
+
+``` r
+lmmModel_estimates(lmm_gomp)
+#>   r0.Control sd_r0.Control  r0.DrugA sd_r0.DrugA   r0.DrugB sd_r0.DrugB
+#> 1 0.07194508   0.005263301 0.0834335 0.006114264 0.06044689 0.005465602
+#>   r0.Combination sd_r0.Combination  rho.Control sd_rho.Control   rho.DrugA
+#> 1     0.02418036       0.004289743 -0.007308988    0.005107615 0.009335088
+#>   sd_rho.DrugA    rho.DrugB sd_rho.DrugB rho.Combination sd_rho.Combination
+#> 1  0.005821028 -0.003567779  0.006513122     -0.02896268         0.01020863
+#>   sd_r0_ranef sd_rho_ranef  sd_resid
+#> 1  0.03237753 1.123656e-05 0.2102822
+```
+
 ### 2. Synergy Analysis
+
+Synergy calculation can be done using `lmmSynergy`. The reference model
+to assess the drug combination effect can be changed to Bliss
+independence, highest single agent, or response additivity, by setting
+`method = "Bliss"`, `method = "HSA"`, and `method = "RA"`, respectively.
 
 **Bliss independence model**
 
@@ -562,6 +620,9 @@ lmmSynergy(lmm, method = "Bliss", robust = TRUE)
     #> attr(,"SynergyLMM")
     #> [1] "lmmSynergy"
 
+- *Note: Sandwich-based robust estimates are only available for the
+  exponential model.*
+
 ### 3. Model Diagnostics
 
 We can perform the model diagnostics using the following functions:
@@ -707,7 +768,32 @@ ObsvsPred(lmm)
 
 **Influential Diagnostics**
 
+*Cook’s distances based on the change of fitted values*
+
+``` r
+CookDistance(lmm)
+#> [1] "Subjects with Cook's distance greater than: 0.578"
+#>         8 
+#> 0.8326171
+```
+
+<img src="man/figures/README-CooksD_fitted-1.png" width="100%" />
+
+*Cook’s distances based on the change of fixed effects*
+
+``` r
+CookDistance(lmm, type = "fixef")
+#> [1] "Subjects with Cook's distance greater than: 0.107"
+#>         8 
+#> 0.1544561
+```
+
+<img src="man/figures/README-CooksD_fixef-1.png" width="100%" />
+
 *log likelihood displacements*
+
+- *Note: The calculation of log likelihood displacements is only
+  available for the exponential growth model.*
 
 ``` r
 logLikSubjectDisplacements(lmm)
@@ -718,18 +804,10 @@ logLikSubjectDisplacements(lmm)
 
 <img src="man/figures/README-logLikDisp-1.png" width="100%" />
 
-*Cook’s distances*
+### 4. Power Analysis
 
-``` r
-CookDistance(lmm)
-#> [1] "Subjects with Cook's distance greater than: 0.578"
-#>         8 
-#> 0.8326171
-```
-
-<img src="man/figures/README-CooksD-1.png" width="100%" />
-
-## 4. Power Analysis
+- *Note: The* post-hoc *power analysis and the* a priori *power analysis
+  are only available for the exponential growth model.*
 
 **Post-Hoc Power Analysis**
 

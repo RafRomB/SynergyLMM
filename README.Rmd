@@ -23,6 +23,14 @@ knitr::opts_chunk$set(
 
 A comprehensive statistical framework for designing and analyzing _in vivo_ drug combination experiments. 
 
+## Table of Contents
+
+- [Installation](#installation)
+- [1. Fit Model](#1-fit-model)
+- [2. Synergy Analysis](#2-synergy-analysis)
+- [3. Model Diagnosis](#3-model-diagnosis)
+- [4. Power Analysis](#4-power-analysis)
+
 ## Installation
 
 You can install the development version of SynergyLMM from [GitHub](https://github.com/) with:
@@ -64,6 +72,7 @@ The first step is fitting the model from our data:
 # Most simple model
 lmm <- lmmModel(
   data = grwth_data,
+  grwth_model = "exp",
   sample_id = "subject",
   time = "Time",
   treatment = "Treatment",
@@ -74,13 +83,46 @@ lmm <- lmmModel(
   combination = "Combination"
 )
 ```
-We can obtain the model estimates using:
+
+The previous example fits the model using an exponential growth. Users can also use a Gompertz growth model using `grwth_model = "gompertz"`:
+
+
+```{r fit_model_gomp, fig.width=8}
+# Most simple model
+lmm_gomp <- lmmModel(
+  data = grwth_data,
+  grwth_model = "gompertz",
+  start_values = "selfStart",
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  combination = "Combination"
+)
+```
+
+When using the Gompertz growth model, setting `start_values = "selfStart"` derives the initial values from a call to `stats::nls`, which can facilitate successful model fitting.
+
+**Model Estimates**
+
+We can obtain the model estimates and their standard deviation (sd) using:
 
 ```{r model_estimates}
 lmmModel_estimates(lmm)
 ```
 
+Also for the Gompertz model:
+
+```{r}
+lmmModel_estimates(lmm_gomp)
+```
+
 ### 2. Synergy Analysis
+
+Synergy calculation can be done using `lmmSynergy`. The reference model to assess the drug combination effect can be changed to Bliss independence, highest single agent, or response additivity, by setting `method = "Bliss"`, `method = "HSA"`, and `method = "RA"`, respectively.
 
 **Bliss independence model**
 
@@ -106,6 +148,7 @@ lmmSynergy(lmm, method = "RA", ra_nsim = 1000)
 ```{r robustSE, fig.width=10}
 lmmSynergy(lmm, method = "Bliss", robust = TRUE)
 ```
+- _Note: Sandwich-based robust estimates are only available for the exponential model._
 
 
 ### 3. Model Diagnostics
@@ -131,19 +174,31 @@ ObsvsPred(lmm)
 
 **Influential Diagnostics**
 
+_Cook's distances based on the change of fitted values_
+
+```{r CooksD_fitted}
+CookDistance(lmm)
+```
+
+
+_Cook's distances based on the change of fixed effects_
+
+```{r CooksD_fixef}
+CookDistance(lmm, type = "fixef")
+```
+
 _log likelihood displacements_
+
+- _Note: The calculation of log likelihood displacements is only available for the exponential growth model._
 
 ```{r logLikDisp}
 logLikSubjectDisplacements(lmm)
 ```
 
-_Cook's distances_
 
-```{r CooksD}
-CookDistance(lmm)
-```
+### 4. Power Analysis
 
-## 4. Power Analysis
+- _Note: The_ post-hoc _power analysis and the_ a priori _power analysis are only available for the exponential growth model._
 
 **Post-Hoc Power Analysis**
 
