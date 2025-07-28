@@ -117,7 +117,7 @@ NULL
 #' `logLikSubjectDisplacements` allows the user to evaluate the log-likelihood displacement for each subject, 
 #' indicating the influence of every subject to the model.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`].
-#' @param disp_thrh Numeric value indicating the threshold of log-likelihood displacement. If not specified, the threshold is set to the 90% percentile of the log-likelihood
+#' @param disp_thrh Numeric value indicating the threshold of log-likelihood displacement. If not specified, the threshold is set to three times the mean of the log-likelihood
 #' displacement values.
 #' @param label_angle Numeric value indicating the angle for the label of subjects with a log-likelihood displacement greater than `disp_thrh`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
@@ -220,7 +220,7 @@ logLikSubjectDisplacements <- function(model,
   # Plot of the likelihood displacements with an indication of outlying values
   
   if(is.na(disp_thrh)){
-    disp_thrh <- round(quantile(dif.2Lik, probs = 0.9),3)
+    disp_thrh <- round(3*mean(dif.2Lik),3)
   }
   
   outL <- dif.2Lik > disp_thrh # Outlying LDi's

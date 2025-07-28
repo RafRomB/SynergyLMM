@@ -16,7 +16,7 @@ logLikSubjectDisplacements(
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
 
-\item{disp_thrh}{Numeric value indicating the threshold of log-likelihood displacement. If not specified, the threshold is set to the 90\% percentile of the log-likelihood
+\item{disp_thrh}{Numeric value indicating the threshold of log-likelihood displacement. If not specified, the threshold is set to three times the mean of the log-likelihood
 displacement values.}
 
 \item{label_angle}{Numeric value indicating the angle for the label of subjects with a log-likelihood displacement greater than \code{disp_thrh}.}
