@@ -16,6 +16,11 @@ vivo* drug combination experiments.
 
 - [Installation](#installation)
 - [1. Fit Model](#1-fit-model)
+- [1.1 Gompertz Growth Model](#11-gompertz-growth-model)
+- [1.2 Specify Residual Variance
+  Structure](#12-specify-residual-variance-structure)
+- [1.3 Adjust Optimization
+  Controls](#13-adjust-optimization-controls-to-solve-convergence-problems)
 - [2. Synergy Analysis](#2-synergy-analysis)
 - [3. Model Diagnosis](#3-model-diagnosis)
 - [4. Power Analysis](#4-power-analysis)
@@ -79,6 +84,8 @@ lmm <- lmmModel(
 
 <img src="man/figures/README-fit_model-1.png" width="100%" />
 
+#### 1.1 Gompertz Growth Model
+
 The previous example fits the model using an exponential growth. Users
 can also use a Gompertz growth model using `grwth_model = "gompertz"`:
 
@@ -105,7 +112,80 @@ When using the Gompertz growth model, setting
 `start_values = "selfStart"` derives the initial values from a call to
 `stats::nls`, which can facilitate successful model fitting.
 
-**Model Estimates**
+#### 1.2 Specify Residual Variance Structure
+
+To address heteroscedasticity, users can define a variance structure
+using the argument `weights` and functions from the
+[`nlme`](https://cran.r-project.org/web/packages/nlme/index.html) R
+package. For example, a treatment-specific variance structure can be
+specify using `weights = nlme::varIdent(form = ~1|Treatment)`:
+
+``` r
+lmmVar <- lmmModel(
+  data = grwth_data,
+  grwth_model = "exp",
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  combination = "Combination",
+  weights = nlme::varIdent(form = ~1|Treatment)
+)
+```
+
+<img src="man/figures/README-varIdent-1.png" width="100%" />
+
+Other options are:
+
+- Time-specific variance structure:
+  `weights = nlme::varIdent(form = ~1|Time)`
+- Subject-specific variance structure:
+  `weights = nlme::varIdent(form = ~1|SampleID)`
+
+Combinations of variance functions can also be specified using
+`nlme::varComb()`. For example, to model residual variance as varying
+independently across both individual samples and time points, users can
+specify:
+
+- `weights = nlme::varComb(nlme::varIdent(form = ~1|SampleID), nlme::varIdent(form = ~1|Time))`
+
+#### 1.3 Adjust Optimization Controls to Solve Convergence Problems
+
+Convergence issues can appear when using complex variance or correlation
+structures, particularly with non-linear models like Gompertz.
+
+User can customize optimization settings—e.g., number of iterations,
+convergence tolerance, or optimizer method—via the `control` argument in
+`lmmModel()` function.
+
+For example, to increase the maximum number of iterations for the
+optimization algorithm: `control = nlme::lmeControl(maxIter = 1000)`
+
+``` r
+lmmCont <- lmmModel(
+  data = grwth_data,
+  grwth_model = "exp",
+  sample_id = "subject",
+  time = "Time",
+  treatment = "Treatment",
+  tumor_vol = "TumorVolume",
+  trt_control = "Control",
+  drug_a = "DrugA",
+  drug_b = "DrugB",
+  combination = "Combination",
+  control = nlme::lmeControl(maxIter = 1000)
+)
+```
+
+<img src="man/figures/README-lmeControl-1.png" width="100%" />
+
+- For the exponential model use: `control = nlme::lmeControl()`
+- For the Gompertz model use: `control = nlme::nlmeControl()`
+
+#### 1.4 Model Estimates
 
 We can obtain the model estimates and their standard deviation (sd)
 using:
