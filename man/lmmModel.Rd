@@ -204,3 +204,7 @@ combination = "Combination"
 \item Andrzej Galecki & Tomasz Burzykowski (2013) \emph{Linear Mixed-Effects Models Using R: A Step-by-Step Approach} First Edition. Springer, New York. ISBN 978-1-4614-3899-1
 }
 }
+\seealso{
+\code{nlme::\link[nlme:lmeControl]{lmeControl}}, \code{nlme::\link[nlme:nlmeControl]{nlmeControl}},
+\code{nlme::\link[nlme:varClasses]{varClasses}}.
+}
