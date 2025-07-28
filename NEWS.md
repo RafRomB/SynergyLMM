@@ -2,14 +2,14 @@
 
 ## New features:
 
-* Gompertz growth model is now available for fitting data using nonlinear mixed 
+* Gompertz growth model is now available for fitting data using non-linear mixed 
 effect models.
 * `lmmSynergy()` now allows for multiple testing correction and p-value 
 adjustment.
 
 ## Breaking changes:
 
-* `lmmModel_estimates()` function now also reports the standard error of the 
+* `lmmModel_estimates()` now also reports the standard error of the 
 fixed effect coefficients.
 - `lmmSynergy()` now also returns a data frame with the estimated coefficients, 
 calculated with `lmmModel_estimates()`, for each time point.
