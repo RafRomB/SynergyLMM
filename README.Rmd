@@ -126,7 +126,8 @@ lmmVar <- lmmModel(
   drug_a = "DrugA",
   drug_b = "DrugB",
   combination = "Combination",
-  weights = nlme::varIdent(form = ~1|Treatment)
+  weights = nlme::varIdent(form = ~1|Treatment),
+  show_plot = FALSE
 )
 ```
 
@@ -159,7 +160,8 @@ lmmCont <- lmmModel(
   drug_a = "DrugA",
   drug_b = "DrugB",
   combination = "Combination",
-  control = nlme::lmeControl(maxIter = 1000)
+  control = nlme::lmeControl(maxIter = 1000),
+  show_plot = FALSE
 )
 ```
 

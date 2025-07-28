@@ -90,7 +90,7 @@ lmm_ex <- lmmModel(
 
 This is the most basic use of the function to fit the model. The user needs to specify the names of the columns containing the information for the subject IDs, time points, treatment groups, tumor measurements, and the names used to refer the different groups. 
 
-Note the argument `grwth_model = "exp"`. This means the model will be fitted using a linear mixed-effect model assuming an **exponential tumor growth**. Users can also use a **Gompertz growth model**, which is presented in section [1.2 Gompertz Model Fitting](#13-gompertz-model-fitting).
+Note the argument `grwth_model = "exp"`. This means the model will be fitted using a linear mixed-effect model assuming an **exponential tumor growth**. Users can also use a **Gompertz growth model**, which is presented in section [1.2 Gompertz Model Fitting](#12-gompertz-model-fitting).
 
 `lmmModel()` fits the model, which we have stored in the `lmm_ex` object, and which we will use in the next steps. A plot with the tumor growth data for the different groups is also produced. The bold lines in the plots represent the fitted lines for the fixed effects of each treatment estimated by the linear mixed-effect model. The x-axis identifies the time since the start of treatment, being 0 the time of treatment initiation. The y-axis represent the $\log$ of the relative tumor volume ($RTV$). 
 
@@ -197,7 +197,8 @@ lmm_ex_var <- lmmModel(
   drug_a = "DrugA",
   drug_b = "DrugB",
   combination = "Combination",
-  weights = nlme::varIdent(form = ~ 1 | SampleID)
+  weights = nlme::varIdent(form = ~ 1 | SampleID),
+  show_plot = FALSE
 )
 ```
 

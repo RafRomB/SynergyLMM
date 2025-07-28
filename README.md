@@ -132,11 +132,10 @@ lmmVar <- lmmModel(
   drug_a = "DrugA",
   drug_b = "DrugB",
   combination = "Combination",
-  weights = nlme::varIdent(form = ~1|Treatment)
+  weights = nlme::varIdent(form = ~1|Treatment),
+  show_plot = FALSE
 )
 ```
-
-<img src="man/figures/README-varIdent-1.png" width="100%" />
 
 Other options are:
 
@@ -176,11 +175,10 @@ lmmCont <- lmmModel(
   drug_a = "DrugA",
   drug_b = "DrugB",
   combination = "Combination",
-  control = nlme::lmeControl(maxIter = 1000)
+  control = nlme::lmeControl(maxIter = 1000),
+  show_plot = FALSE
 )
 ```
-
-<img src="man/figures/README-lmeControl-1.png" width="100%" />
 
 - For the exponential model use: `control = nlme::lmeControl()`
 - For the Gompertz model use: `control = nlme::nlmeControl()`
@@ -877,9 +875,9 @@ CookDistance(lmm, type = "fixef")
 
 ``` r
 logLikSubjectDisplacements(lmm)
-#> [1] "Outliers with Log Likelihood displacement greater than: 0.534"
-#>         6         8        25        28 
-#> 0.6308934 1.1633552 0.5465657 0.5354518
+#> [1] "Outliers with Log Likelihood displacement greater than: 0.679"
+#>        8 
+#> 1.163355
 ```
 
 <img src="man/figures/README-logLikDisp-1.png" width="100%" />
