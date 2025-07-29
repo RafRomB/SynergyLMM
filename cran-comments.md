@@ -16,6 +16,7 @@ calculated with `lmmModel_estimates()`, for each time point.
 based on changes of the fitted values, or changes of the fixed effects.
 - Correction of combination index values in `lmmSynergy()` when `method = "RA"`.
 - Updated documentation for clarity and consistency.
+- Updated vignette with updates and precomputed results to reduce building time.
 
 
 ## R CMD check results
