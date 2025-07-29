@@ -105,7 +105,7 @@ There are several additional arguments in `lmmModel()` function:
 
 While the exponential model is generally a good starting point for most _in vivo_ studies, and it tends to converge more easily, it may be insufficient when tumor growth dynamics deviate significantly from exponential behavior. In such cases, a Gompertz growth model typically offers better flexibility and more accurate estimates of tumor growth and treatment effects. Users can fit a non-linear mixed effect model using a Gompertz growth model by specifying `grwth_model = "gompertz"`:
 
-```{r, fig.width=12, fig.height=8}
+```{r, eval=FALSE}
 lmm_gomp <- lmmModel(
   data = grwth_data,
   grwth_model = "gompertz",
@@ -118,6 +118,11 @@ lmm_gomp <- lmmModel(
   drug_a = "DrugA",
   drug_b = "DrugB",
   combination = "Combination")
+```
+
+
+```{r, echo=FALSE,  fig.width=12, fig.height=8}
+knitr::include_graphics("Gompertz_model.png")
 ```
 
 When using the Gompertz growth model, setting `start_values = "selfStart"` derives the initial values from a call to `stats::nls`, which can facilitate successful model fitting.
@@ -260,22 +265,37 @@ In our data we don't have subjects that seem to be outliers with a high influenc
 
 **Cook's Distances based on the change of fixed effect values**
 
-```{r, fig.width=10, fig.height=8}
+```{r, eval=FALSE}
 CookDistance(lmm_ex_var, type = "fixef")
 ```
+
+```{r, echo=FALSE,  fig.width=10, fig.height=8}
+knitr::include_graphics("CooksDistance_fixef.png")
+```
+
+
 **Cook's Distances based on the change of fitted values**
 
-```{r, fig.width=10, fig.height=8}
+```{r, eval=FALSE}
 CookDistance(lmm_ex_var, type = "fitted")
+```
+
+```{r, echo=FALSE,  fig.width=10, fig.height=8}
+knitr::include_graphics("CooksDistance_fitted.png")
 ```
 
 It seems that subject 8 is a subject with a remarkable influence in both, the fixed effect values, and the fitted values.
 
 We can check the log-likelihood displacements. Since we have defined a variance structure in the model, we need to specify an additional argument in the function, `var_name`:
 
-```{r, fig.width=10, fig.height=8}
+```{r, eval=FALSE}
 logLikSubjectDisplacements(lmm_ex_var, var_name = "SampleID")
 ```
+
+```{r, echo=FALSE,  fig.width=10, fig.height=8}
+knitr::include_graphics("loglikDisp.png")
+```
+
 Again, subject 8 seems to be having a higher influence in the model. 
 
 In a real data analysis, this results suggest that maybe the researcher should review the data regarding subject 8, to try to identify any reasons for the different behavior of  this subject.
@@ -320,12 +340,12 @@ hsa <- lmmSynergy(lmm_ex_var, method = "HSA", robust = TRUE, min_time = 6)
 
 As expected the results are similar, indicating synergy, but with smaller p-values compared to the Bliss model.
 
-Finally, we can test the **response additivity (RA)** model. The assessment of drug combination effect using this model is based on simulations. We can choose the number of simulations to perform with the `ra_nsim` parameter. For this example, we will set it to 1000:
+Finally, we can test the **response additivity (RA)** model. The assessment of drug combination effect using this model is based on simulations. We can choose the number of simulations to perform with the `ra_nsim` parameter. For this example, we will set it to 100 to reduce the computational time :
 
 ```{r, fig.width=12, fig.height=10}
-ra <- lmmSynergy(lmm_ex_var, method = "RA", robust = TRUE, min_time = 6, ra_nsim = 1000)
+ra <- lmmSynergy(lmm_ex_var, method = "RA", robust = TRUE, min_time = 6, nsim = 100)
 ```
-Since we performed 1000 simulations, the minimum p-value is 0.001. If we would like to obtain more precise p-values, we should run the analysis increasing the number of simulations.
+Since we performed 100 simulations, the minimum p-value is 0.01. If we would like to obtain more precise p-values, we should run the analysis increasing the number of simulations.
 
 ## 4. Power Analysis
 
@@ -341,12 +361,12 @@ The _post hoc_ (retrospective) power analysis allows to evaluate the statistical
 
 Since the drug combination effect is time-dependent, the statistical power vary depending on the time point being analyzed. We can choose which time point to analyse using the `time` argument.
 
-The post hoc power analysis is based on simulations. We can specify the number of simulations to run using the `nsim` argument. For this example, we will run only 100 simulations:
+The post hoc power analysis is based on simulations. We can specify the number of simulations to run using the `nsim` argument. For this example, we will run only 50 simulations to reduce the computational time:
 
 If we don't specify any day, the last time point is used by default (in this case, day 30):
 
 ```{r}
-PostHocPwr(lmm_ex_var, nsim = 100, method = "Bliss")
+PostHocPwr(lmm_ex_var, nsim = 50, method = "Bliss")
 ```
 
 We can see that the analysis provides a good statistical power.
