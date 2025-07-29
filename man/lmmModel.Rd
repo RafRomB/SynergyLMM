@@ -185,6 +185,7 @@ lmmModel(
 lmmModel(
 data = grwth_data, 
 grwth_model = "gompertz", # Selecting Gompertz model
+start_values = "selfStart", # Using self-starting values
 sample_id = "subject",
 time = "Time",
 treatment = "Treatment",
