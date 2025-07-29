@@ -11,7 +11,7 @@ adjustment.
 
 * `lmmModel_estimates()` now also reports the standard error of the 
 fixed effect coefficients.
-- `lmmSynergy()` now also returns a data frame with the estimated coefficients, 
+* `lmmSynergy()` now also returns a data frame with the estimated coefficients, 
 calculated with `lmmModel_estimates()`, for each time point.
 * `CookDistance()` now allows to choose between calculating Cook's distances 
 based on changes of the fitted values, or changes of the fixed effects.

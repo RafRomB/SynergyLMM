@@ -1,7 +1,21 @@
-## Resubmission
+## CRAN submission
 
-* Updated 'lmmSynergy()' function to also provide a data frame with the estimates for each model produced at each time point.
-* Modified 'lmmModel_estimates()' function to also report the standar error of the fixed effect coefficients, and the option to obtain sandwich-based robust standard errors.
+This is a minor update to the SynergyLMM package (1.1.0)
+
+## Changes
+
+- Gompertz growth model is now available for fitting data using non-linear mixed 
+effect models.
+- `lmmSynergy()` now allows for multiple testing correction and p-value 
+adjustment.
+- `lmmModel_estimates()` now also reports the standard error of the 
+fixed effect coefficients.
+- `lmmSynergy()` now also returns a data frame with the estimated coefficients, 
+calculated with `lmmModel_estimates()`, for each time point.
+- `CookDistance()` now allows to choose between calculating Cook's distances 
+based on changes of the fitted values, or changes of the fixed effects.
+- Correction of combination index values in `lmmSynergy()` when `method = "RA"`.
+- Updated documentation for clarity and consistency.
 
 
 ## R CMD check results
