@@ -5,8 +5,10 @@
 
 <!-- badges: start -->
 
-![CRAN/METACRAN
-Version](https://img.shields.io/cran/v/SynergyLMM?link=https%3A%2F%2Fcran.r-project.org%2Fweb%2Fpackages%2FSynergyLMM%2Findex.html)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/SynergyLMM)](https://CRAN.R-project.org/package=SynergyLMM)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 A comprehensive statistical framework for designing and analyzing *in
