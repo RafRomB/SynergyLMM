@@ -93,10 +93,9 @@ The previous example fits the model using an exponential growth. Users can also 
 
 
 ```{r fit_model_gomp, fig.width=8}
-# Most simple model
 lmm_gomp <- lmmModel(
   data = grwth_data,
-  grwth_model = "gompertz",
+  grwth_model = "gompertz", # Specify Gompertz growth model
   start_values = "selfStart",
   sample_id = "subject",
   time = "Time",
