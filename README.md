@@ -37,7 +37,8 @@ You can install the development version of SynergyLMM from
 pak::pak("RafRomB/SynergyLMM")
 ```
 
-Or you can install the CRAN-released version with:
+Or you can install the [CRAN-released
+version](https://cran.r-project.org/package=SynergyLMM) with:
 
 ``` r
 install.packages("SynergyLMM")
