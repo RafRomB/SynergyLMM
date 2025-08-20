@@ -34,7 +34,7 @@ lmm <- lmmModel(
 lmmSyn <- lmmSynergy(lmm, show_plot = FALSE)
 
 test_that("plot_lmmSynergy runs without error on valid input", {
-  expect_equal(class(
+  expect_true(ggplot2::is_ggplot(
     plot_SynergyLMM(
       lmm,
       plot_type = "lmmModel",
@@ -43,7 +43,7 @@ test_that("plot_lmmSynergy runs without error on valid input", {
       drug_b = "Drug_B",
       combination = "Drug_AB"
     )
-  ), c("gg", "ggplot"))
+  ))
   expect_equal(length(plot_SynergyLMM(lmmSyn, plot_type = "lmmSynergy")),3)
   expect_equal(length(plot_SynergyLMM(lmm, "ranefDiagnostics")), 2)
   expect_equal(length(plot_SynergyLMM(lmm, "ranefDiagnostics")$plots), 4)
