@@ -90,7 +90,7 @@ NULL
 #' @param cx Subject that has been remove from the data to build the model with leave-one-out data.
 #' @param model An object of class "lme" representing the linear mixed-effects model fitted by [`lmmModel()`],
 #' fitted using maximum likelihood.
-#' @param lmeUall A list with the leave-one-out model fits obtained by [`.lmeU()`].
+#' @param lmeUall A list with the leave-one-out model fits obtained by `.lmeU()`.
 #' @param var_name Name of the variable for the weights of the model in the case that a variance structure has been specified using [nlme::varIdent()].
 #' @returns Numeric value indicating the displacement in the log-likelihood due to removal of subject `cx`.
 #' @keywords internal
