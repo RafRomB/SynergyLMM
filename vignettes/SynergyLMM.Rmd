@@ -21,7 +21,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
                       fig.align = "center", 
                       out.width = "100%",
                       prompt = TRUE)
-
+options(continue = " ")
 ```
 
 ## Introduction
@@ -117,7 +117,8 @@ lmm_gomp <- lmmModel(
   trt_control = "Control",
   drug_a = "DrugA",
   drug_b = "DrugB",
-  combination = "Combination")
+  combination = "Combination"
+  )
 ```
 
 
