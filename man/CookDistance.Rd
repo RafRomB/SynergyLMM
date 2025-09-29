@@ -50,12 +50,12 @@ When \code{type = "fitted"}, the Cook's distances
 are calculated as the normalized change in fitted response values due to the removal of a subject from the model.
 Firts, a leave-one-subject-out model is fitted, removing individually each subject to fit the model. Then, the Cook's
 distance for subject \eqn{i}, (\eqn{D_i}), is calculated as:
-\deqn{D_i=\frac{\sum_{j=1}^n\Bigl(\hat{y}_{j}-\hat{y}_{j_{(-i)}}\Bigl)^2}{rank(X)\cdot MSE}}
+\deqn{D_i=\frac{\sum_{j=1}^n\Bigl(\hat{y}_{j}-\hat{y}_{j_{(-i)}}\Bigl)^2}{p\cdot MSE}}
 
 where \eqn{\hat{y}_j} is the \eqn{j^{th}} fitted response value using the complete model, and \eqn{\hat{y}_{j_{(-i)}}} is the
 \eqn{j^{th}} fitted response value obtained using the model where subject \eqn{i} has been removed.
 
-The denominator of the expression is equal to the number of the fixed-effects coefficients, which, under the assumption that
+The denominator of the expression is equal to the number of the fixed-effects coefficients, \eqn{p}, which, under the assumption that
 the design matrix is of full rank, is equivalent to the rank of the design matrix, and the Cook distance is normalized by the
 mean square error (\eqn{MSE}) of the model.
 \itemize{
@@ -66,10 +66,10 @@ The identification of the subjects with a greater influence in the estimated fix
 described in Gałecki and Burzykowsk (2013). To compute the Cook's distance for the fixed effect estimates (i.e., the contribution to each subject to the coefficients of its treatment group),
 first a matrix containing the leave-one-subject-out estimates or the fixed effects is calculated. Then, the Cook's distances are calculated according to:
 
-\deqn{D_i \equiv  \frac{(\hat{\beta} - \hat{\beta}_{(-i)})[\widehat{Var(\hat{\beta})}]^{-1}(\hat{\beta} - \hat{\beta}_{(-i)})}{rank(X)}}
+\deqn{D_i \equiv  \frac{(\hat{\beta} - \hat{\beta}_{(-i)})[\widehat{Var(\hat{\beta})}]^{-1}(\hat{\beta} - \hat{\beta}_{(-i)})}{p}}
 
 where \eqn{\beta} represents the vector of fixed effects and \eqn{\hat{\beta}_{(-i)}} is the estimate of the parameter vector \eqn{\beta} obtained by fitting the model to the data with the \eqn{i}-th subject excluded. The denominator of
-the expression is equal to the number of the fixed-effects coefficients, which, under the assumption that the design matrix is of full rank, is equivalent to the rank of the design matrix.
+the expression is equal to the number of the fixed-effects coefficients, \eqn{p}, which, under the assumption that the design matrix is of full rank, is equivalent to the rank of the design matrix.
 }
 \examples{
 #' # Load the example data
