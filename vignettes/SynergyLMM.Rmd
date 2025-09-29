@@ -34,6 +34,10 @@ The following figure represent schematically 'SynergyLMM' workflow:
 
 ![**Overview of the 'SynergyLMM' workflow. a,** The first step is uploading the longitudinal tumor burden-related measurements for the different treatment groups. The input consists of a tabular data in long format with at least 4 columns containing information about the samples IDs, the time points for each measurement, the treatment group, and the tumor measurement. **b,** The input data will then be processed to estimate the linear mixed effect model that fits the tumor growth dynamics for each subject, and estimate the growth rates for each treatment group. **c,**  'SynergyLMM' offer various functions to evaluate the model diagnostics and model performance, as well as for the identification of potential outliers and influential individuals for the model fit and the treatment groups. **d,** Once a proper model with satisfactory diagnostics has been obtained, the statistical assessment of combination effects is performed, with a time dependent estimation of the synergy score and combination index, along with their confidence intervals and statistical significance. The method allows for testing synergy using three reference models: Bliss independence, highest single agent (HSA), and response additivity (RA). **e,** 'SynergyLMM' implements versatile functions to calculate the _post hoc_ power of the experiment and the _a priori_ power by modifying the values of key experimental variables, such as sample size,  follow-up time, or frequency of the measurements.](Fig1_LMM_Graphical_Abstract.png){width="100%"}
 
+## 0. Recommended Workflow
+
+![**Recommended workflow for using SynergyLMM** to assess drug combination effects. HSA: highest single agent. RA: response additivity.](Flowchart_v2.png){width="100%"}
+
 ## 1. Data Upload and Model Fit
 
 We will start by loading 'SynergyLMM' package:

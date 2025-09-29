@@ -75,7 +75,7 @@ The following figure represent schematically 'SynergyLMM' workflow:
 
 ## 0. Recommended Workflow
 
-![**Recommended workflow for using SynergyLMM**. Recommended workflow for using SynergyLMM to assess drug combination effects. HSA: highest single agent. RA: response additivity.](vignettes/Flowchart_v2.png){width="100%"}
+![**Recommended workflow for using SynergyLMM** to assess drug combination effects. HSA: highest single agent. RA: response additivity.](vignettes/Flowchart_v2.png){width="100%"}
 
 ## 1. Data Upload and Model Fit
 

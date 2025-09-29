@@ -103,11 +103,10 @@ measurements.</figcaption>
 
 <figure>
 <img src="vignettes/Flowchart_v2.png" style="width:100.0%"
-alt="Recommended workflow for using SynergyLMM. Recommended workflow for using SynergyLMM to assess drug combination effects. HSA: highest single agent. RA: response additivity." />
+alt="Recommended workflow for using SynergyLMM to assess drug combination effects. HSA: highest single agent. RA: response additivity." />
 <figcaption aria-hidden="true"><strong>Recommended workflow for using
-SynergyLMM</strong>. Recommended workflow for using SynergyLMM to assess
-drug combination effects. HSA: highest single agent. RA: response
-additivity.</figcaption>
+SynergyLMM</strong> to assess drug combination effects. HSA: highest
+single agent. RA: response additivity.</figcaption>
 </figure>
 
 ## 1. Data Upload and Model Fit
