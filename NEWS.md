@@ -1,3 +1,5 @@
+# SynergyLMM (development version)
+
 # SynergyLMM 1.1.1
 
 Patch update to the SynergyLMM package (1.1.1) so it does not break with the new ggplot2 v4.0.0 update.
