@@ -820,7 +820,8 @@ the number of simulations.
 experimental designs.
 
 *Post-hoc* and *a priori* power analysis are only available for models
-fitted using the exponential growth model.
+fitted using the **exponential growth** model, and for **Bliss
+independence** and **HSA** synergy reference models.
 
 ### 4.1 *Post Hoc* Power Analysis
 
@@ -887,6 +888,7 @@ days <- unique(grwth_data$Time)
 
 # Model estimates
 estimates <- lmmModel_estimates(lmm_ex_var)
+estimates <- round(estimates, 3) # rounding for nicer presentation
 ```
 
 Now, we can evaluate the *a priori* power for this experiment, varying
@@ -896,13 +898,14 @@ size varies from 1 to 10 subjects per group:
 ``` r
 PwrSampleSize(npg = 1:10,
               time = days,
-              grwrControl = round(estimates$Control,3),
-              grwrA = round(estimates$DrugA,3),
-              grwrB = round(estimates$DrugB, 3),
-              grwrComb = round(estimates$Combination, 3),
-              sd_ranef = round(estimates$sd_ranef, 3),
-              sgma = round(estimates$sd_resid, 3),
-              method = "Bliss")
+              grwrControl = estimates$Control,
+              grwrA = estimates$DrugA,
+              grwrB = estimates$DrugB,
+              grwrComb = estimates$Combination,
+              sd_ranef = estimates$sd_ranef,
+              sgma = estimates$sd_resid,
+              method = "Bliss",
+              plot_exmpDt = TRUE)
 ```
 
 <img src="man/figures/README-apriori_pwr_size-1.png" width="100%" />
@@ -922,12 +925,13 @@ PwrSampleSize(npg = 1:10,
 The plot on the left represents the hypothetical data that we have
 provided, with the regression lines for each treatment group according
 to `grwrControl`, `grwrA`, `grwrB`, and `grwrComb` values. The values
-assigned to `sd_ranef` and `sgma` are also shown.
+assigned to `sd_ranef` and `sgma` are also shown. The `plot_exmpDt`
+argument allows the user to control whether this plot is displayed.
 
-The plot on the left shows the values of the power calculation depending
-on the values assigned to `npg`. We can observed that, for this
-experiment, a sample size of 5 would be enough to reach 0.8 statistical
-power.
+The plot on the right shows the values of the power calculation
+depending on the values assigned to `npg`. We can observed that, for
+this experiment, a sample size of 5 would be enough to reach 0.8
+statistical power.
 
 #### Time Power Analysis
 
@@ -981,12 +985,12 @@ end points of the study is:
 PwrTime(npg = npg,
         time = max_time,
         type = "max",
-        grwrControl = round(estimates$Control,3),
-              grwrA = round(estimates$DrugA,3),
-              grwrB = round(estimates$DrugB, 3),
-              grwrComb = round(estimates$Combination, 3),
-              sd_ranef = round(estimates$sd_ranef, 3),
-              sgma = round(estimates$sd_resid, 3),
+        grwrControl = estimates$Control,
+              grwrA = estimates$DrugA,
+              grwrB = estimates$DrugB,
+              grwrComb = estimates$Combination,
+              sd_ranef = estimates$sd_ranef,
+              sgma = estimates$sd_resid,
               method = "Bliss")
 ```
 
@@ -1027,12 +1031,12 @@ Now, let’s analyze the *a priori* power:
 PwrTime(npg = npg,
         time = freq_time,
         type = "freq",
-        grwrControl = round(estimates$Control,3),
-        grwrA = round(estimates$DrugA,3),
-        grwrB = round(estimates$DrugB, 3),
-        grwrComb = round(estimates$Combination, 3),
-        sd_ranef = round(estimates$sd_ranef, 3),
-        sgma = round(estimates$sd_resid, 3),
+        grwrControl = estimates$Control,
+        grwrA = estimates$DrugA,
+        grwrB = estimates$DrugB,
+        grwrComb = estimates$Combination,
+        sd_ranef = estimates$sd_ranef,
+        sgma = estimates$sd_resid,
         method = "Bliss")
 ```
 
@@ -1083,10 +1087,10 @@ From our model, the estimated parameters are:
 
 ``` r
 estimates
-#>      Control sd_Control      DrugA    sd_DrugA      DrugB   sd_DrugB
-#> 1 0.07888867 0.00318583 0.07496401 0.003194576 0.06308966 0.00315647
-#>   Combination sd_Combination  sd_ranef  sd_resid
-#> 1  0.03535055    0.003249592 0.0386823 0.2148223
+#>   Control sd_Control DrugA sd_DrugA DrugB sd_DrugB Combination sd_Combination
+#> 1   0.079      0.003 0.075    0.003 0.063    0.003       0.035          0.003
+#>   sd_ranef sd_resid
+#> 1    0.039    0.215
 ```
 
 Then, we can for example, evaluate how the statistical power varies if
@@ -1099,12 +1103,12 @@ Bliss independence model:
 APrioriPwr(npg = npg, # Sample size per group, calculated above
            time = days, # Time points of measurements, calculated above
            # Model estimates:
-           grwrControl = round(estimates$Control,3),
-           grwrA = round(estimates$DrugA,3),
-           grwrB = round(estimates$DrugB, 3),
-           grwrComb = round(estimates$Combination, 3),
-           sd_ranef = round(estimates$sd_ranef, 3),
-           sgma = round(estimates$sd_resid, 3),
+           grwrControl = estimates$Control,
+           grwrA = estimates$DrugA,
+           grwrB = estimates$DrugB,
+           grwrComb = estimates$Combination,
+           sd_ranef = estimates$sd_ranef,
+           sgma = estimates$sd_resid,
            sd_eval = seq(0.01, 0.1, 0.01),
            sgma_eval = seq(0.01, 1, 0.01),
            grwrComb_eval = seq(-0.05, 0.1, 0.001)
@@ -1116,9 +1120,9 @@ APrioriPwr(npg = npg, # Sample size per group, calculated above
     #>   numDF denDF  F-value       nc     Power
     #> 1     1   317 13.77187 13.77187 0.9590544
 
-The red dot and the vertical line in the two plots on the right indicate
-the power result corresponding to the values assigned to `sd_ranef`,
-`sgma`, and `grwrComb`, respectively.
+The red dot and the vertical line in the two plots indicate the power
+result corresponding to the values assigned to `sd_ranef`, `sgma`, and
+`grwrComb`, respectively.
 
 The results demonstrate that the power increases as the residual and
 random effects variances decrease. Furthermore, the plot on the right
