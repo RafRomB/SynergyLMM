@@ -16,6 +16,7 @@ PwrTime(
   sgma = 0.1,
   method = "Bliss",
   vF = NULL,
+  plot_exmpDt = FALSE,
   ...
 )
 }
@@ -50,19 +51,18 @@ structure. If given as a formula, it is used as the argument to \link[nlme:varFi
 See the documentation on \link[nlme:varClasses]{nlme::varClasses} for a description of the available \link[nlme:varFunc]{nlme::varFunc} classes. Defaults to NULL, corresponding to
 homoscedastic within-group errors.}
 
+\item{plot_exmpDt}{Logical indicating if a plot representing the hypothetical data should also be returned.}
+
 \item{...}{Additional parameters to be passed to \link[nlmeU:Pwr.lme]{nlmeU::Pwr.lme} method.}
 }
 \value{
-The functions returns two plots:
-\itemize{
-\item A plot representing the hypothetical data, with the regression lines for each
-treatment group according to \code{grwrControl}, \code{grwrA}, \code{grwrB} and \code{grwrComb} values. The values
-assigned to \code{sd_ranef} and \code{sgma} are also shown.
-\item A plot showing the values of the power calculation depending on the values assigned to
+The functions returns a plot showing the values of the power calculation depending on the values assigned to
 \code{Time}. If \code{type} is set to "max", the plot shows how the power varies depending on the maximum time of follow-up.
 If \code{type} is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
 been performed.
-}
+If \code{plot_exmpDt = TRUE}, a plot representing the hypothetical data, with the regression lines for each
+treatment group according to \code{grwrControl}, \code{grwrA}, \code{grwrB} and \code{grwrComb} values is also plotted. The values
+assigned to \code{sd_ranef} and \code{sgma} are also shown.
 
 The function also returns the data frame with the power for the analysis for each value specified in \code{ Time}.
 }

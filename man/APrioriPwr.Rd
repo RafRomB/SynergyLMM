@@ -18,6 +18,7 @@ APrioriPwr(
   grwrComb_eval = NULL,
   method = "Bliss",
   vF = NULL,
+  plot_exmpDt = FALSE,
   ...
 )
 }
@@ -55,20 +56,22 @@ structure. If given as a formula, it is used as the argument to \link[nlme:varFi
 See the documentation on \link[nlme:varClasses]{nlme::varClasses} for a description of the available \link[nlme:varFunc]{nlme::varFunc} classes. Defaults to NULL, corresponding to
 homoscedastic within-group errors.}
 
+\item{plot_exmpDt}{Logical indicating if a plot representing the hypothetical data should also be returned.}
+
 \item{...}{Additional parameters to be passed to \link[nlmeU:Pwr.lme]{nlmeU::Pwr.lme} method.}
 }
 \value{
 The functions returns several plots:
 \itemize{
-\item A plot representing the hypothetical data, with the regression lines for each
-treatment group according to \code{grwrControl}, \code{grwrA}, \code{grwrB} and \code{grwrComb} values. The values
-assigned to \code{sd_ranef} and \code{sgma} are also shown.
 \item A plot showing the values of the power calculation depending on the values assigned to
 \code{sd_eval} and \code{sgma_eval}. The power result corresponding to the values assigned to \code{sd_ranef} and
 \code{sgma} is shown with a red dot.
 \item A plot showing the values of the power calculation depending on the values assigned to
 \code{grwrComb_eval}. The vertical dashed line indicates the value of \code{grwrComb}. The horizontal
 line indicates the power of 0.80.
+If \code{plot_exmpDt = TRUE}, a plot representing the hypothetical data, with the regression lines for each
+treatment group according to \code{grwrControl}, \code{grwrA}, \code{grwrB} and \code{grwrComb} values is also plotted. The values
+assigned to \code{sd_ranef} and \code{sgma} are also shown.
 }
 
 The statistical power for the fitted model for the initial data set according to the values given by
