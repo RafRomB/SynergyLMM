@@ -23,6 +23,7 @@ NULL
 #' structure. If given as a formula, it is used as the argument to [nlme::varFixed], corresponding to fixed variance weights. 
 #' See the documentation on [nlme::varClasses] for a description of the available [nlme::varFunc] classes. Defaults to NULL, corresponding to 
 #' homoscedastic within-group errors.
+#' @param plot_exmpDt Logical indicating if a plot representing the hypothetical data should also be returned.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
 #' @details
 #' `PwrSampleSize` allows the user to define an hypothetical drug combination study, customizing several 
@@ -40,12 +41,11 @@ NULL
 #' or be defined by the user.
 #' -  `npg` is a vector indicating the different sample sizes for which the statistical power is going to be evaluated, keeping the 
 #' rest of parameters fixed.
-#' @returns The functions returns two plots:
-#' - A plot representing the hypothetical data, with the regression lines for each
-#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
-#' assigned to `sd_ranef` and `sgma` are also shown.
-#' - A plot showing the values of the power calculation depending on the values assigned to 
+#' @returns The functions returns a plot showing the values of the power calculation depending on the values assigned to 
 #' `npg`.
+#' If `plot_exmpDt = TRUE`, a plot representing the hypothetical data, with the regression lines for each
+#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values is also plotted. The values 
+#' assigned to `sd_ranef` and `sgma` are also shown.
 #' 
 #' The function also returns the data frame with the power for the analysis for each sample size
 #' specified in `npg`.
@@ -70,6 +70,7 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
                           sgma = 0.1,
                           method = "Bliss",
                           vF = NULL,
+                          plot_exmpDt = FALSE,
                           ...) {
   
   ## Constructing an exemplary dataset
@@ -211,6 +212,11 @@ PwrSampleSize <- function(npg = c(5, 8, 10),
     labs(title = paste("Power depending on\nnumber of subjects per group for", method)) + scale_x_continuous(breaks = npg) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
-  plot(plot_grid(p1, p2, ncol = 2))
+  if (plot_exmpDt == TRUE) {
+    plot(plot_grid(p1, p2, ncol = 2))
+  } else {
+    plot(p2)
+  }
+  
   return(npg_Pwr)
 }

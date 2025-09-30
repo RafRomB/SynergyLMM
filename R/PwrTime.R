@@ -27,6 +27,7 @@ NULL
 #' structure. If given as a formula, it is used as the argument to [nlme::varFixed], corresponding to fixed variance weights. 
 #' See the documentation on [nlme::varClasses] for a description of the available [nlme::varFunc] classes. Defaults to NULL, corresponding to 
 #' homoscedastic within-group errors.
+#' @param plot_exmpDt Logical indicating if a plot representing the hypothetical data should also be returned.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
 #' @details
 #' `PwrTime` allows the user to define an hypothetical drug combination study, customizing several 
@@ -48,14 +49,13 @@ NULL
 #' -  `time` is a list in which each element is a vector with the times at which the tumor volume measurements have been performed, and for
 #' which the statistical power is going to be evaluated, keeping the rest of parameters fixed.
 #' 
-#' @returns The functions returns two plots:
-#' - A plot representing the hypothetical data, with the regression lines for each
-#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
-#' assigned to `sd_ranef` and `sgma` are also shown.
-#' - A plot showing the values of the power calculation depending on the values assigned to 
+#' @returns The functions returns a plot showing the values of the power calculation depending on the values assigned to 
 #' `Time`. If `type` is set to "max", the plot shows how the power varies depending on the maximum time of follow-up. 
 #' If `type` is set to "freq", the plot shows how the power varies depending on how frequently the measurements have
 #' been performed.
+#' If `plot_exmpDt = TRUE`, a plot representing the hypothetical data, with the regression lines for each
+#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values is also plotted. The values 
+#' assigned to `sd_ranef` and `sgma` are also shown.
 #' 
 #' The function also returns the data frame with the power for the analysis for each value specified in ` Time`.
 #' 
@@ -95,6 +95,7 @@ PwrTime <- function(npg = 5,
                     sgma = 0.1 ,
                     method = "Bliss",
                     vF = NULL,
+                    plot_exmpDt = FALSE,
                     ...) {
   
   
@@ -228,7 +229,12 @@ PwrTime <- function(npg = 5,
     labs(title = paste(title, method)) + scale_x_continuous(breaks = time_vector) +
     geom_hline(yintercept = 0.8, lty = "dashed")
   
-  plot(plot_grid(p1,p2, ncol = 2))
+  if (plot_exmpDt == TRUE) {
+    plot(plot_grid(p1,p2, ncol = 2))
+  } else {
+    plot(p2)
+  }
+  
   return(npg_Pwr)
 }
 

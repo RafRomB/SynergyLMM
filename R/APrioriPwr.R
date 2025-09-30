@@ -65,6 +65,7 @@ NULL
 #' structure. If given as a formula, it is used as the argument to [nlme::varFixed], corresponding to fixed variance weights. 
 #' See the documentation on [nlme::varClasses] for a description of the available [nlme::varFunc] classes. Defaults to NULL, corresponding to 
 #' homoscedastic within-group errors.
+#' @param plot_exmpDt Logical indicating if a plot representing the hypothetical data should also be returned.
 #' @param ... Additional parameters to be passed to [nlmeU::Pwr.lme] method.
 #' @details
 #' `APrioriPwr` allows for total customization of an hypothetical drug combination study and allows the user
@@ -83,15 +84,15 @@ NULL
 #' exemplary data set to fit the corresponding model and calculate the power.
 #' 
 #' @returns The functions returns several plots:
-#' - A plot representing the hypothetical data, with the regression lines for each
-#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values. The values 
-#' assigned to `sd_ranef` and `sgma` are also shown.
 #' - A plot showing the values of the power calculation depending on the values assigned to 
 #' `sd_eval` and `sgma_eval`. The power result corresponding to the values assigned to `sd_ranef` and
 #' `sgma` is shown with a red dot.
 #' - A plot showing the values of the power calculation depending on the values assigned to
 #' `grwrComb_eval`. The vertical dashed line indicates the value of `grwrComb`. The horizontal
 #' line indicates the power of 0.80.
+#' If `plot_exmpDt = TRUE`, a plot representing the hypothetical data, with the regression lines for each
+#' treatment group according to `grwrControl`, `grwrA`, `grwrB` and `grwrComb` values is also plotted. The values 
+#' assigned to `sd_ranef` and `sgma` are also shown.
 #' 
 #' The statistical power for the fitted model for the initial data set according to the values given by
 #' `npg`, `time`, `grwrControl`, `grwrA`, `grwrB`, `grwrComb`, `sd_ranef` and `sgma` is also shown in the console.
@@ -126,6 +127,7 @@ APrioriPwr <- function(npg = 5,
                        grwrComb_eval = NULL,
                        method = "Bliss",
                        vF = NULL,
+                       plot_exmpDt = FALSE,
                        ...) {
   if (is.null(sd_eval) & is.null(sgma_eval) & is.null(grwrComb_eval)) {
     stop(
@@ -339,7 +341,11 @@ APrioriPwr <- function(npg = 5,
       scale_fill_continuous(type = "viridis") + cowplot::theme_cowplot() + labs(title = paste("Power for", method, sep = " ")) +
       xlab("SD for random effects") + ylab("SD for residuals") + geom_point(x = sd_ranef, y = sgma, shape = 18, size = 5, color = "firebrick3")
     if (is.null(grwrComb_eval)) {
-      plot(plot_grid(p1, p2, ncol = 2))
+      if (plot_exmpDt == TRUE) {
+        plot(plot_grid(p1, p2, ncol = 2)) 
+      } else {
+        plot(p2)
+      }
     }
   }
   
@@ -428,12 +434,20 @@ APrioriPwr <- function(npg = 5,
       )) + xlab("Growth rate (logRTV/Times)") +
       ggplot2::geom_hline(yintercept = 0.8, lty = "dashed") + ggplot2::geom_vline(xintercept = grwrComb, lty=3)
     if (is.null(sd_eval) & is.null(sgma_eval)) {
-      plot(plot_grid(p1, p3, ncol = 2))
+      if (plot_exmpDt == TRUE) {
+        plot(plot_grid(p1, p3, ncol = 2)) 
+      } else {
+        plot(p3)
+      }
     }
   }
   if (!is.null(sd_eval) &
       !is.null(sgma_eval) & !is.null(grwrComb_eval)) {
-    plot(plot_grid(p1, p2, p3, ncol = 3))
+    if (plot_exmpDt == TRUE) {
+      plot(plot_grid(p1, p2, p3, ncol = 3))
+    } else {
+      plot(plot_grid(p2, p3, ncol = 2))
+    }
   }
   return(pwr.result)
 }
