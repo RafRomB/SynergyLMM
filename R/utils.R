@@ -28,7 +28,7 @@ gompertzLog_fun <- function(Time, r0, rho) {
   (r0 / rho) * (1 - exp(-rho * Time))
 }
 
-#' @title Definition of self-starting funtion for start value of Gompertz log model
+#' @title Definition of self-starting function for start value of Gompertz log model
 #' @description
 #' Definition of the self-starting function to estimate initial values for Gompertz log model
 #' @param mCall Matched call to the `selfStart` model

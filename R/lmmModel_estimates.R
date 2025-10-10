@@ -11,9 +11,8 @@
 #' See "Details" section of [clubSandwich::vcovCR()] for further information.
 #' @details
 #' The model estimates provided by `lmmModel_estimates` include:
-#' - Fixed effect coefficients: \eqn{\hat{\beta}_{Control}}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, ( \eqn{\hat{\beta}_{C}}), \eqn{\hat{\beta}_{Combination}}, 
-#' which represent the estimated specific growth rates for the Control, Drug A, Drug B, (Drug C, if present), and Combination groups, respectively.
-#' - The standard deviation (sd) corresponding to each of the fixed effect coefficients. 
+#' - Fixed effect coefficients for the Control, Drug A, Drug B, (Drug C, if present), and Combination groups, respectively.
+#' - The standard error (se) corresponding to each of the fixed effect coefficients. 
 #' - Standard deviation of the random effects (between-subject variance). Column `sd_ranef`.
 #' - Standard deviation of the residuals (within-subject variance). Column `sd_resid`.
 #' 
@@ -78,9 +77,9 @@ lmmModel_estimates.explme <- function(model,
   trt_names <- sub("Time:Treatment", replacement = "", trt_names)
   trt_names <- trt_names[-length(trt_names)]
   
-  trt_names <- as.vector(rbind(trt_names, paste0("sd_", trt_names)))
+  trt_names <- as.vector(rbind(trt_names, paste0("se_", trt_names)))
   
-  colnames(dt) <- c(trt_names,"Combination", "sd_Combination","sd_ranef", "sd_resid")
+  colnames(dt) <- c(trt_names,"Combination", "se_Combination","sd_ranef", "sd_resid")
   
   return(dt)
 }
@@ -120,8 +119,8 @@ lmmModel_estimates.gompertzlme <- function(model,
   trt_names_rho[length(trt_names_rho)] <- "rho.Combination"
   
   
-  trt_names_r0 <- as.vector(rbind(trt_names_r0, paste0("sd_", trt_names_r0)))
-  trt_names_rho <- as.vector(rbind(trt_names_rho, paste0("sd_", trt_names_rho)))
+  trt_names_r0 <- as.vector(rbind(trt_names_r0, paste0("se_", trt_names_r0)))
+  trt_names_rho <- as.vector(rbind(trt_names_rho, paste0("se_", trt_names_rho)))
   trt_names <- c(trt_names_r0, trt_names_rho)
   
   colnames(dt) <- c(trt_names,"sd_r0_ranef", "sd_rho_ranef","sd_resid")

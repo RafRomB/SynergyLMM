@@ -575,7 +575,7 @@ test_that("lmmModel_estimates returns a data frame with correct structure", {
   
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 10)  # control, sd_control, drug_a, sd_druga, drug_b, sd_drugb, combination, sd_combination, sd_ranef, sd_resid
-  expect_equal(colnames(result), c("Control", "sd_Control","Drug_A","sd_Drug_A","Drug_B", "sd_Drug_B", "Combination", "sd_Combination", "sd_ranef", "sd_resid"))
+  expect_equal(colnames(result), c("Control", "se_Control","Drug_A","se_Drug_A","Drug_B", "se_Drug_B", "Combination", "se_Combination", "sd_ranef", "sd_resid"))
 })
 
 test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
@@ -612,7 +612,7 @@ test_that("lmmModel_estimates returns a data frame with correct structure with 3
   
   expect_s3_class(result, "data.frame")
   expect_equal(ncol(result), 12)  # control, drug_a, drug_b, combination, sd_ranef, sd_resid
-  expect_equal(colnames(result), c("Control", "sd_Control","Drug_A","sd_Drug_A","Drug_B", "sd_Drug_B", "Drug_Z", "sd_Drug_Z", "Combination", "sd_Combination", "sd_ranef", "sd_resid"))
+  expect_equal(colnames(result), c("Control", "se_Control","Drug_A","se_Drug_A","Drug_B", "se_Drug_B", "Drug_Z", "se_Drug_Z", "Combination", "se_Combination", "sd_ranef", "sd_resid"))
 })
 
 test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
@@ -645,11 +645,11 @@ test_that("lmmModel_estimates returns robust standard error estimates", {
   result <- lmmModel_estimates(model, robust = TRUE, type = "CR2")
   
   # Check that the coefficients match the model's fixed effects
-  expect_equal(result$sd_Control, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[1,3])
-  expect_equal(result$sd_Drug_A, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[2,3])
-  expect_equal(result$sd_Drug_B, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[3,3])
-  expect_equal(result$sd_Drug_Z, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[4,3])
-  expect_equal(result$sd_Combination, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[5,3])
+  expect_equal(result$se_Control, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[1,3])
+  expect_equal(result$se_Drug_A, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[2,3])
+  expect_equal(result$se_Drug_B, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[3,3])
+  expect_equal(result$se_Drug_Z, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[4,3])
+  expect_equal(result$se_Combination, clubSandwich::conf_int(model, vcov = clubSandwich::vcovCR(model, type = "CR2"))[5,3])
   
   # Check that the standard deviations match the model's random effects and residuals
   expect_equal(result$sd_ranef, sqrt(model$modelStruct$reStruct[[1]][1]))
@@ -702,3 +702,4 @@ test_that("lmmModel_estimates returns correct values for coefficients and standa
   expect_equal(result$sd_rho_ranef, as.numeric(sqrt(diag(nlme::pdMatrix(model$modelStruct$reStruct[[1]])))[2]))
   expect_equal(result$sd_resid, model$sigma)
 })
+

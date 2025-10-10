@@ -34,9 +34,8 @@ such as for power calculation.
 \details{
 The model estimates provided by \code{lmmModel_estimates} include:
 \itemize{
-\item Fixed effect coefficients: \eqn{\hat{\beta}_{Control}}, \eqn{\hat{\beta}_A}, \eqn{\hat{\beta}_B}, ( \eqn{\hat{\beta}_{C}}), \eqn{\hat{\beta}_{Combination}},
-which represent the estimated specific growth rates for the Control, Drug A, Drug B, (Drug C, if present), and Combination groups, respectively.
-\item The standard deviation (sd) corresponding to each of the fixed effect coefficients.
+\item Fixed effect coefficients for the Control, Drug A, Drug B, (Drug C, if present), and Combination groups, respectively.
+\item The standard error (se) corresponding to each of the fixed effect coefficients.
 \item Standard deviation of the random effects (between-subject variance). Column \code{sd_ranef}.
 \item Standard deviation of the residuals (within-subject variance). Column \code{sd_resid}.
 }
