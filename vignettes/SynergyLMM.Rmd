@@ -528,3 +528,9 @@ The results demonstrate that the power increases as the residual and random effe
 
 All these functions constitute an interesting toolbox for the researcher. One may perform a first pilot experiment, and then optimize the study design based on the data from that experiment.
 
+
+## 5. Citation
+
+To cite `SynergyLMM` in publications use:
+
+Romero-Becerra R, Zhao Z, Nebdal D, Müller E, Bergholtz H, Norum JH, Aittokallio T (2025). “Improved analysis of in vivo drug combination experiments with a comprehensive statistical framework and web-tool.” _Nature Communications_, *16*(1), 10151. doi:10.1038/s41467-025-65218-9 <https://doi.org/10.1038/s41467-025-65218-9>.

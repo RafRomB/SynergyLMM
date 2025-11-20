@@ -1,0 +1,20 @@
+bibentry(
+  bibtype = "Article",
+  title = "Improved analysis of in vivo drug combination experiments with a comprehensive statistical framework and web-tool",
+  author = c(
+  as.person("Rafael Romero-Becerra"), 
+  as.person("Zhi Zhao"),
+  as.person("Daniel Nebdal"),
+  as.person("Elisabeth Müller"),
+  as.person("Helga Bergholtz"),
+  as.person("Jens Henrik Norum"),
+  as.person("Tero Aittokallio")
+  ),
+  journal = "Nature Communications",
+  year = 2025,
+  volume = 16,
+  number = 1,
+  pages = 10151,
+  doi = "10.1038/s41467-025-65218-9",
+  url = "https://www.nature.com/articles/s41467-025-65218-9"
+)

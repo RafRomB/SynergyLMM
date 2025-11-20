@@ -14,6 +14,17 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 A comprehensive statistical framework for designing and analyzing *in
 vivo* drug combination experiments.
 
+### Citation
+
+To cite `SynergyLMM` in publications use:
+
+Romero-Becerra R, Zhao Z, Nebdal D, Müller E, Bergholtz H, Norum JH,
+Aittokallio T (2025). “Improved analysis of in vivo drug combination
+experiments with a comprehensive statistical framework and web-tool.”
+*Nature Communications*, *16*(1), 10151.
+<doi:10.1038/s41467-025-65218-9>
+<https://doi.org/10.1038/s41467-025-65218-9>.
+
 ## Table of Contents
 
 - [Installation](#installation)
@@ -270,9 +281,9 @@ variance).
 
 ``` r
 lmmModel_estimates(lmm_ex)
-#>      Control sd_Control      DrugA   sd_DrugA      DrugB   sd_DrugB Combination
+#>      Control se_Control      DrugA   se_DrugA      DrugB   se_DrugB Combination
 #> 1 0.07855242 0.00322683 0.07491984 0.00322683 0.06306986 0.00322683  0.03487933
-#>   sd_Combination   sd_ranef  sd_resid
+#>   se_Combination   sd_ranef  sd_resid
 #> 1     0.00322683 0.03946667 0.2124122
 ```
 
@@ -546,9 +557,9 @@ If we obtain the model estimates from this new model:
 
 ``` r
 lmmModel_estimates(lmm_ex_var)
-#>      Control sd_Control      DrugA    sd_DrugA      DrugB   sd_DrugB
+#>      Control se_Control      DrugA    se_DrugA      DrugB   se_DrugB
 #> 1 0.07888867 0.00318583 0.07496401 0.003194576 0.06308966 0.00315647
-#>   Combination sd_Combination  sd_ranef  sd_resid
+#>   Combination se_Combination  sd_ranef  sd_resid
 #> 1  0.03535055    0.003249592 0.0386823 0.2148223
 ```
 
@@ -1087,7 +1098,7 @@ From our model, the estimated parameters are:
 
 ``` r
 estimates
-#>   Control sd_Control DrugA sd_DrugA DrugB sd_DrugB Combination sd_Combination
+#>   Control se_Control DrugA se_DrugA DrugB se_DrugB Combination se_Combination
 #> 1   0.079      0.003 0.075    0.003 0.063    0.003       0.035          0.003
 #>   sd_ranef sd_resid
 #> 1    0.039    0.215
