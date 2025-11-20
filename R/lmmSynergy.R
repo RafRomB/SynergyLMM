@@ -196,7 +196,7 @@ NULL
 #' lmmSynergy(lmm, min_time = 12)
 #' 
 #' # Using robust standard errors
-#' lmmSynergy(lmm, method = "Bliss", robust = TRUE, type = "CR2")
+#' lmmSynergy(lmm, method = "Bliss", min_time = 27, robust = TRUE, type = "CR2")
 #' 
 
 #' @export
