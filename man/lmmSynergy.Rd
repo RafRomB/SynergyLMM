@@ -249,8 +249,6 @@ lmmSynergy(lmm, method = "RA", nsim = 10) # 10 simulations for shorter computing
 # Only calculate synergy from Time 12 onwards
 lmmSynergy(lmm, min_time = 12)
 
-# Using robust standard errors
-lmmSynergy(lmm, method = "Bliss", min_time = 27, robust = TRUE, type = "CR2")
 
 }
 \references{
