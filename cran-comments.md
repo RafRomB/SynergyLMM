@@ -9,6 +9,7 @@ This is a patch update to the SynergyLMM package (1.1.2) to add the citation to 
 - Minor corrections in `CookDistance()` documentation
 - Additional parameter `plot_exmpDt` to control the output of exemplary data in `APrioriPwr()`, `PwrSampleSize()`, and `PwrTime()` functions
 - Minor corrections in `lmmModel_estimates()` documentation and naming of columns in the resulting data frame
+- Minor correction in `lmmSynergy()` example code
 
 ## R CMD check results
 

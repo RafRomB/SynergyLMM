@@ -244,7 +244,7 @@ lmmSynergy(lmm, method = "Bliss")
 ## HSA
 lmmSynergy(lmm, method = "HSA")
 ## RA
-lmmSynergy(lmm, method = "RA", ra_sim = 10) # 10 simulations for shorter computing time
+lmmSynergy(lmm, method = "RA", nsim = 10) # 10 simulations for shorter computing time
 
 # Only calculate synergy from Time 12 onwards
 lmmSynergy(lmm, min_time = 12)
