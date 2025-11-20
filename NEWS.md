@@ -1,4 +1,12 @@
-# SynergyLMM (development version)
+# SynergyLMM 1.1.2
+
+Patch update to the SynergyLMM package (1.1.2) to add the citation to the published article and some minor updates.
+
+## Fixes
+
+* Added citation to published article: https://doi.org/10.1038/s41467-025-65218-9.
+* `APrioriPwr()`, `PwrSampleSize()`, and `PwrTime()` now allow to control the output of exemplary data plot.
+* Minor corrections in `lmmModel_estimates()` documentation and naming of columns in the resulting data frame.
 
 # SynergyLMM 1.1.1
 
