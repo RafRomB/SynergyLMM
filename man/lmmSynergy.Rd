@@ -234,20 +234,18 @@ lmm <- lmmModel(
   drug_b = "DrugB",
   combination = "Combination"
   ) 
-# Most simple use with default values
+# Most simple use with default values (Bliss reference model)
 syn <- lmmSynergy(lmm)
 # Accessing to synergy results data frame
 syn$Synergy
 # Selecting different reference models:
-## Bliss
-lmmSynergy(lmm, method = "Bliss")
 ## HSA
 lmmSynergy(lmm, method = "HSA")
 ## RA
 lmmSynergy(lmm, method = "RA", nsim = 10) # 10 simulations for shorter computing time
 
-# Only calculate synergy from Time 12 onwards
-lmmSynergy(lmm, min_time = 12)
+# Only calculate synergy from Time 21 onwards
+lmmSynergy(lmm, min_time = 21)
 
 
 }
