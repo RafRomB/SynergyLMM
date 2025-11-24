@@ -1,3 +1,5 @@
+# SynergyLMM (development version)
+
 # SynergyLMM 1.1.2
 
 Patch update to the SynergyLMM package (1.1.2) to add the citation to the published article and some minor updates.
