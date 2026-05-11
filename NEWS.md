@@ -1,4 +1,6 @@
-# SynergyLMM (development version)
+# SynergyLMM 1.1.3
+
+Updated package maintainer's email address.
 
 # SynergyLMM 1.1.2
 

@@ -2,7 +2,7 @@ Package: SynergyLMM
 Title: Statistical Framework for in Vivo Drug Combination Studies
 Version: 1.1.2.9000
 Authors@R: 
-    c(person("Rafael", "Romero-Becerra", , "r.r.becerra@medisin.uio.no", role = c("aut", "cre"),
+    c(person("Rafael", "Romero-Becerra", , "rafrombec@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3935-2647")), 
            person("Zhi", "Zhao", email = "zhi.zhao@medisin.uio.no", role = c("ctb")), 
            person("Tero", "Aittokallio", email = "t.a.aittokallio@medisin.uio.no", role = c("ctb")))
@@ -16,7 +16,6 @@ Description: A framework for evaluating drug combination effects in preclinical 
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports: 
     magrittr (>= 2.0.3),
     rlang,
@@ -44,3 +43,4 @@ LazyData: true
 VignetteBuilder: knitr
 URL: https://github.com/RafRomB/SynergyLMM
 BugReports: https://github.com/RafRomB/SynergyLMM/issues
+Config/roxygen2/version: 8.0.0
