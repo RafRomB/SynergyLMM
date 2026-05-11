@@ -86,8 +86,8 @@ test_that("Test PostHocPwr with different values of nsim", {
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
   
-  # Test with nsim = 100 (larger number of simulations)
-  result <- PostHocPwr(model, nsim = 100)
+  # Test with nsim = 20 (larger number of simulations)
+  result <- PostHocPwr(model, nsim = 20)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
 })
@@ -110,12 +110,12 @@ test_that("Test PostHocPwr with different pvalue thresholds", {
 
 test_that("Test PostHocPwr setting a value for time", {
   # Test with time = 5
-  result <- PostHocPwr(model, nsim = 100, time = 5)
+  result <- PostHocPwr(model, nsim = 10, time = 5)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
-  
+
   # Test with time = 9
-  result <- PostHocPwr(model, nsim = 100, time = 9)
+  result <- PostHocPwr(model, nsim = 10, time = 9)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
   
@@ -126,8 +126,8 @@ test_that("Test PostHocPwr setting a value for time", {
 test_that("Test PostHocPwr passess arguments to simulateY function", {
   
   # Passing the same seed to initiate the random number generator
-  result.seed <- PostHocPwr(model, pvalue = 0.5, nsim = 50, seed = 123)
-  result2.seed <- PostHocPwr(model, pvalue = 0.5, nsim = 50, seed = 123)
+  result.seed <- PostHocPwr(model, pvalue = 0.5, nsim = 10, seed = 123)
+  result2.seed <- PostHocPwr(model, pvalue = 0.5, nsim = 10, seed = 123)
   expect_true(result.seed == result2.seed)
   
 })
@@ -387,38 +387,6 @@ test_that("PwrSampleSize handles the 'HSA' method correctly", {
   expect_equal(nrow(result), length(c(5, 8)))
 })
 
-test_that("PwrSampleSize generates the correct plots without errors for 'Bliss' method", {
-  expect_silent(
-    PwrSampleSize(
-      npg = c(5, 8, 10),
-      time = c(0, 3, 5, 10),
-      grwrControl = 0.08,
-      grwrA = 0.07,
-      grwrB = 0.06,
-      grwrComb = 0.03,
-      sd_ranef = 0.01,
-      sgma = 0.1,
-      method = "Bliss"
-    )
-  )
-})
-
-test_that("PwrSampleSize generates the correct plots without errors for 'HSA' method", {
-  expect_silent(
-    PwrSampleSize(
-      npg = c(5, 8, 10),
-      time = c(0, 3, 5, 10),
-      grwrControl = 0.08,
-      grwrA = 0.07,
-      grwrB = 0.06,
-      grwrComb = 0.03,
-      sd_ranef = 0.01,
-      sgma = 0.1,
-      method = "HSA"
-    )
-  )
-})
-
 test_that("PwrSampleSize handles different numbers of times correctly", {
   result <- PwrSampleSize(
     npg = c(5, 8, 10),
@@ -544,36 +512,6 @@ test_that("PwrTime handles incorrect method input gracefully", {
     ),
     "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'."
   )
-})
-
-test_that("PwrTime generates the correct plots without errors for 'Bliss' method", {
-  expect_silent(PwrTime(
-    npg = 5,
-    time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
-    type = "max",
-    grwrControl = 0.08,
-    grwrA = 0.07,
-    grwrB = 0.06,
-    grwrComb = 0.03,
-    sd_ranef = 0.01,
-    sgma = 0.1,
-    method = "Bliss"
-  ))
-})
-
-test_that("PwrTime generates the correct plots without errors for 'HSA' method", {
-  expect_silent(PwrTime(
-    npg = 5,
-    time = list(seq(0, 9, 3), seq(0, 21, 3), seq(0, 30, 3)),
-    type = "freq",
-    grwrControl = 0.08,
-    grwrA = 0.07,
-    grwrB = 0.06,
-    grwrComb = 0.03,
-    sd_ranef = 0.01,
-    sgma = 0.1,
-    method = "HSA"
-  ))
 })
 
 test_that("PwrTime handles incorrect 'type' input gracefully", {

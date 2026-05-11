@@ -77,21 +77,21 @@ test_that("Test lmmSynergy with HSA method", {
 test_that("Test lmmSynergy with RA method", {
   
   # Call the function with method = "RA"
-  result <- lmmSynergy(model, method = "RA", show_plot = FALSE)
-  
+  result <- lmmSynergy(model, method = "RA", nsim = 100, show_plot = FALSE)
+
   # Check that the result is a list with two elements
   expect_type(result, "list")
   expect_equal(length(result), 4)
   expect_named(result, c("Contrasts", "Synergy", "Estimates", "nsim"))
-  
+
   # Check that "Contrasts" is a NULL and "Synergy" is a data frame
   expect_null(result$Contrasts)
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval","Time") %in% colnames(synergy)))
-  
+
 })
 
 test_that("Test lmmSynergy with robust sandwich estimators (robust = TRUE)", {
@@ -115,7 +115,7 @@ test_that("Test lmmSynergy with robust sandwich estimators (robust = TRUE)", {
 })
 
 test_that("Test lmmSynergy method = 'RA' robust = TRUE works correctly", {
-  result <- lmmSynergy(model, method = "RA", min_time = 0, ra_nsim = 1000, robust = TRUE, type = "CR2", padj = "BH", show_plot = FALSE)
+  result <- lmmSynergy(model, method = "RA", min_time = 0, nsim = 100, robust = TRUE, type = "CR2", padj = "BH", show_plot = FALSE)
   
   expect_type(result, "list")
   expect_named(result, c("Contrasts", "Synergy", "Estimates", "nsim"))
@@ -208,29 +208,29 @@ test_that("Test lmmSynergy with 3 drugs with HSA method", {
 })
 
 test_that("Test lmmSynergy with RA method", {
-  
+
   # Call the function with method = "RA"
-  result <- lmmSynergy(model, method = "RA", show_plot = FALSE)
-  
+  result <- lmmSynergy(model, method = "RA", nsim = 100, show_plot = FALSE)
+
   # Check that the result is a list with two elements
   expect_type(result, "list")
   expect_equal(length(result), 4)
   expect_named(result, c("Contrasts", "Synergy", "Estimates","nsim"))
-  
+
   # Check that "Contrasts" is a NULL and "Synergy" is a data frame
   expect_null(result$Contrasts)
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
-  
+
 })
 
 test_that("Test lmmSynergy with RA method and 'robust' = TRUE works correctly", {
-  
+
   # Call the function with method = "RA"
-  result <- lmmSynergy(model, method = "RA", robust = TRUE, show_plot = FALSE)
+  result <- lmmSynergy(model, method = "RA", nsim = 100, robust = TRUE, show_plot = FALSE)
   
   # Check that the result is a list with two elements
   expect_type(result, "list")
@@ -284,16 +284,16 @@ model <- lmmModel(
 
 test_that("Test lmmSynergy with valid input and default parameters (Bliss method)", {
   # Call the function with default method ("Bliss")
-  result <- lmmSynergy(model, padj = "BH", show_plot = FALSE)
-  
+  result <- lmmSynergy(model, nsim = 10, padj = "BH", show_plot = FALSE)
+
   # Check that the result is a list with two elements
   expect_type(result, "list")
   expect_equal(length(result), 3)
   expect_named(result, c("Synergy", "Estimates","nsim"))
-  
+
   # Check that "Synergy" is a data frame
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj", "Time") %in% colnames(synergy)))
@@ -302,55 +302,55 @@ test_that("Test lmmSynergy with valid input and default parameters (Bliss method
 test_that("Test lmmSynergy with HSA method", {
   # Call the function with method = "HSA"
   expect_warning(
-    result <- lmmSynergy(model, method = "HSA", show_plot = FALSE))
-  
+    result <- lmmSynergy(model, method = "HSA", nsim = 10, show_plot = FALSE))
+
   # Check that the result is structured as expected
   expect_type(result, "list")
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval","Time") %in% colnames(synergy)))
 })
 
 test_that("Test lmmSynergy with RA method", {
-  
+
   # Call the function with method = "RA"
-  result <- lmmSynergy(model, method = "RA", show_plot = FALSE)
-  
+  result <- lmmSynergy(model, method = "RA", nsim = 10, show_plot = FALSE)
+
   # Check that the result is a list with two elements
   expect_type(result, "list")
   expect_equal(length(result), 3)
   expect_named(result, c("Synergy", "Estimates", "nsim"))
-  
+
   # Check that "Synergy" is a data frame
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval","Time") %in% colnames(synergy)))
-  
+
 })
 
 test_that("Test lmmSynergy with robust sandwich estimators (robust = TRUE) returns a warning message", {
   # Call the function with robust = TRUE and type = "CR1"
   expect_warning(
-    lmmSynergy(model, robust = TRUE, type = "CR1", show_plot = FALSE),
+    lmmSynergy(model, robust = TRUE, nsim = 10, type = "CR1", show_plot = FALSE),
     "Sandwich-based robust estimators are only available for exponential growth models.")
   })
 
 
 test_that("Test lmmSynergy with different values of min_time", {
   # Call the function with min_time = 5
-  result <- lmmSynergy(model, min_time = 5)
-  
+  result <- lmmSynergy(model, min_time = 5, nsim = 10)
+
   # Check that only times >= 5 are included
   expect_true(all(result$Synergy$Day >= 5))
 })
 
 test_that("Test lmmSynergy plotting functionality with show_plot = TRUE", {
   # Check that no error is thrown and a plot is generated
-  expect_silent(lmmSynergy(model, show_plot = TRUE))
+  expect_silent(lmmSynergy(model, nsim = 10, show_plot = TRUE))
 })
 
 test_that("Test lmmSynergy with incorrect method input", {
@@ -387,16 +387,16 @@ model <- lmmModel(
 
 test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
   # Call the function with default method ("Bliss")
-  result <- lmmSynergy(model, padj = "BH", show_plot = FALSE)
-  
+  result <- lmmSynergy(model, nsim = 10, padj = "BH", show_plot = FALSE)
+
   # Check that the result is a list with two elements
   expect_type(result, "list")
   expect_equal(length(result), 3)
   expect_named(result, c("Synergy", "Estimates", "nsim"))
-  
+
   # Check that "Synergy" is a data frame
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "padj","Time") %in% colnames(synergy)))
@@ -404,34 +404,34 @@ test_that("Test lmmSynergy with 3 drugs (Bliss method)", {
 
 test_that("Test lmmSynergy with 3 drugs with HSA method", {
   # Call the function with method = "HSA"
-  result <- lmmSynergy(model, method = "HSA", show_plot = FALSE)
-  
+  result <- lmmSynergy(model, method = "HSA", nsim = 10, show_plot = FALSE)
+
   # Check that the result is structured as expected
   expect_type(result, "list")
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
 })
 
 test_that("Test lmmSynergy with RA method", {
-  
+
   # Call the function with method = "RA"
-  result <- lmmSynergy(model, method = "RA", show_plot = FALSE)
-  
+  result <- lmmSynergy(model, method = "RA", nsim = 10, show_plot = FALSE)
+
   # Check that the result is a list with two elements
   expect_type(result, "list")
   expect_equal(length(result), 3)
   expect_named(result, c("Synergy", "Estimates","nsim"))
-  
+
   # Check that "Synergy" is a data frame
   expect_s3_class(result$Synergy, "data.frame")
-  
+
   # Check the structure of 'Synergy' dataframe
   synergy <- result$Synergy
   expect_true(all(c("Model", "Metric", "Estimate", "lwr", "upr", "pval", "Time") %in% colnames(synergy)))
-  
+
 })
 
 

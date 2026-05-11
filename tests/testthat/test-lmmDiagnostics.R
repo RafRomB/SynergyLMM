@@ -67,49 +67,18 @@ test_that("Levene and Fligner tests return the correct classes", {
 })
 
 test_that("ranefDiagnostics handles small sample sizes for D'Agostino test", {
-  # Modify test data to have fewer than 20 samples for ranef
-  small_sample_data <- test_data[test_data$SampleID <= 2, ]
-  
-  small_model <- lmmModel(
-    data = test_data,
-    sample_id = "SampleID",
-    time = "Time",
-    treatment = "Treatment",
-    tumor_vol = "TV",
-    trt_control = "Control",
-    drug_a = "Drug_A",
-    drug_b = "Drug_B",
-    combination = "Drug_AB",
-    time_start = 0,
-    min_observations = 1,
-    show_plot = FALSE
-  )
-  
-  expect_error(ranefDiagnostics(small_model, norm_test = "dagoTest"), 
+  expect_error(ranefDiagnostics(model, norm_test = "dagoTest"),
                regexp = "sample size must be at least 20")
-  
 })
 
 # Tests for residDiagnostics ----
 
-# Data and model for testing:
+# Use a copy of test_data so the global test_data stays clean for later sections
+outlier_data <- test_data
+outlier_data$TV[nrow(outlier_data)] <- 1000
 
-set.seed(123)
-test_data <- data.frame(
-  SampleID = rep(1:10, each = 10),
-  Time = rep(0:9, times = 10),
-  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
-  TV = rnorm(100, mean = 100, sd = 20)
-)
-
-# Create an outlier observation
-
-test_data$TV[nrow(test_data)] <- 1000
-
-# Create model
-
-model <- lmmModel(
-  data = test_data,
+outlier_model <- lmmModel(
+  data = outlier_data,
   sample_id = "SampleID",
   time = "Time",
   treatment = "Treatment",
@@ -124,7 +93,7 @@ model <- lmmModel(
 )
 
 test_that("residDiagnostics correctly identifies outliers", {
-  result <- residDiagnostics(model, pvalue = 0.05)
+  result <- residDiagnostics(outlier_model, pvalue = 0.05)
   
   # Check that the result contains an "outliers" data frame
   expect_true("Outliers" %in% names(result))
@@ -136,8 +105,8 @@ test_that("residDiagnostics correctly identifies outliers", {
 })
 
 test_that("residDiagnostics performs and returns results from normality tests", {
-  result <- residDiagnostics(model, pvalue = 0.05)
-  
+  result <- residDiagnostics(outlier_model, pvalue = 0.05)
+
   # Check that the result contains a "Normality" list
   expect_true("Normality" %in% names(result))
 
@@ -146,20 +115,20 @@ test_that("residDiagnostics performs and returns results from normality tests", 
 })
 
 test_that("residDiagnostics generates diagnostic plots", {
-  result <- residDiagnostics(model, pvalue = 0.05)
-  
+  result <- residDiagnostics(outlier_model, pvalue = 0.05)
+
   # Check that the result contains a "plots" object
   expect_true("Plots" %in% names(result))
   expect_type(result$Plots, "list")
-  
+
   # Check that the plot list contains expected plots
   expect_true(length(result$Plots) >= 1)
-  
+
   expect_s3_class(result$Plots[[1]], "trellis")
 })
 
 test_that("Levene and Fligner tests return the correct classes", {
-  diagnostics <- residDiagnostics(model)
+  diagnostics <- residDiagnostics(outlier_model)
   
   # Check the class of Levene's test results
   expect_s3_class(diagnostics$Levene.test$Time, "anova")
@@ -173,33 +142,6 @@ test_that("Levene and Fligner tests return the correct classes", {
 
 # Tests for ObsvsPred ----
 
-# Data and model for testing:
-
-set.seed(123)
-test_data <- data.frame(
-  SampleID = rep(1:10, each = 10),
-  Time = rep(0:9, times = 10),
-  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
-  TV = rnorm(100, mean = 100, sd = 20)
-)
-
-# Create model
-
-model <- lmmModel(
-  data = test_data,
-  sample_id = "SampleID",
-  time = "Time",
-  treatment = "Treatment",
-  tumor_vol = "TV",
-  trt_control = "Control",
-  drug_a = "Drug_A",
-  drug_b = "Drug_B",
-  combination = "Drug_AB",
-  time_start = 0,
-  min_observations = 1,
-  show_plot = FALSE
-)
-
 test_that("ObsvsPred produce model performance results", {
   expect_s3_class(ObsvsPred(model), "data.frame")
 })
@@ -212,31 +154,6 @@ test_that("ObsvsPred correctly computes and returns model performance metrics", 
 })
 
 # Tests for .lmeU ----
-
-# Create test dataset 
-set.seed(123)
-test_data <- data.frame(
-  SampleID = rep(1:10, each = 10),
-  Time = rep(0:9, times = 10),
-  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
-  TV = rnorm(100, mean = 100, sd = 20)
-)
-
-# Create model
-model <- lmmModel(
-  data = test_data,
-  sample_id = "SampleID",
-  time = "Time",
-  treatment = "Treatment",
-  tumor_vol = "TV",
-  trt_control = "Control",
-  drug_a = "Drug_A",
-  drug_b = "Drug_B",
-  combination = "Drug_AB",
-  time_start = 0,
-  min_observations = 1,
-  show_plot = FALSE
-)
 
 test_that("Test .lmeU function with valid input", {
   
@@ -265,19 +182,7 @@ test_that("Test .lmeU function model structure consistency", {
 
 # Tests for .logLik1.varIdent_loo ----
 
-# Data and model for testing:
-
-set.seed(123)
-test_data <- data.frame(
-  SampleID = rep(1:10, each = 10),
-  Time = rep(0:9, times = 10),
-  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
-  TV = rnorm(100, mean = 100, sd = 20)
-)
-
-# Create model
-
-model <- lmmModel(
+model_varident <- lmmModel(
   data = test_data,
   sample_id = "SampleID",
   time = "Time",
@@ -295,17 +200,17 @@ model <- lmmModel(
 )
 
 # Recover the data from the fitted model
-model_data <- model$data
+model_data_varident <- model_varident$data
 
 # Create leave-one-out model
-modfit <- .lmeU(1, model)
+modfit_varident <- .lmeU(1, model_varident)
 
 test_that("Test .logLik1.varIdent_loo function with valid input", {
   # Data frame for one subject
-  dt1 <- model_data[model_data$SampleID == 1, ]
-  
+  dt1 <- model_data_varident[model_data_varident$SampleID == 1, ]
+
   # Call the function with valid input
-  result <- .logLik1.varIdent_loo(modfit, dt1, dtInit = model, var_name = "SampleID")
+  result <- .logLik1.varIdent_loo(modfit_varident, dt1, dtInit = model_varident, var_name = "SampleID")
   
   # Check that the result is numeric and not NA
   expect_type(result, "double")
@@ -352,18 +257,7 @@ test_that("Test .logLik1.varIdent_loo function with different var_name values", 
 
 # Tests for .lLik ----
 
-# Create test data
-set.seed(123)
-test_data <- data.frame(
-  SampleID = rep(1:10, each = 10),
-  Time = rep(0:9, times = 10),
-  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
-  TV = rnorm(100, mean = 100, sd = 20)
-)
-
-# Create model
-
-model <- lmmModel(
+model_ml <- lmmModel(
   data = test_data,
   sample_id = "SampleID",
   time = "Time",
@@ -379,73 +273,65 @@ model <- lmmModel(
   method = "ML"
 )
 
-
-# Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
-lmeUall_no_varIdent <- list(.lmeU(1, model))
+# Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function
+lmeUall_no_varIdent <- list(.lmeU(1, model_ml))
 names(lmeUall_no_varIdent) <- 1
 
 test_that("Test .lLik function with valid input without varIdent structure", {
-  
+
   # Call the function with valid input and check result is numeric
-  result <- .lLik(1, model, lmeUall_no_varIdent, var_name = NULL)
+  result <- .lLik(1, model_ml, lmeUall_no_varIdent, var_name = NULL)
   expect_type(result, "double")
 })
 
 test_that("Test .lLik function with valid input with varIdent structure", {
-  
-  # Update model to include varIdent structure
-  model <- update(model, weights = varIdent(form = ~1|SampleID))
 
-  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
-  lmeUall_varIdent <- list(.lmeU(1, model))
+  # Update ML model to include varIdent structure
+  model_vi <- update(model_ml, weights = varIdent(form = ~1|SampleID))
+
+  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function
+  lmeUall_varIdent <- list(.lmeU(1, model_vi))
   names(lmeUall_varIdent) <- 1
-  
+
   # Call the function with valid input and correct var_name
-  result <- .lLik(1, model, lmeUall_varIdent, var_name = "SampleID")
+  result <- .lLik(1, model_vi, lmeUall_varIdent, var_name = "SampleID")
   expect_type(result, "double")
 })
 
 test_that("Test .lLik function throws an error with missing var_name when needed", {
-  
-  # Update model to include varIdent structure
-  model <- update(model, weights = varIdent(form = ~1|SampleID))
-  
-  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
-  lmeUall_varIdent <- list(.lmeU(1, model))
+
+  # Update ML model to include varIdent structure
+  model_vi <- update(model_ml, weights = varIdent(form = ~1|SampleID))
+
+  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function
+  lmeUall_varIdent <- list(.lmeU(1, model_vi))
   names(lmeUall_varIdent) <- 1
-  
+
   # Call the function without providing var_name when variance structure is used
-  expect_error(.lLik(1, model, lmeUall_varIdent, var_name = NULL),
+  expect_error(.lLik(1, model_vi, lmeUall_varIdent, var_name = NULL),
                "`var_name` cannot be NULL if a variance structure has been specified in the model")
 })
 
 test_that("Test .lLik function with different variance structures", {
   # Test with another variance structure (Time)
-  
-  model <- update(model, weights = varIdent(form = ~1|Time)) # Use `Time` as group for variance structure
-  
-  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function 
-  lmeUall_diff_var <- list(.lmeU(1, model))
+  model_vi_time <- update(model_ml, weights = varIdent(form = ~1|Time))
+
+  # Create a list of leave-one-out (leave mouse 1 out) model fits using .lmeU function
+  lmeUall_diff_var <- list(.lmeU(1, model_vi_time))
   names(lmeUall_diff_var) <- 1
-  
+
   # Call the function and check the result is numeric
-  result <- .lLik(1, model, lmeUall_diff_var, var_name = "Time")
+  result <- .lLik(1, model_vi_time, lmeUall_diff_var, var_name = "Time")
   expect_type(result, "double")
 })
 
 # Tests for logLikSubjectDisplacements ----
 
-# Create test data
-set.seed(123)
-test_data <- data.frame(
-  SampleID = rep(1:10, each = 10),
-  Time = rep(0:9, times = 10),
-  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
-  TV = rnorm(100, mean = 100, sd = 20)
-)
+# Precompute once; reused in multiple tests below
+loglik_displacements <- logLikSubjectDisplacements(model)
 
-# Create model
-model <- lmmModel(
+# varIdent model shared by the two varIdent tests
+model_varident_reml <- lmmModel(
   data = test_data,
   sample_id = "SampleID",
   time = "Time",
@@ -457,92 +343,55 @@ model <- lmmModel(
   combination = "Drug_AB",
   time_start = 0,
   min_observations = 1,
-  show_plot = FALSE
-  )
-
+  show_plot = FALSE,
+  weights = varIdent(form = ~1|SampleID)
+)
 
 test_that("Test logLikSubjectDisplacements with valid input without varIdent structure", {
-  
-  # Call the function with valid input and check that it runs without error
-  result <- logLikSubjectDisplacements(model)
-  
+
   # Check that the result is numeric
-  expect_type(result, "double")
-  
+  expect_type(loglik_displacements, "double")
+
   # Check that all values are finite
-  expect_true(all(is.finite(result)))
+  expect_true(all(is.finite(loglik_displacements)))
 })
 
 test_that("Test logLikSubjectDisplacements with valid input with varIdent structure", {
-  
-  # Update model to include varStruct
-  model <- lmmModel(
-    data = test_data,
-    sample_id = "SampleID",
-    time = "Time",
-    treatment = "Treatment",
-    tumor_vol = "TV",
-    trt_control = "Control",
-    drug_a = "Drug_A",
-    drug_b = "Drug_B",
-    combination = "Drug_AB",
-    time_start = 0,
-    min_observations = 1,
-    show_plot = FALSE,
-    weights = varIdent(form = ~1|SampleID))
-  
+
   # Call the function with valid input and correct var_name
-  result <- logLikSubjectDisplacements(model, var_name = "SampleID")
-  
+  result <- logLikSubjectDisplacements(model_varident_reml, var_name = "SampleID")
+
   # Check that the result is numeric
   expect_type(result, "double")
-  
+
   # Check that all values are finite
   expect_true(all(is.finite(result)))
 })
 
 test_that("Test logLikSubjectDisplacements throws an error with missing var_name when needed", {
-  
-  # Update model to include varStruct
-  model <- lmmModel(
-    data = test_data,
-    sample_id = "SampleID",
-    time = "Time",
-    treatment = "Treatment",
-    tumor_vol = "TV",
-    trt_control = "Control",
-    drug_a = "Drug_A",
-    drug_b = "Drug_B",
-    combination = "Drug_AB",
-    time_start = 0,
-    min_observations = 1,
-    show_plot = FALSE,
-    weights = varIdent(form = ~1|SampleID))
-  
+
   # Call the function without providing var_name when variance structure is used
-  expect_error(logLikSubjectDisplacements(model), 
+  expect_error(logLikSubjectDisplacements(model_varident_reml),
                "`var_name` cannot be NULL if a variance structure has been specified in the model", fixed = TRUE)
 })
 
 test_that("Test logLikSubjectDisplacements with different thresholds", {
-  # Test with threshold that is higher than any log-likelihood displacement
-  result <- logLikSubjectDisplacements(model, disp_thrh = 1000)
-  expect_true(all(result <= 1000))
-  expect_message(logLikSubjectDisplacements(model, disp_thrh = 1000),
-                 "No subject with a log-likelihood displacement greater than: 1000")
-  
+  # Combine the call and message check to avoid running LOO twice
+  expect_message(
+    result_thrh <- logLikSubjectDisplacements(model, disp_thrh = 1000),
+    "No subject with a log-likelihood displacement greater than: 1000"
+  )
+  expect_true(all(result_thrh <= 1000))
+
   # Test with very low threshold (all displacements should be included in plot)
-  result <- logLikSubjectDisplacements(model, disp_thrh = -1000)
-  expect_true(any(result > -1000))
+  result_low <- logLikSubjectDisplacements(model, disp_thrh = -1000)
+  expect_true(any(result_low > -1000))
 })
 
 test_that("Test logLikSubjectDisplacements output consistency", {
-  # Run function and capture the output
-  result <- logLikSubjectDisplacements(model)
-  
-  # Check that result is named and length matches number of subjects
-  expect_named(result)
-  expect_equal(length(result), length(unique(test_data$SampleID)))
+  # Reuse precomputed result
+  expect_named(loglik_displacements)
+  expect_equal(length(loglik_displacements), length(unique(test_data$SampleID)))
 })
 
 
@@ -604,44 +453,19 @@ test_that("Test .CookDfun with non-conformable inputs", {
 
 # Tests for CookDistance ----
 
-# Create test data
-set.seed(123)
-test_data <- data.frame(
-  SampleID = rep(1:10, each = 10),
-  Time = rep(0:9, times = 10),
-  Treatment = rep(c("Control", "Drug_A", "Drug_B", "Drug_AB"), each = 10, length.out = 100),
-  TV = rnorm(100, mean = 100, sd = 20)
-)
-
-# Create model
-model <- lmmModel(
-  data = test_data,
-  sample_id = "SampleID",
-  time = "Time",
-  treatment = "Treatment",
-  tumor_vol = "TV",
-  trt_control = "Control",
-  drug_a = "Drug_A",
-  drug_b = "Drug_B",
-  combination = "Drug_AB",
-  time_start = 0,
-  min_observations = 1,
-  show_plot = FALSE
-)
-
+# Precompute once; reused in multiple tests below
+cook_distances <- CookDistance(model)
 
 test_that("Test CookDistance with valid input without Cook threshold", {
-  # Call the function with a valid input and default cook_thr
-  result <- CookDistance(model)
-  
+
   # Check that the result is a numeric vector
-  expect_type(result, "double")
-  
+  expect_type(cook_distances, "double")
+
   # Check that the length of the result matches the number of subjects
-  expect_equal(length(result), length(unique(test_data$SampleID)))
-  
+  expect_equal(length(cook_distances), length(unique(test_data$SampleID)))
+
   # Check that all values are finite
-  expect_true(all(is.finite(result)))
+  expect_true(all(is.finite(cook_distances)))
 })
 
 test_that("Test CookDistance with type = 'fixef'", {
@@ -672,12 +496,9 @@ test_that("Test CookDistance with different thresholds", {
 })
 
 test_that("Test CookDistance output consistency", {
-  # Run the function and capture the output
-  result <- CookDistance(model)
-  
-  # Check that the result is named and length matches number of subjects
-  expect_named(result)
-  expect_equal(length(result), length(unique(test_data$SampleID)))
+  # Reuse precomputed result
+  expect_named(cook_distances)
+  expect_equal(length(cook_distances), length(unique(test_data$SampleID)))
 })
 
 test_that("Test CookDistance with invalid model input", {
