@@ -1,6 +1,6 @@
 # SynergyLMM 1.1.3
 
-Updated package maintainer's email address.
+Patch update to update the package maintainer's email address.
 
 # SynergyLMM 1.1.2
 
