@@ -1,3 +1,5 @@
+# SynergyLMM (development version)
+
 # SynergyLMM 1.1.3
 
 Patch update to update the package maintainer's email address.
