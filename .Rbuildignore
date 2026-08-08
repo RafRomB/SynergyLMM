@@ -10,3 +10,6 @@
 ^CRAN-SUBMISSION$
 ^\.positai$
 ^\.claude$
+^tests/testthat/_problems$
+^Rplots\.pdf$
+^tests/testthat/Rplots\.pdf$

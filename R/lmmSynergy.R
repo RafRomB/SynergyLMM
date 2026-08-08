@@ -517,13 +517,7 @@ lmmSynergy.explme <- function(model,
   df <- rbind(ci, ss)
   
   rownames(df) <- NULL
-  if (sum(df$pval == 0) > 0) {
-    ndec <- strsplit(format(nsim, scientific = T), split = "\\+")[[1]][2]
-    apx_p <- paste("p<1e-",ndec, sep = "")
-    warning(paste("p-values below", apx_p, "are approximated to 0."),
-            " If you used method = 'RA' consider increasing 'nsim' value for",
-            " more precise p-values.")
-  }
+  warn_zero_pval(df$pval, nsim)
   result <- list(Contrasts = Contrasts, Synergy = df, Estimates = estimates, nsim = nsim)
   if(show_plot) {
     plot(plot_lmmSynergy(result)$CI_SS)
@@ -911,13 +905,7 @@ lmmSynergy.gompertzlme <- function(model,
   
   df <- rbind(ci, ss)
   rownames(df) <- NULL
-  if (sum(df$pval == 0) > 0) {
-    ndec <- strsplit(format(nsim, scientific = T), split = "\\+")[[1]][2]
-    apx_p <- paste("p<1e-",ndec, sep = "")
-    warning(paste("p-values below", apx_p, "are approximated to 0."),
-            " If you used a Gompertz model, consider increasing 'nsim' value for",
-            " more precise p-values.")
-  }
+  warn_zero_pval(df$pval, nsim, gompertz = TRUE)
   result <- list(Synergy = df, Estimates = estimates, nsim = nsim)
   if(show_plot) {
     plot(plot_lmmSynergy(result)$CI_SS)

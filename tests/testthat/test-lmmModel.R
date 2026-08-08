@@ -123,7 +123,8 @@ test_that("lmmModel throws an error when required columns are missing", {
       min_observations = 1,
       show_plot = FALSE
     ),
-    "The following required columns are missing from the data: SampleID"
+    "The following required columns are missing from the data: SampleID",
+    fixed = TRUE
   )
 })
 
@@ -147,7 +148,8 @@ test_that("lmmModel throws an error when treatment column contains unrecognized 
       min_observations = 1,
       show_plot = FALSE
     ),
-    "The treatment column contains unrecognized treatments: unk_trt"
+    "The treatment column contains unrecognized treatments: unk_trt",
+    fixed = TRUE
   )
 })
 
@@ -169,7 +171,8 @@ test_that("lmmModel throws an error when an expected treatment is missing", {
       min_observations = 1,
       show_plot = FALSE
     ),
-    "The treatment column is missing expected treatments: Drug_X"
+    "The treatment column is missing expected treatments: Drug_X",
+    fixed = TRUE
   )
 })
 
@@ -189,7 +192,8 @@ test_that("lmmModel throws an error when 'min_observations' is a negative value"
     min_observations = -1,
     show_plot = FALSE
   ),
-  "The `min_observations` parameter must be a positive numeric value."
+  "The `min_observations` parameter must be a positive numeric value.",
+  fixed = TRUE
   )
 })
 
@@ -290,7 +294,9 @@ test_that("lmmModel excludes samples with TV0 == 0", {
     time_start = 0,
     min_observations = 1,
     show_plot = FALSE
-  ), "1,4 subjects have measurements with value 0 at the initial time point: 0. These subjects will be removed from the analysis.")
+  ), "1,4 subjects have measurements with value 0 at the initial time point: 0. These subjects will be removed from the analysis.",
+  fixed = TRUE
+  )
   
 })
 
@@ -578,7 +584,7 @@ test_that("lmmModel_estimates returns a data frame with correct structure", {
   expect_equal(colnames(result), c("Control", "se_Control","Drug_A","se_Drug_A","Drug_B", "se_Drug_B", "Combination", "se_Combination", "sd_ranef", "sd_resid"))
 })
 
-test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
+test_that("lmmModel_estimates returns correct values for coefficients and standard deviations (2 drugs)", {
   model <- lmmModel(test_data, combination = "Drug_AB")
   result <- lmmModel_estimates(model)
   
@@ -615,7 +621,7 @@ test_that("lmmModel_estimates returns a data frame with correct structure with 3
   expect_equal(colnames(result), c("Control", "se_Control","Drug_A","se_Drug_A","Drug_B", "se_Drug_B", "Drug_Z", "se_Drug_Z", "Combination", "se_Combination", "sd_ranef", "sd_resid"))
 })
 
-test_that("lmmModel_estimates returns correct values for coefficients and standard deviations", {
+test_that("lmmModel_estimates returns correct values for coefficients and standard deviations (3 drugs)", {
   model <- lmmModel(test_data, trt_control = "Control",
                     drug_a = "Drug_A",
                     drug_b = "Drug_B",

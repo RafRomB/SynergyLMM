@@ -5,3 +5,7 @@
 inst/doc
 test_build.R
 .positai
+tests/testthat/_problems/
+Rplots.pdf
+tests/testthat/Rplots.pdf
+*.tar.gz

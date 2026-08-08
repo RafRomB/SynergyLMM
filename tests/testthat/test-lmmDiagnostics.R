@@ -56,7 +56,7 @@ test_that("Normality tests return the correct classes", {
 })
 
 
-test_that("Levene and Fligner tests return the correct classes", {
+test_that("Levene and Fligner tests return the correct classes (ranefDiagnostics)", {
   diagnostics <- ranefDiagnostics(model)
   
   # Check the class of Levene's test results
@@ -67,8 +67,10 @@ test_that("Levene and Fligner tests return the correct classes", {
 })
 
 test_that("ranefDiagnostics handles small sample sizes for D'Agostino test", {
+  # Only a distinctive fragment is matched: the full sentence comes from
+  # fBasics and may be reworded upstream.
   expect_error(ranefDiagnostics(model, norm_test = "dagoTest"),
-               regexp = "sample size must be at least 20")
+               regexp = "sample size")
 })
 
 # Tests for residDiagnostics ----
@@ -99,9 +101,12 @@ test_that("residDiagnostics correctly identifies outliers", {
   expect_true("Outliers" %in% names(result))
   expect_s3_class(result$Outliers, "data.frame")
   
-  # Verify that outliers are correctly identified
-  # (You may need to manually verify this based on the mock model)
-  expect_true(nrow(result$Outliers) > 0 || nrow(result$Outliers) == 0)
+  # Verify the structure of the outliers data frame and the selection rule. The
+  # number of outliers is not asserted: it depends on numeric details of the fit.
+  expect_true(all(c("SampleID", "Time", "Treatment", "normalized_resid") %in%
+                    colnames(result$Outliers)))
+  # Every reported outlier must exceed the two-sided normal cut-off for 'pvalue'
+  expect_true(all(abs(result$Outliers$normalized_resid) > -qnorm(0.05 / 2)))
 })
 
 test_that("residDiagnostics performs and returns results from normality tests", {
@@ -127,7 +132,7 @@ test_that("residDiagnostics generates diagnostic plots", {
   expect_s3_class(result$Plots[[1]], "trellis")
 })
 
-test_that("Levene and Fligner tests return the correct classes", {
+test_that("Levene and Fligner tests return the correct classes (residDiagnostics)", {
   diagnostics <- residDiagnostics(outlier_model)
   
   # Check the class of Levene's test results
@@ -309,7 +314,9 @@ test_that("Test .lLik function throws an error with missing var_name when needed
 
   # Call the function without providing var_name when variance structure is used
   expect_error(.lLik(1, model_vi, lmeUall_varIdent, var_name = NULL),
-               "`var_name` cannot be NULL if a variance structure has been specified in the model")
+               "`var_name` cannot be NULL if a variance structure has been specified in the model",
+               fixed = TRUE
+               )
 })
 
 test_that("Test .lLik function with different variance structures", {
@@ -377,11 +384,14 @@ test_that("Test logLikSubjectDisplacements throws an error with missing var_name
 
 test_that("Test logLikSubjectDisplacements with different thresholds", {
   # Combine the call and message check to avoid running LOO twice
+  # The threshold is far beyond any attainable displacement, so the message is
+  # guaranteed regardless of the numeric details of the leave-one-out refits.
   expect_message(
-    result_thrh <- logLikSubjectDisplacements(model, disp_thrh = 1000),
-    "No subject with a log-likelihood displacement greater than: 1000"
+    result_thrh <- logLikSubjectDisplacements(model, disp_thrh = 1e+06),
+    "No subject with a log-likelihood displacement greater than: 1e+06",
+    fixed = TRUE
   )
-  expect_true(all(result_thrh <= 1000))
+  expect_true(all(result_thrh <= 1e+06))
 
   # Test with very low threshold (all displacements should be included in plot)
   result_low <- logLikSubjectDisplacements(model, disp_thrh = -1000)
@@ -486,9 +496,12 @@ test_that("Test CookDistance with type = 'fixef'", {
 test_that("Test CookDistance with different thresholds", {
   
   # Test with a threshold that is higher than any Cook's distance
-  expect_message(result <- CookDistance(model, cook_thr = 10), 
-                "No subject with a Cook's distance greater than: 10")
-  expect_true(all(result <= 10))
+  # The threshold is far beyond any attainable Cook's distance, so the message
+  # is guaranteed regardless of the numeric details of the refits.
+  expect_message(result <- CookDistance(model, cook_thr = 1e+06),
+                "No subject with a Cook's distance greater than: 1e+06",
+                fixed = TRUE)
+  expect_true(all(result <= 1e+06))
   
   # Test with a threshold of zero (all distances should be included in the plot)
   result <- CookDistance(model, cook_thr = -10)

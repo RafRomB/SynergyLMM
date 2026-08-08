@@ -26,7 +26,7 @@ model <- lmmModel(
 
 test_that("Test PostHocPwr with valid input and default parameters (Bliss method)", {
   # Call the function with default method ("Bliss")
-  result <- PostHocPwr(model, nsim = 10) # Use small nsim for quicker testing
+  result <- PostHocPwr(model, nsim = 10, seed = 123) # Use small nsim for quicker testing
   
   # Check that the result is numeric
   expect_type(result, "double")
@@ -35,9 +35,9 @@ test_that("Test PostHocPwr with valid input and default parameters (Bliss method
   expect_true(result >= 0 && result <= 1)
 })
 
-test_that("Test PostHocPwr with HSA method", {
+test_that("Test PostHocPwr with HSA method (2 drugs)", {
   # Call the function with method = "HSA"
-  result <- PostHocPwr(model, nsim = 10, method = "HSA") # Use small nsim for quicker testing
+  result <- PostHocPwr(model, nsim = 10, method = "HSA", seed = 123) # Use small nsim for quicker testing
   
   # Check that the result is numeric
   expect_type(result, "double")
@@ -64,7 +64,7 @@ test_that("Test PostHocPwr with HSA method independently of the order of treatme
   )
   
   # Call the function with method = "HSA"
-  result <- PostHocPwr(model, nsim = 10, method = "HSA") # Use small nsim for quicker testing
+  result <- PostHocPwr(model, nsim = 10, method = "HSA", seed = 123) # Use small nsim for quicker testing
   
   # Check that the result is numeric
   expect_type(result, "double")
@@ -77,45 +77,50 @@ test_that("Test PostHocPwr with HSA method independently of the order of treatme
 test_that("Test PostHocPwr with invalid method input", {
   # Expect an error when an invalid method is provided
   expect_error(PostHocPwr(model, method = "InvalidMethod"),
-               "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.")
+               "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.",
+               fixed = TRUE
+               )
 })
 
 test_that("Test PostHocPwr with different values of nsim", {
   # Test with nsim = 1 (edge case)
-  result <- PostHocPwr(model, nsim = 1)
+  result <- PostHocPwr(model, nsim = 1, seed = 123)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
   
   # Test with nsim = 20 (larger number of simulations)
-  result <- PostHocPwr(model, nsim = 20)
+  result <- PostHocPwr(model, nsim = 20, seed = 123)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
 })
 
 test_that("Test PostHocPwr with different pvalue thresholds", {
-  # Test with pvalue = 0.01
-  result <- PostHocPwr(model, pvalue = 0.01, nsim = 10)
+  # Test with pvalue = 0.01. The same seed is used for both thresholds so that
+  # the two power estimates are computed from identical simulated data sets.
+  result <- PostHocPwr(model, pvalue = 0.01, nsim = 10, seed = 123)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
   
-  # Test with pvalue = 0.10
-  result2 <- PostHocPwr(model, pvalue = 0.50, nsim = 10)
+  # Test with pvalue = 0.50
+  result2 <- PostHocPwr(model, pvalue = 0.50, nsim = 10, seed = 123)
   expect_type(result2, "double")
-  expect_true(result2 >= 0 && result <= 1)
+  expect_true(result2 >= 0 && result2 <= 1)
   
-  # result with lower p-value threshold should be smaller
-  expect_true(result < result2)
+  # The power at the lower p-value threshold cannot exceed the power at the
+  # higher one. A strict inequality is not asserted: with nsim = 10 both
+  # estimates are frequently 0 or frequently 1.
+  expect_true(result <= result2)
   
 })
 
 test_that("Test PostHocPwr setting a value for time", {
   # Test with time = 5
-  result <- PostHocPwr(model, nsim = 10, time = 5)
+  result <- PostHocPwr(model, nsim = 10, time = 5, seed = 123)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
 
   # Test with time = 9
-  result <- PostHocPwr(model, nsim = 10, time = 9)
+  result <- PostHocPwr(model, nsim = 10, time = 9, seed = 123)
   expect_type(result, "double")
   expect_true(result >= 0 && result <= 1)
   
@@ -159,7 +164,7 @@ model <- lmmModel(
 
 test_that("Test PostHocPwr with 3 drugs (Bliss method)", {
   # Call the function with default method ("Bliss")
-  result <- PostHocPwr(model, nsim = 10) # Use small nsim for quicker testing
+  result <- PostHocPwr(model, nsim = 10, seed = 123) # Use small nsim for quicker testing
   
   # Check that the result is numeric
   expect_type(result, "double")
@@ -168,9 +173,9 @@ test_that("Test PostHocPwr with 3 drugs (Bliss method)", {
   expect_true(result >= 0 && result <= 1)
 })
 
-test_that("Test PostHocPwr with HSA method", {
+test_that("Test PostHocPwr with HSA method (3 drugs)", {
   # Call the function with method = "HSA"
-  result <- PostHocPwr(model, nsim = 10, method = "HSA") # Use small nsim for quicker testing
+  result <- PostHocPwr(model, nsim = 10, method = "HSA", seed = 123) # Use small nsim for quicker testing
   
   # Check that the result is numeric
   expect_type(result, "double")
@@ -184,18 +189,21 @@ test_that("Test PostHocPwr with HSA method", {
 test_that("APrioriPwr throws an error when neither sd_eval and sgma_eval nor grwrComb_eval are provided", {
   expect_error(
     APrioriPwr(grwrControl = 0.1, grwrA = 0.1, grwrB = 0.1, grwrComb = 0.1, sd_ranef = 0.5, sgma = 0.5),
-    "One of the following, 'sd_eval' and 'sgma_eval', or 'grwrComb_eval', arguments must be specified"
+    "One of the following, 'sd_eval' and 'sgma_eval', or 'grwrComb_eval', arguments must be specified",
+    fixed = TRUE
   )
 })
 
 test_that("APrioriPwr throws an error when only one of sd_eval or sgma_eval is provided", {
   expect_error(
     APrioriPwr(grwrControl = 0.1, grwrA = 0.1, grwrB = 0.1, grwrComb = 0.1, sd_ranef = 0.5, sgma = 0.5, sd_eval = c(0.2, 0.3)),
-    "Both, 'sd_eval' and 'sgma_eval', must be specified"
+    "Both, 'sd_eval' and 'sgma_eval', must be specified",
+    fixed = TRUE
   )
   expect_error(
     APrioriPwr(grwrControl = 0.1, grwrA = 0.1, grwrB = 0.1, grwrComb = 0.1, sd_ranef = 0.5, sgma = 0.5, sgma_eval = c(0.2, 0.3)),
-    "Both, 'sd_eval' and 'sgma_eval', must be specified"
+    "Both, 'sd_eval' and 'sgma_eval', must be specified",
+    fixed = TRUE
   )
 })
 
@@ -212,7 +220,8 @@ test_that("APrioriPwr handles incorrect method input gracefully", {
       sgma_eval = c(0.2, 0.3),
       method = "RA"
     ),
-    "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'."
+    "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.",
+    fixed = TRUE
   )
 })
 
@@ -416,7 +425,8 @@ test_that("PwrSampleSize handles incorrect method input gracefully", {
       sgma = 0.1,
       method = "RA"
     ),
-    "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'."
+    "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.",
+    fixed = TRUE
   )
 })
 
@@ -474,7 +484,8 @@ test_that("Warning is thrown when 'type' is 'max' and times have the same maximu
       sgma = 0.1,
       method = "Bliss"
     ),
-    "Your list 'time' has several vectors with the same maximum time of follow-up."
+    "Your list 'time' has several vectors with the same maximum time of follow-up.",
+    fixed = TRUE
   )
 })
 
@@ -510,7 +521,8 @@ test_that("PwrTime handles incorrect method input gracefully", {
       sgma = 0.1,
       method = "RA"
     ),
-    "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'."
+    "Invalid 'method' provided. Choose from 'Bliss' or 'HSA'.",
+    fixed = TRUE
   )
 })
 
@@ -528,7 +540,8 @@ test_that("PwrTime handles incorrect 'type' input gracefully", {
       sgma = 0.1,
       method = "Bliss"
     ),
-    "invalidType: Invalid 'type' provided. Choose from 'max' or 'freq'."
+    "invalidType: Invalid 'type' provided. Choose from 'max' or 'freq'.",
+    fixed = TRUE
   )
 })
 

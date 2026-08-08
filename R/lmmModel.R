@@ -281,7 +281,7 @@ lmmModel <- function(data,
   # Remove those samples for which TV0 == 0
   # (and therefore, no RTV can be calculated)
   
-  samples0 <- TV.df %>% dplyr::filter(.data$Time == time_start & .data$TV == 0) %>% dplyr::select(.data$SampleID)
+  samples0 <- TV.df %>% dplyr::filter(.data$Time == time_start & .data$TV == 0) %>% dplyr::select("SampleID")
   
   if (length(samples0$SampleID) > 0) {
     warning(paste(paste(samples0$SampleID, collapse = ","), 
@@ -289,7 +289,7 @@ lmmModel <- function(data,
                   "These subjects will be removed from the analysis.", sep = ""))
   }
   
-  samples <- TV.df %>% dplyr::filter(.data$Time == time_start & .data$TV != 0) %>% dplyr::select(.data$SampleID)
+  samples <- TV.df %>% dplyr::filter(.data$Time == time_start & .data$TV != 0) %>% dplyr::select("SampleID")
   
   TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
   
@@ -320,8 +320,8 @@ lmmModel <- function(data,
   
   # Remove samples with less than the minimum of observations specified
   
-  samples <- TV.df %>% dplyr::count(.data$SampleID, .by = .data$SampleID) %>%
-    dplyr::filter(.data$n >= min_observations) %>% dplyr::select(.data$SampleID)
+  samples <- TV.df %>% dplyr::count(.data$SampleID) %>%
+    dplyr::filter(.data$n >= min_observations) %>% dplyr::select("SampleID")
   
   TV.df <- TV.df %>% dplyr::filter(.data$SampleID %in% samples$SampleID)
   

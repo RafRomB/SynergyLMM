@@ -65,3 +65,45 @@ SSgompertzLog <- selfStart(
 )
 
 
+
+#' @title Warn when simulated p-values are approximated to zero
+#' @description
+#' Emits the warning used by [lmmSynergy()] when one or more of the reported
+#' p-values is exactly zero. Simulation-based p-values cannot be smaller than
+#' the resolution allowed by `nsim`, so a zero simply means that every simulated
+#' draw fell on the same side of the null.
+#' @param pvals Numeric vector of p-values.
+#' @param nsim Number of simulations used to obtain `pvals`.
+#' @param gompertz Logical. Whether the p-values come from a Gompertz model fit,
+#' which changes the advice given in the warning.
+#' @return Invisibly, `TRUE` if a warning was emitted and `FALSE` otherwise.
+#' @keywords internal
+#' @noRd
+
+warn_zero_pval <- function(pvals, nsim, gompertz = FALSE) {
+  if (!any(pvals == 0, na.rm = TRUE)) {
+    return(invisible(FALSE))
+  }
+  apx_p <- approx_pval_label(nsim)
+  advice <- if (gompertz) {
+    " If you used a Gompertz model, consider increasing 'nsim' value for more precise p-values."
+  } else {
+    " If you used method = 'RA' consider increasing 'nsim' value for more precise p-values."
+  }
+  warning(paste("p-values below", apx_p, "are approximated to 0."), advice,
+          call. = FALSE)
+  invisible(TRUE)
+}
+
+#' @title Label for the resolution of simulated p-values
+#' @description
+#' Builds the `"p<1e-03"` style label describing the smallest p-value that
+#' `nsim` simulations can resolve.
+#' @param nsim Number of simulations.
+#' @return A character string.
+#' @keywords internal
+#' @noRd
+
+approx_pval_label <- function(nsim) {
+  paste0("p<", format(1 / nsim, scientific = TRUE, digits = 1))
+}

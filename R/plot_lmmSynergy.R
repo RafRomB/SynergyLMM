@@ -57,15 +57,14 @@ plot_lmmSynergy <- function(syn_data){
     syn_data$padj <- syn_data$pval
   }
   
-  if (sum(syn_data$padj == 0) > 1) {
-    
-    ndec <- strsplit(format(nsim, scientific = T), split = "\\+")[[1]][2]
-    apx_p <- paste("p<1e-",ndec, sep = "")
-    
-    syn_data$padj0 <- rep(NA, nrow(syn_data))
-    syn_data$padj0[syn_data$padj == 0] <- "extreme"
-    syn_data$padj[syn_data$padj == 0] <- NA
-    
+  apx_p <- approx_pval_label(nsim)
+  syn_data$padj0 <- rep(NA_character_, nrow(syn_data))
+
+  if (sum(syn_data$padj == 0, na.rm = TRUE) > 0) {
+
+    syn_data$padj0[which(syn_data$padj == 0)] <- "extreme"
+    syn_data$padj[which(syn_data$padj == 0)] <- NA
+
   }
   
   Model <- unique(syn_data$Model)
@@ -85,12 +84,12 @@ plot_lmmSynergy <- function(syn_data){
     annotate(geom = "text", x =(min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
              y = 1.05, angle = 90, hjust = 0, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
-  if (sum(is.na(syn_data$padj)) > 1 & sum(is.na(syn_data$padj)) != length(syn_data$padj)) {
+  if (sum(is.na(syn_data$padj)) > 0 & sum(is.na(syn_data$padj)) != length(syn_data$padj)) {
     CI <- CI +
       geom_point(aes(x = .data$Time, y = .data$Estimate, color = .data$padj0), size = 5, shape = 23) + 
       guides(colours = guide_legend(override.aes = list(size = 5))) +
       scale_color_manual(name = NULL, 
-                         values = c(`padj0` = "extreme"), labels = apx_p) +
+                         values = c(extreme = "gray60"), labels = apx_p) +
       coord_cartesian(clip = "off")
   } else if (sum(is.na(syn_data$padj)) == length(syn_data$padj)) {
     CI <- CI +
@@ -116,12 +115,12 @@ plot_lmmSynergy <- function(syn_data){
     annotate(geom = "text", x = (min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
              y = -0.33, angle = 90, hjust = 1, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
-  if (sum(is.na(syn_data$padj)) > 1 & sum(is.na(syn_data$padj)) != length(syn_data$padj)) {
+  if (sum(is.na(syn_data$padj)) > 0 & sum(is.na(syn_data$padj)) != length(syn_data$padj)) {
     SS <- SS +
       geom_point(aes(x = .data$Time, y = .data$Estimate, color = .data$padj0), size = 5, shape = 23) + 
       guides(colours = guide_legend(override.aes = list(size = 5))) +
       scale_color_manual(name = NULL, 
-                         values = c(`padj0` = "extreme"), labels = apx_p) +
+                         values = c(extreme = "gray60"), labels = apx_p) +
       coord_cartesian(clip = "off")
   } else if (sum(is.na(syn_data$padj)) == length(syn_data$padj)) {
     SS <- SS +

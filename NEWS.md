@@ -1,5 +1,22 @@
 # SynergyLMM (development version)
 
+# SynergyLMM 1.1.4
+
+Patch update fixing a test failure reported by the CRAN additional checks with OpenBLAS.
+
+## Fixes
+
+* Tests no longer assert simulated outcomes. Whether a p-value is exactly 0
+depends on the draws from `MASS::mvrnorm()`, which are not reproducible across
+BLAS/LAPACK implementations. The wording of the corresponding `lmmSynergy()`
+warning is now covered by a deterministic unit test.
+* The reported resolution of simulated p-values is now computed as `1/nsim`.
+It is unchanged for any `nsim` that is a power of ten, including all defaults.
+* `plot_lmmSynergy()` now flags p-values approximated to 0 whenever at least one
+is present, and draws them in the colour announced in the legend.
+* Replaced the use of `.data$` inside `dplyr::select()`, deprecated since
+tidyselect 1.2.0, with column names.
+
 # SynergyLMM 1.1.3
 
 Patch update to update the package maintainer's email address.
