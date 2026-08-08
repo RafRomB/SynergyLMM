@@ -66,9 +66,14 @@ plot_lmmSynergy <- function(syn_data){
     syn_data$padj[which(syn_data$padj == 0)] <- NA
 
   }
-  
+
+  # Rows whose p-value was approximated to 0, kept apart so that they are the
+  # only ones drawn by the layer carrying the 'extreme' legend key
+  extreme_CI <- syn_data[!is.na(syn_data$padj0) & syn_data$Metric == "Combination Index", ]
+  extreme_SS <- syn_data[!is.na(syn_data$padj0) & syn_data$Metric == "Synergy Score", ]
+
   Model <- unique(syn_data$Model)
-  
+
   CI <- syn_data %>% dplyr::filter(.data$Metric == "Combination Index") %>% ggplot(aes(x = .data$Time, y = .data$Estimate)) +
     geom_segment(aes(x= .data$Time, y = .data$lwr, yend = .data$upr), color = "gray60", lwd = 1, 
                  arrow = arrow(angle = 90, length = unit(0.01, "npc"),ends = "both")) + cowplot::theme_cowplot() +
@@ -84,19 +89,17 @@ plot_lmmSynergy <- function(syn_data){
     annotate(geom = "text", x =(min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
              y = 1.05, angle = 90, hjust = 0, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
-  if (sum(is.na(syn_data$padj)) > 0 & sum(is.na(syn_data$padj)) != length(syn_data$padj)) {
+  # Points whose p-value was approximated to 0 are marked with their own legend
+  # key. Only those points are drawn by this layer, so that the remaining points
+  # keep the fill assigned by the p-value gradient and no 'NA' key is added.
+  if (nrow(extreme_CI) > 0) {
     CI <- CI +
-      geom_point(aes(x = .data$Time, y = .data$Estimate, color = .data$padj0), size = 5, shape = 23) + 
-      guides(colours = guide_legend(override.aes = list(size = 5))) +
-      scale_color_manual(name = NULL, 
+      geom_point(data = extreme_CI,
+                 aes(x = .data$Time, y = .data$Estimate, color = .data$padj0),
+                 size = 5, shape = 23) +
+      guides(colour = guide_legend(override.aes = list(size = 5))) +
+      scale_color_manual(name = NULL,
                          values = c(extreme = "gray60"), labels = apx_p) +
-      coord_cartesian(clip = "off")
-  } else if (sum(is.na(syn_data$padj)) == length(syn_data$padj)) {
-    CI <- CI +
-      geom_point(aes(x = .data$Time, y = .data$Estimate, color = .data$padj0), size = 5, shape = 23) + 
-      guides(colours = guide_legend(override.aes = list(size = 5))) +
-      scale_color_manual(name = NULL, 
-                         values = "gray60", labels = apx_p) +
       coord_cartesian(clip = "off")
   }
   
@@ -115,19 +118,14 @@ plot_lmmSynergy <- function(syn_data){
     annotate(geom = "text", x = (min(syn_data$Time)-(syn_data$Time[2]-syn_data$Time[1])), 
              y = -0.33, angle = 90, hjust = 1, label = "Antagonism", fontface = "bold", color = "#c21d2f")
   
-  if (sum(is.na(syn_data$padj)) > 0 & sum(is.na(syn_data$padj)) != length(syn_data$padj)) {
+  if (nrow(extreme_SS) > 0) {
     SS <- SS +
-      geom_point(aes(x = .data$Time, y = .data$Estimate, color = .data$padj0), size = 5, shape = 23) + 
-      guides(colours = guide_legend(override.aes = list(size = 5))) +
-      scale_color_manual(name = NULL, 
+      geom_point(data = extreme_SS,
+                 aes(x = .data$Time, y = .data$Estimate, color = .data$padj0),
+                 size = 5, shape = 23) +
+      guides(colour = guide_legend(override.aes = list(size = 5))) +
+      scale_color_manual(name = NULL,
                          values = c(extreme = "gray60"), labels = apx_p) +
-      coord_cartesian(clip = "off")
-  } else if (sum(is.na(syn_data$padj)) == length(syn_data$padj)) {
-    SS <- SS +
-      geom_point(aes(x = .data$Time, y = .data$Estimate, color = .data$padj0), size = 5, shape = 23) + 
-      guides(colours = guide_legend(override.aes = list(size = 5))) +
-      scale_color_manual(name = NULL, 
-                         values = "gray60", labels = apx_p) +
       coord_cartesian(clip = "off")
   }
   
