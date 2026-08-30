@@ -1,5 +1,38 @@
 # SynergyLMM (development version)
 
+# SynergyLMM 1.2.0
+
+The 'SynergyLMM' Shiny application is now shipped with the package.
+
+## New features
+
+* New `runSynergyLMMApp()` launches the interactive 'SynergyLMM' application
+locally. The app is bundled under `inst/shiny` and covers the full workflow:
+data upload, model fitting, synergy evaluation, model diagnostics, and the
+_post hoc_ and _a priori_ power analyses. The packages it needs are listed in
+`Suggests`, so they are not a hard dependency; the function reports every
+missing one in a single message. The app is still available online at
+<https://synergylmm.uiocloud.no/>.
+* `PostHocPwr()` gains an optional `progress` argument, a function of no
+arguments called once per simulation. It allows front-ends to report progress
+during long runs and is ignored when `NULL` (the default).
+* `APrioriPwr()`, `PwrSampleSize()` and `PwrTime()` now attach the plot they
+draw to their returned object as an attribute named `"plot"`. It can be
+retrieved with `attr(result, "plot")` and passed to, for example,
+`ggplot2::ggsave()`. The returned values themselves are unchanged.
+
+## Fixes
+
+* The application previously ran its own copy of the analysis code, which had
+drifted from the package: it fitted the _a priori_ power models with an
+intercept (`~ Time:Treatment` rather than `~ 0 + Time:Treatment`), used the
+old `subject` identifier column, and did not support the variance-function
+argument. The app now calls the package functions directly, so the two can no
+longer diverge. Reported power is unaffected by this correction, as the
+synergy contrasts are zero-sum and therefore invariant to the intercept
+parametrisation: `APrioriPwr()`, `PwrSampleSize()` and `PwrTime()` agree with
+the previous application output to within rounding.
+
 # SynergyLMM 1.1.4
 
 Patch update fixing a test failure reported by the CRAN additional checks with OpenBLAS.

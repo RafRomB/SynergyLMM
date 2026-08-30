@@ -76,6 +76,9 @@ assigned to \code{sd_ranef} and \code{sgma} are also shown.
 
 The statistical power for the fitted model for the initial data set according to the values given by
 \code{npg}, \code{time}, \code{grwrControl}, \code{grwrA}, \code{grwrB}, \code{grwrComb}, \code{sd_ranef} and \code{sgma} is also shown in the console.
+
+The plot that was drawn is attached to the returned object as an attribute named \code{"plot"}, so that
+it can be retrieved with \code{attr(result, "plot")} and passed to, for example, \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}.
 }
 \description{
 \emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy using linear-mixed models

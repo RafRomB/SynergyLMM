@@ -13,6 +13,9 @@ NULL
 #' @param pvalue Threshold for the p-value of synergy calculation to be considered statistically significant.
 #' @param time Time point for which to calculate the statistical power. If not specified, the last time point is used
 #' by default.
+#' @param progress Optional function of no arguments, called once after each simulation. It is
+#' intended for reporting progress in interactive front-ends (for example, a Shiny progress bar),
+#' and is ignored when `NULL` (the default).
 #' @param ... Additional parameters to be passed to [nlmeU::simulateY]:
 #' @details
 #' The _post hoc_ power calculation relies on simulation of the dependent variable, using [nlmeU::simulateY].
@@ -59,8 +62,13 @@ PostHocPwr <- function(model,
                        method = "Bliss",
                        pvalue = 0.05,
                        time = NA,
+                       progress = NULL,
                        ...) {
-  
+
+  if (!is.null(progress) && !is.function(progress)) {
+    stop("'progress' must be a function or NULL.")
+  }
+
   tryCatch({
     if (!"explme" %in% class(model)) {
       stop(
@@ -116,7 +124,9 @@ PostHocPwr <- function(model,
   simfmA <- apply(simA, 2, function(y) {
     dt$logRTV <- y
     auxFit <- update(model, data = dt)
-    marginaleffects::hypotheses(auxFit, hypothesis = contrast)
+    res <- marginaleffects::hypotheses(auxFit, hypothesis = contrast)
+    if (!is.null(progress)) progress()
+    res
   })
   FstateE <-
     sapply(simfmA, function(x)

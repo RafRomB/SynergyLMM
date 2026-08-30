@@ -545,3 +545,53 @@ test_that("PwrTime handles incorrect 'type' input gracefully", {
   )
 })
 
+
+# Tests for the "plot" attribute on the power functions ----
+
+test_that("The a priori power functions attach the drawn plot as an attribute", {
+  skip_if_not_installed("ggplot2")
+
+  pwr_size <- PwrSampleSize(
+    npg = 5:6,
+    time = seq(0, 9, 3),
+    grwrControl = 0.08,
+    grwrA = 0.07,
+    grwrB = 0.06,
+    grwrComb = 0.03,
+    sd_ranef = 0.01,
+    sgma = 0.1,
+    method = "Bliss",
+    plot_exmpDt = FALSE
+  )
+
+  expect_s3_class(attr(pwr_size, "plot"), "ggplot")
+
+  pwr_time <- PwrTime(
+    npg = 5,
+    time = list(seq(0, 9, 3), seq(0, 21, 3)),
+    type = "max",
+    grwrControl = 0.08,
+    grwrA = 0.07,
+    grwrB = 0.06,
+    grwrComb = 0.03,
+    sd_ranef = 0.01,
+    sgma = 0.1,
+    method = "Bliss",
+    plot_exmpDt = FALSE
+  )
+
+  expect_s3_class(attr(pwr_time, "plot"), "ggplot")
+})
+
+test_that("PostHocPwr calls the 'progress' callback once per simulation", {
+  calls <- 0
+  result <- PostHocPwr(model, nsim = 5, seed = 123,
+                       progress = function() calls <<- calls + 1)
+
+  expect_equal(calls, 5)
+  expect_true(result >= 0 && result <= 1)
+
+  # A non-function is rejected, and NULL (the default) is a no-op
+  expect_error(PostHocPwr(model, nsim = 2, progress = "not a function"),
+               "'progress' must be a function or NULL.", fixed = TRUE)
+})

@@ -96,7 +96,10 @@ NULL
 #' 
 #' The statistical power for the fitted model for the initial data set according to the values given by
 #' `npg`, `time`, `grwrControl`, `grwrA`, `grwrB`, `grwrComb`, `sd_ranef` and `sgma` is also shown in the console.
-#' 
+#'
+#' The plot that was drawn is attached to the returned object as an attribute named `"plot"`, so that
+#' it can be retrieved with `attr(result, "plot")` and passed to, for example, [ggplot2::ggsave()].
+#'
 #' @importFrom nlme lme lmeControl pdDiag
 #' @importFrom cowplot theme_cowplot plot_grid
 #' @references
@@ -342,10 +345,11 @@ APrioriPwr <- function(npg = 5,
       xlab("SD for random effects") + ylab("SD for residuals") + geom_point(x = sd_ranef, y = sgma, shape = 18, size = 5, color = "firebrick3")
     if (is.null(grwrComb_eval)) {
       if (plot_exmpDt == TRUE) {
-        plot(plot_grid(p1, p2, ncol = 2)) 
+        final_plot <- plot_grid(p1, p2, ncol = 2)
       } else {
-        plot(p2)
+        final_plot <- p2
       }
+      plot(final_plot)
     }
   }
   
@@ -435,19 +439,28 @@ APrioriPwr <- function(npg = 5,
       ggplot2::geom_hline(yintercept = 0.8, lty = "dashed") + ggplot2::geom_vline(xintercept = grwrComb, lty=3)
     if (is.null(sd_eval) & is.null(sgma_eval)) {
       if (plot_exmpDt == TRUE) {
-        plot(plot_grid(p1, p3, ncol = 2)) 
+        final_plot <- plot_grid(p1, p3, ncol = 2)
       } else {
-        plot(p3)
+        final_plot <- p3
       }
+      plot(final_plot)
     }
   }
   if (!is.null(sd_eval) &
       !is.null(sgma_eval) & !is.null(grwrComb_eval)) {
     if (plot_exmpDt == TRUE) {
-      plot(plot_grid(p1, p2, p3, ncol = 3))
+      final_plot <- plot_grid(p1, p2, p3, ncol = 3)
     } else {
-      plot(plot_grid(p2, p3, ncol = 2))
+      final_plot <- plot_grid(p2, p3, ncol = 2)
     }
+    plot(final_plot)
   }
+
+  # No power curve was requested, so only the exemplary data plot is available
+  if (!exists("final_plot", inherits = FALSE)) {
+    final_plot <- p1
+  }
+  attr(pwr.result, "plot") <- final_plot
+
   return(pwr.result)
 }

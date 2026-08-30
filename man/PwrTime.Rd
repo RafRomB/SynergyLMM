@@ -65,6 +65,8 @@ treatment group according to \code{grwrControl}, \code{grwrA}, \code{grwrB} and 
 assigned to \code{sd_ranef} and \code{sgma} are also shown.
 
 The function also returns the data frame with the power for the analysis for each value specified in \code{ Time}.
+The plot that was drawn is attached to that data frame as an attribute named \code{"plot"}, so that it
+can be retrieved with \code{attr(result, "plot")} and passed to, for example, \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}.
 }
 \description{
 \emph{A priori} power calculation for a hypothetical two-drugs combination study of synergy

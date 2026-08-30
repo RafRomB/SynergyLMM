@@ -58,6 +58,8 @@ NULL
 #' assigned to `sd_ranef` and `sgma` are also shown.
 #' 
 #' The function also returns the data frame with the power for the analysis for each value specified in ` Time`.
+#' The plot that was drawn is attached to that data frame as an attribute named `"plot"`, so that it
+#' can be retrieved with `attr(result, "plot")` and passed to, for example, [ggplot2::ggsave()].
 #' 
 #' @references
 #' - Helms, R. W. (1992). _Intentionally incomplete longitudinal designs: I. Methodology and comparison of some full span designs_. Statistics in Medicine, 11(14–15), 1889–1913. https://doi.org/10.1002/sim.4780111411
@@ -230,11 +232,14 @@ PwrTime <- function(npg = 5,
     geom_hline(yintercept = 0.8, lty = "dashed")
   
   if (plot_exmpDt == TRUE) {
-    plot(plot_grid(p1,p2, ncol = 2))
+    final_plot <- plot_grid(p1, p2, ncol = 2)
   } else {
-    plot(p2)
+    final_plot <- p2
   }
-  
+  plot(final_plot)
+
+  attr(npg_Pwr, "plot") <- final_plot
+
   return(npg_Pwr)
 }
 

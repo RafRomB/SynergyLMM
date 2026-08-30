@@ -4,7 +4,15 @@
 \alias{PostHocPwr}
 \title{Post hoc power calculation based on simulations of the synergy evaluation using LMM.}
 \usage{
-PostHocPwr(model, nsim = 1000, method = "Bliss", pvalue = 0.05, time = NA, ...)
+PostHocPwr(
+  model,
+  nsim = 1000,
+  method = "Bliss",
+  pvalue = 0.05,
+  time = NA,
+  progress = NULL,
+  ...
+)
 }
 \arguments{
 \item{model}{An object of class "lme" representing the linear mixed-effects model fitted by \code{\link[=lmmModel]{lmmModel()}}.}
@@ -18,6 +26,10 @@ corresponding to Bliss and highest single agent, respectively.}
 
 \item{time}{Time point for which to calculate the statistical power. If not specified, the last time point is used
 by default.}
+
+\item{progress}{Optional function of no arguments, called once after each simulation. It is
+intended for reporting progress in interactive front-ends (for example, a Shiny progress bar),
+and is ignored when \code{NULL} (the default).}
 
 \item{...}{Additional parameters to be passed to \link[nlmeU:simulateY]{nlmeU::simulateY}:}
 }

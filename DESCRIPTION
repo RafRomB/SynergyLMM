@@ -1,6 +1,6 @@
 Package: SynergyLMM
 Title: Statistical Framework for in Vivo Drug Combination Studies
-Version: 1.1.4.9000
+Version: 1.2.0
 Authors@R: 
     c(person("Rafael", "Romero-Becerra", , "rafrombec@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3935-2647")), 
@@ -31,11 +31,20 @@ Imports:
     lattice,
     marginaleffects,
     clubSandwich
-Suggests: 
+Suggests:
     lme4,
     knitr,
     rmarkdown,
-    testthat (>= 3.1.5)
+    testthat (>= 3.1.5),
+    shiny,
+    bslib,
+    shinyjs,
+    shinyWidgets,
+    shinyhelper,
+    DT,
+    plotly,
+    readxl,
+    openxlsx
 Config/testthat/edition: 3
 Depends: 
     R (>= 4.0)
@@ -43,4 +52,4 @@ LazyData: true
 VignetteBuilder: knitr
 URL: https://github.com/RafRomB/SynergyLMM
 BugReports: https://github.com/RafRomB/SynergyLMM/issues
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0
